@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleeditdocs.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Edit Inspection Documents</h1>
+    <div style="width: 100%; display: flex; ">
+    <div id="search"  class="container_list">
+
+        
+        <input type="text" id="searchInput" placeholder="Search document..." oninput="filterByName()">
+        Filter by           
+        <select id="filterSelect">
+            <option value="new">Newest</option>
+            <option value="old">Oldest</option>
+            <option value="recently">Recently added</option>
+        </select>
+        
+        <hr style="border-top: 3px static #000000;">
+
+        <div class="containder_scroll">
+            <ul id="itemList">
+                <li name="tmp">
+                    <div class="inner_list_div">
+                        <span>21.05.2023, dr. Jędrzej Dąbek - Podstawy Przedsiębiorczości</span>
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <img src="edit.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                        </button>
+                    </div>
+                </li>
+                <li name="tmp">
+                    <div class="inner_list_div">
+                        <span>01.04.2023, dr. Jan Nowak - Programowawnie gier komputerowych</span>
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <img src="edit.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                        </button>
+                    </div>
+
+                </li>
+                <li name="tmp">
+                    <div class="inner_list_div">
+                        <span>22.03.2023, mgr inż Anna Bąk - Paradygmaty Programowania</span>
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <img src="edit.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                        </button>
+                    </div>
+
+                </li>
+                <li name="tmp">
+                    <div class="inner_list_div">
+                        <span>11.02.2023, dr. Miłosz Kowalski - Analiza Matematyczna 1</span>
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <img src="edit.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                        </button>
+                    </div>
+
+                </li>
+                <li name="tmp">
+                    <div class="inner_list_div">
+                        <span>17.01.2023, dr. Szymon Wąs - Analiza Matematyczna 2</span>
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <img src="edit.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                        </button>
+                    </div>
+                    
+
+                </li>
+                <li name="tmp">
+                    <div class="inner_list_div">
+                        <span>08.01.2023, dr. Iwona Perła - Fizyka 2</span>
+                        <button type="submit" style="border: none; background: none; padding: 0;">
+                            <img src="edit.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                        </button>
+                    </div>
+                    
+
+                </li>
+            </ul>
+        </div>
+
+
+
+        
+        <a href="index.html" class="button" id="button" style="position: absolute; bottom: 0; right: 0; margin: 20px ;">Return to Main</a>
+    </div>    
+
+    <div id="editable" class="hidden">
+        <div style="padding: 10px;">
+            <h3> 
+                Inspection Document:
+            </h3>
+            <div class="row">
+                Inspected: mgr inż. Anna Bąk
+            </div>
+            <div  class="row"> 
+                Department: Applied Computer Science
+            </div>
+            <div  class="row">
+                Date: 21.05.2023
+            </div>
+            <div  class="row">
+                Subject: Paradygmaty Programowania
+            </div>
+            <div  class="row">
+                Subject code: W04ITE-SI0016W
+            </div>
+            <div  class="row">
+                Inspectors: dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak
+            </div>
+        </div>
+
+        <hr style="border-top: 3px static #000000;">
+
+        <div style="padding: 10px; width: 50%;">
+            <div class="row" id="Inspected_lateness">
+                <label>Inspected lateness:</label>
+                <input type="text" id="Inspected_lateness_input" class="input_docs" value="0">
+            </div>
+            <div class="row">   
+                <label>Students attendance:</label>
+                <input type="text" value="121" class="input_docs">
+            </div>
+            <div class="row">
+                <label>Room adaptation:</label>
+                <input type="text" value="good" class="input_docs">
+            </div>
+            <div class="row">
+                <label>Content compatibility:</label>
+                <input type="text" value="very good" class="input_docs">
+            </div>
+            <div class="row">
+                <label>Substantive assessment:</label>
+                <input type="text" value="Lorem ipsum" class="input_docs">
+            </div>
+            <div class="row">
+                <label>Final assessment:</label>
+                <input type="text" value="5" class="input_docs">
+            </div>
+            <div class="row">
+                <label>Recommendation:</label>
+                <input type="text" value="Lorem ipsum" class="input_docs">
+            </div>
+        </div>
+
+        <a class="button_save" id="buttonSave" onclick="save_docs()" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save</a>
+        <a class="button_cancel" id="buttonCancel" onclick="cancel_docs()" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
+        
+
+
+    </div> 
+
+</div>  
+    
+
+    <script>
+        function save_docs() {
+            const InspectedLatenessInput = document.getElementById("Inspected_lateness_input");
+                if (isNaN(InspectedLatenessInput.value) || InspectedLatenessInput.value.trim() === "" || parseInt(InspectedLatenessInput.value)< 0) {
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'popup_overlay';
+                    
+                    const content = document.createElement('div');
+                    content.className = 'popup_content';
+
+                    
+                    const text = document.createElement('p');
+                    text.className = 'popup_text';
+                    text.textContent = 'Ivalid input data!';
+                    content.appendChild(text);
+
+
+                    const okButton = document.createElement('button');
+                    okButton.className = 'ok_popup_btn';
+                    okButton.textContent = 'Ok';
+                    content.appendChild(okButton);
+
+                    overlay.appendChild(content);
+                    document.body.appendChild(overlay);
+
+                    okButton.addEventListener('click', () => {
+                        overlay.remove();
+                    });
+
+                    InspectedLatenessInput.classList.add("input_error")
+                    return;
+                }
+                    InspectedLatenessInput.classList.remove("input_error")
+                
+
+            const editableDiv = document.getElementById("editable");
+
+            const overlay = document.createElement('div');
+            overlay.className = 'popup_overlay';
+            
+            const content = document.createElement('div');
+            content.className = 'popup_content';
+
+            
+            const text = document.createElement('p');
+            text.className = 'popup_text';
+            text.textContent = 'Do you want to save document?';
+            content.appendChild(text);
+
+
+            const saveButton = document.createElement('button');
+            const cancelButton = document.createElement('button');
+            saveButton.className = 'save_popup_btn';
+            cancelButton.className = 'cancel_popup_btn';
+            saveButton.textContent = 'Save';
+            cancelButton.textContent = 'Cancel';
+            content.appendChild(saveButton);
+            content.appendChild(cancelButton);
+
+            overlay.appendChild(content);
+            document.body.appendChild(overlay);
+
+            saveButton.addEventListener('click', () => {
+                overlay.remove();
+                editableDiv.classList.add("hidden");
+            });
+            cancelButton.addEventListener('click', () => {
+                overlay.remove();
+            });
+            }
+ 
+
+        function cancel_docs() {
+            const editableDiv = document.getElementById("editable");
+            editableDiv.classList.add("hidden");
+        }
+
+    
+            function filterByName() {
+            const searchValue = document.getElementById("searchInput").value.toLowerCase();
+            const items = document.querySelectorAll("#itemList li");
+            console.log(items);
+            console.log(searchValue);
+            if(searchValue === "") {
+                    items.forEach(item => {
+                        item.style.display = "block";
+                    });
+            return;}   
+
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+
+                if (text.includes(searchValue)) {
+                    item.style.display = "block";
+                    console.log(text);
+                } else {
+                    item.style.display = "none";
+                    
+                }
+            });
+        }      
+        
+        
+        function deleteItem(button) {   
+            if(false){
+                const overlay = document.createElement('div');
+                        overlay.className = 'popup_overlay';
+                        
+                        const content = document.createElement('div');
+                        content.className = 'popup_content';
+    
+                        
+                        const text = document.createElement('p');
+                        text.className = 'popup_text';
+                        text.textContent = 'Selected inspection already has been conducted';
+                        content.appendChild(text);
+    
+    
+                        const okButton = document.createElement('button');
+                        okButton.className = 'ok_popup_btn';
+                        okButton.textContent = 'Ok';
+                        content.appendChild(okButton);
+    
+                        overlay.appendChild(content);
+                        document.body.appendChild(overlay);
+    
+                        okButton.addEventListener('click', () => {
+                            overlay.remove();
+                        });
+                return;
+            }
+
+const listItem = button.closest("li"); 
+const listItems = document.querySelectorAll("#itemList li");
+const editableDiv = document.getElementById("editable");
+
+listItems.forEach((item) => {
+    item.addEventListener("click", () => {
+        
+        editableDiv.classList.remove("hidden");
+    });
+});
+
+}
+    </script>
+    
+</body>
+</html>

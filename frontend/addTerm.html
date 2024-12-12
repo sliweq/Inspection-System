@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="addterm.css">
+    <title>Add term</title>
+</head>
+<body>
+    <h1>Add Inspection term</h1>
+    <div style="width: 100%; display: flex; ">
+    <div id="search"  class="container_list">
+        <div style="padding: 10px;">
+            <h3> 
+                Inspection Document:
+            </h3>
+
+            <div style="width: 50%;">
+
+                <div class="row">
+                    Inspected:
+                    <select id="inspectedPicker" class="pickers">
+                        <option value="">Select Inspected</option>
+                        <option value="Team A">dr. Jan Nowak</option>
+                        <option value="Team B">mgr inż Anna Bąk</option>
+                        <option value="Team C">dr. Miłosz Kowalski</option>
+                    </select>
+                </div>
+    
+                <div  class="row">
+                    Subject: 
+                    <select id="subjectPicker" class="pickers">
+                        <option value="">Select Subject</option>
+                        <option value="Sub A">Podstawy Przedsiębiorczości</option>
+                        <option value="Sub B">Podstawy Zarządzania Projektami</option>
+                        <option value="Sub C">Podstawy prezentacji</option>
+                    </select>
+                </div>
+    
+                <div  class="row">
+                    Date
+                    <input type="date" class="pickers" id="datePicker" value="">
+                </div>
+                
+                <div  class="row">
+                    Inspectors:
+                    <select id="teamPicker"  class="pickers">
+                        <option value="">Select Inspectors</option>
+                        <option value="Team A">Team A - dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak</option>
+                        <option value="Team B">Team B - dr. Jerzy Śliwka, dr. Mirosława Gruszka, dr. Jan Nowak</option>
+                        <option value="Team C">Team C - dr. Jan Marek, dr. Katrzyna Kić, dr. Jan Nowak</option>
+                    </select>
+                </div>
+            </div>
+            <hr style="border-top : 3px static #000000;">
+            <div id="editable" class="hidden">     
+                <h3>
+                    Term details:
+                </h3>
+                <div  class="row">
+                    Inspected: dr. Jan Nowak
+                </div>
+                <div  class="row">
+                    Department: Applied Computer Science
+                </div>
+                <div  class="row">
+                    Subject: Architektura Komputerów
+                </div>
+                <div  class="row">
+                    Subject code: W04ITE-SI0016W
+                </div>
+                <div  class="row">
+                    Date: 2024-12-03 / 13:15
+                </div>
+                <div  class="row">
+                    Location: D-2 / 123
+                </div>
+                <div>
+                    Inspectors: Team A - dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak
+                </div>
+            </div>
+    
+            <a class="button_save" id="buttonSave" style="position: absolute; bottom: 0;left: 0; margin: 20px ;" onclick="save_docs()">Add</a>
+            <a class="button_cancel" id="buttonCancel" href="index.html" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
+            
+        </div>
+    </div>    
+</div>  
+    
+
+    <script>
+        function checkPickers() {
+            const inspectedPicker = document.getElementById("inspectedPicker");
+            const subjectPicker = document.getElementById("subjectPicker");
+            const datePicker = document.getElementById("datePicker");
+            const teamPicker = document.getElementById("teamPicker");
+
+            const editableDiv = document.getElementById("editable");
+
+            if(inspectedPicker.value === "" || subjectPicker.value === "" || datePicker.value === "" || teamPicker.value === ""){
+                editableDiv.classList.add("hidden");
+                return;
+            }
+                editableDiv.classList.remove("hidden");
+            }
+
+            const pickers = document.querySelectorAll('.pickers');
+    pickers.forEach(picker => {
+        picker.addEventListener('change', checkPickers);
+    });
+
+    function save_docs() {
+            const inspectedPicker = document.getElementById("inspectedPicker");
+            const subjectPicker = document.getElementById("subjectPicker");
+            const datePicker = document.getElementById("datePicker");
+            const teamPicker = document.getElementById("teamPicker");
+console.log(inspectedPicker.value); 
+console.log(subjectPicker.value);
+console.log(datePicker.value);
+console.log(teamPicker.value);
+
+
+            if(inspectedPicker.value === "" || subjectPicker.value === "" || datePicker.value === "" || teamPicker.value === ""){
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'popup_overlay';
+                    
+                    const content = document.createElement('div');
+                    content.className = 'popup_content';
+
+                    
+                    const text = document.createElement('p');
+                    text.className = 'popup_text';
+                    text.textContent = 'Ivalid input data!';
+                    content.appendChild(text);
+
+
+                    const okButton = document.createElement('button');
+                    okButton.className = 'ok_popup_btn';
+                    okButton.textContent = 'Ok';
+                    content.appendChild(okButton);
+
+                    overlay.appendChild(content);
+                    document.body.appendChild(overlay);
+
+                    okButton.addEventListener('click', () => {
+                        overlay.remove();
+                    });
+
+                    
+                    if(inspectedPicker.value === ""){
+                        inspectedPicker.classList.add("input_error")
+                    }else
+                    {
+                        inspectedPicker.classList.remove("input_error")
+                    }
+                    if(subjectPicker.value === "" ){
+                        subjectPicker.classList.add("input_error")
+                    }else
+                    {
+                        subjectPicker.classList.remove("input_error")
+                    }
+                    if(datePicker.value === "" ){
+                        datePicker.classList.add("input_error")
+                    }else
+                    {
+                        datePicker.classList.remove("input_error")
+                    }
+                    if(teamPicker.value === "" ){
+                        teamPicker.classList.add("input_error")
+                    }else
+                    {
+                        teamPicker.classList.remove("input_error")
+                    }
+                    return;
+                }
+                
+            }
+        
+    </script>
+    
+</body>
+</html>
