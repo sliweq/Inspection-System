@@ -7,14 +7,11 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>View Hospitation Schedule</h1>
+    <h1>View Inspection Schedule</h1>
     <div class="container">
         <label for="semester-list">Select a Semester:</label>
         <select id="semester-list">
             <option value="">Select a Semester</option>
-            <option value="Winter semester 2024">Winter semester 2024</option>
-            <option value="Summer semester 2023">Summer semester 2023</option>
-            <option value="Summer semester 2024">Summer semester 2024</option>
         </select>
         <button class="button" onclick="viewSchedule()">View Schedule</button>
         <p id="message" class="alert"></p>
@@ -22,55 +19,13 @@
 
     <div class="container hidden" id="schedule-list">
         <h2>Schedule for <span id="chosen-semester"></span></h2>
-        <ul id="schedule-details">
-        </ul>
+        <ul id="schedule-details"></ul>
     </div>
 
     <a href="index.html" class="button">Return to Main</a>
-
+    <script src="controller.js"></script>
     <script>
-        const schedules = {
-            "Winter semester 2024": [
-                "dr inż. Dariusz Banasiak - Interakcja człowiek - komputer W04ITE-SM0221G; W, P - Prof. dr hab. inż. Olgierd Unold, Dr hab. inż. Iwona Karcz-Dulęba, prof. uczelni",
-                "prof. dr hab. inż. Robert Burduk - Hurtownie i eksploracja danych W04ITE-SI0120G; W, P - Prof. dr hab. inż. Michał Woźniak, Dr hab. inż. Dariusz Król, prof. uczelni"
-            ],
-            "Summer semester 2023": [
-                "dr inż. Dariusz Caban  - Systemy operacyjne 1 W04ITE-SI0016W - Prof. dr hab. inż. Czesław Smutnicki, Dr inż. Jarosław Rudy",
-                "dr inż. Artur Chorążyczewski - Elementy elektroniki i elektrotechniki W04ISA-SI0008G; L - Dr hab. inż. Andrzej Rusiecki, prof. uczelni, Dr inż. Paweł Drąg"
-            ],
-            "Summer semester 2024": []
-        };
-
-        function viewSchedule() {
-            const semester = document.getElementById("semester-list").value;
-            const message = document.getElementById("message");
-            const scheduleList = document.getElementById("schedule-list");
-            const chosenSemester = document.getElementById("chosen-semester");
-            const scheduleDetails = document.getElementById("schedule-details");
-
-            if (!semester) {
-                message.textContent = "Please select a semester.";
-                scheduleList.classList.add("hidden");
-                return;
-            }
-
-            const semesterSchedule = schedules[semester];
-            message.textContent = "";
-            chosenSemester.textContent = semester;
-            scheduleDetails.innerHTML = "";
-
-            if (semesterSchedule.length === 0) {
-                message.textContent = `No scheduled hospitations for ${semester}.`;
-                scheduleList.classList.add("hidden");
-            } else {
-                semesterSchedule.forEach(item => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = item;
-                    scheduleDetails.appendChild(listItem);
-                });
-                scheduleList.classList.remove("hidden");
-            }
-        }
+        document.addEventListener("DOMContentLoaded", loadSemesters);
     </script>
 </body>
 </html>

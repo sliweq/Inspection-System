@@ -1,0 +1,8 @@
+Nastąpiły zmiany, zarówno w stosunku do specyfikacji przypadków użycia jak i prototypów interfejsu.
+Zmiany nastąpiły z powodu chęci poprawy User Experience. 
+Po ocenie Pani Profesor prototypów interfejsów zauważyła Pani, że w celu edycji lub wyświetlenia składu zespołu,
+użytkownik musiałby przeklikać się przez menu drop-down i czasami wiele przycisków.
+Z tego powodu uprościłem Use-Case Model ManageInspectionTeam, 
+tak aby połączyć przypadki użycia ViewInspectionTeam EditInspectionTeam jak i CreateInspectionTeam.
+Dzięki połączenia wielu funkcjonalności w jeden widok, drastycznie zredukowałem ilość interakcji które użytkownik musi wykonać z systemem.
+Teraz możliwe jest pełne zarządzanie zespołami hospitacyjnymi z poziomu jedengo ekranu.

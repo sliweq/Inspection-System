@@ -7,151 +7,16 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Edit or create a Hospitation Team</h1>
-    <div class="container">
-        <label for="team-list">Select a Team:</label>
-        <select id="team-list">
-            <option value="">Select a Team</option>
-            <option value="Team A">Team A</option>
-            <option value="Team B">Team B</option>
-            <option value="Team C">Team C</option>
-        </select>
-        <button class="button" onclick="editTeam()">Edit</button>
-        <br>
-        <p>Or, enter a new team identifier:</p>
-        <input type="text" id="team-id" placeholder="Team Identifier">
-        <button onclick="createTeam()">Create</button>
-        <p id="message" class="alert"></p>
-    </div>
-
-    <div class="container hidden" id="edit-options">
-        <h2>Edit Options</h2>
-        <button class="button" onclick="showAddMember()">Add Member</button>
-        <button class="button" onclick="showRemoveMember()">Remove Member</button>
-    </div>
-
-    <div class="container hidden" id="add-member">
-        <h3>Add a Member</h3>
-        <label for="add-member-select">Choose a member to add:</label>
-        <select id="add-member-select">
-            <option value="Hanna Panna, dr inż.">Hanna Panna, dr. inż.</option>
-            <option value="Karolina Trampolina, prof.">Karolina Trampolina, prof.</option>
-            <option value="Janek Dzbanek, dr hab.">Janek Dzbanek, dr hab.</option>
-            <option value="Michał Kowalski, dr inż.">Michał Kowalski, dr inż.</option>
-        </select>
-        <button class="button" onclick="addMember()">Add</button>
-        <p id="add-message" class="alert"></p>
-    </div>
-
-    <div class="container hidden" id="remove-member">
-        <h3>Remove a Member</h3>
-        <label for="remove-member-select">Choose a member to remove:</label>
-        <select id="remove-member-select">
-        </select>
-        <button class="button" onclick="removeMember()">Remove</button>
-        <p id="remove-message" class="alert"></p>
-    </div>
-
+    <h1>Edit Inspection Teams</h1>
+    <div id="team-container"></div>
+    <p id="message" class="alert"></p>
     <a href="index.html" class="button">Return to Main</a>
 
+    <script src="controller.js"></script>
     <script>
-        const teams = {
-            "Team A": ["Alicja Nowak, dr hab.", "Bob Kowalski, prof."],
-            "Team B": ["Grzegorz Wojciechowski, dr. hab.", "Daniel Poznański, dr"],
-            "Team C": []
-        };
-
-        function editTeam() {
-            const teamList = document.getElementById("team-list").value;
-            const message = document.getElementById("message");
-            const editOptions = document.getElementById("edit-options");
-
-            if (!teamList) {
-                message.textContent = "Please select a team to edit.";
-                editOptions.classList.add("hidden");
-                return;
-            }
-
-            message.textContent = `Editing ${teamList}`;
-            editOptions.classList.remove("hidden");
-
-            const removeMemberSelect = document.getElementById("remove-member-select");
-            removeMemberSelect.innerHTML = "";
-            if (teams[teamList].length === 0) {
-                const option = document.createElement("option");
-                option.value = "";
-                option.textContent = "No members to remove";
-                removeMemberSelect.appendChild(option);
-            } else {
-                teams[teamList].forEach(member => {
-                    const option = document.createElement("option");
-                    option.value = member;
-                    option.textContent = member;
-                    removeMemberSelect.appendChild(option);
-                });
-            }
-        }
-
-        function showAddMember() {
-            document.getElementById("add-member").classList.remove("hidden");
-            document.getElementById("remove-member").classList.add("hidden");
-            document.getElementById("add-message").textContent = " ";
-        }
-
-        function showRemoveMember() {
-            document.getElementById("remove-member").classList.remove("hidden");
-            document.getElementById("add-member").classList.add("hidden");
-            document.getElementById("remove-message").textContent = " ";
-        }
-
-        function addMember() {
-            const teamList = document.getElementById("team-list").value;
-            const memberToAdd = document.getElementById("add-member-select").value;
-            const message = document.getElementById("add-message");
-
-            if (teams[teamList].includes(memberToAdd)) {
-                message.textContent = "This member is already in the team.";
-            } else {
-                teams[teamList].push(memberToAdd);
-                message.textContent = `${memberToAdd} was added to ${teamList}.`;
-                editTeam();
-            }
-        }
-
-        function removeMember() {
-            const teamList = document.getElementById("team-list").value;
-            const memberToRemove = document.getElementById("remove-member-select").value;
-            const message = document.getElementById("remove-message");
-
-            if (!memberToRemove) {
-                message.textContent = "No member selected to remove.";
-                return;
-            }
-
-            const index = teams[teamList].indexOf(memberToRemove);
-            if (index > -1) {
-                teams[teamList].splice(index, 1);
-                message.textContent = `${memberToRemove} was removed from ${teamList}.`;
-                editTeam();
-            }
-        }
-
-        function createTeam() {
-            const teamId = document.getElementById("team-id").value.trim();
-            const message = document.getElementById("message");
-
-            if (!teamId) {
-                message.textContent = "Please enter a valid team identifier.";
-                return;
-            }
-
-            if (teams.hasOwnProperty(teamId)) {
-                message.textContent = "A team with this identifier already exists.";
-            } else {
-                teams[teamId] = [];
-                message.textContent = `Team '${teamId}' created successfully!`;
-            }
-        }
-            </script>
+        window.onload = loadTeams;
+    </script>
+    
+    
 </body>
 </html>

@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Consolas", monospace;
     font-size: 14pt;
     margin: 20px;
 }
@@ -14,6 +14,18 @@ h1, h2 {
     margin: 10px 0;
     color: white;
     background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.buttonRed {
+    display: inline-block;
+    padding: 10px 10px;
+    margin: 10px 0;
+    color: white;
+    background-color: red;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -36,3 +48,23 @@ h1, h2 {
     font-weight: bold;
 }
 
+.hidden {
+    display: none;
+}
+
+.team-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+#team-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#team-members {
+    list-style-type: none;
+    padding: 0;
+}
