@@ -2,7 +2,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, or_
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy.orm import aliased, declarative_base, sessionmaker, relationship
 from sqlalchemy.exc import NoResultFound, IntegrityError
 import uvicorn
 
@@ -31,9 +31,7 @@ class Teacher(Base):
     surname = Column(String, nullable=False)
     password_hash = Column(String, nullable=False)
     lessons = relationship("Lesson", back_populates="teacher")
-    # was that the point?
-    teacher_inspection_reports = relationship("TeacherInspectionReport", back_populates="teacher")
-    teacher_inspection_team = relationship("TeacherInspectionTeam", back_populates="teacher")
+
 
 class InspectionTeam(Base):
     __tablename__ = "InspectionTeam"
@@ -42,7 +40,7 @@ class InspectionTeam(Base):
     teachers = relationship("TeacherInspectionTeam", back_populates="inspection_team")
     # was that the point?
     inspections = relationship("Inspection", back_populates="inspection_team")
-    teacher_inspection_team = relationship("TeacherInspectionTeam", back_populates="inspection_team")
+    teachers = relationship("TeacherInspectionTeam", back_populates="inspection_team")
 
 
 class TeacherInspectionTeam(Base):
@@ -73,6 +71,8 @@ class Lesson(Base):
 
     subject = relationship("Subject", back_populates="lessons")
     teacher = relationship("Teacher", back_populates="lessons")
+    #added
+    inspections = relationship("Inspection", back_populates="lesson") 
 
 class InspectionSchedule(Base):
     __tablename__ = "InspectionSchedule"
@@ -106,7 +106,7 @@ class Inspection(Base):
 
     inspectionSchedule = relationship("InspectionSchedule", back_populates="inspections")
     inspection_team = relationship("InspectionTeam", back_populates="inspections")
-    lesson = relationship("Lesson", backref="inspections")
+    lesson = relationship("Lesson", back_populates="inspections")
     inspection_report = relationship("InspectionReport", back_populates="inspections")
 
 
@@ -123,7 +123,7 @@ class InspectionReport(Base):
     final_rating = Column(Integer, nullable=False)
     objection = Column(Integer, nullable=False)
 
-    inspections = relationship("Inspection", backref="inspection_report")
+    inspections = relationship("Inspection", back_populates="inspection_report")
 
 
 class TeacherInspectionReport(Base):
@@ -234,7 +234,7 @@ def get_inspection_docs(db: SessionLocal = Depends(get_db)):
     inspection_docs = (
         db.query(
             InspectionReport.id.label("document_id"),
-            Inspection.inspection_date.label("inspection_date"),
+            Lesson.time.label("inspection_date"),
             Subject.name.label("subject_name"),
             Teacher.name.label("teacher_name"),
             Teacher.surname.label("teacher_surname"),
@@ -259,21 +259,23 @@ def get_inspection_docs(db: SessionLocal = Depends(get_db)):
 
 @app.get("/inspection-docs/{docs_id}/", response_model=dict)
 def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
+    teacher_alias_1 = aliased(Teacher)
+    teacher_alias_2 = aliased(Teacher)
     inspection = (
         db.query(Inspection)
         .join(Lesson, Lesson.id == Inspection.fk_lesson)
         .join(Subject, Subject.id == Lesson.fk_subject)
-        .join(Teacher, Teacher.id == Lesson.fk_teacher)
+        .join(teacher_alias_1, teacher_alias_1.id == Lesson.fk_teacher)  # Use the alias for Teacher
         .join(InspectionReport, InspectionReport.id == Inspection.fk_inspectionReport)
         .outerjoin(InspectionTeam, InspectionTeam.id == Inspection.fk_inspectionTeam)
         .outerjoin(TeacherInspectionTeam, TeacherInspectionTeam.fk_inspectionTeam == InspectionTeam.id)
-        .outerjoin(Teacher, Teacher.id == TeacherInspectionTeam.fk_teacher)
+        .outerjoin(teacher_alias_2, teacher_alias_2.id == TeacherInspectionTeam.fk_teacher)  # Use the second alias
         .filter(Inspection.id == docs_id)
         .first()
     )
 
-    # if not inspection:
-    #     raise HTTPException(status_code=404, detail="Inspection document not found")
+    if not inspection:
+        raise HTTPException(status_code=404, detail="Inspection document not found")
     
     inspection_details = {
         "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name}",
