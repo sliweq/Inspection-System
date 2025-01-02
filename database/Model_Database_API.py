@@ -31,13 +31,19 @@ class Teacher(Base):
     surname = Column(String, nullable=False)
     password_hash = Column(String, nullable=False)
     lessons = relationship("Lesson", back_populates="teacher")
+    # was that the point?
+    teacher_inspection_reports = relationship("TeacherInspectionReport", back_populates="teacher")
+    teacher_inspection_team = relationship("TeacherInspectionTeam", back_populates="teacher")
 
 class InspectionTeam(Base):
     __tablename__ = "InspectionTeam"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)  
     name = Column(String, nullable=False)
     teachers = relationship("TeacherInspectionTeam", back_populates="inspection_team")
+    # was that the point?
     inspections = relationship("Inspection", back_populates="inspection_team")
+    teacher_inspection_team = relationship("TeacherInspectionTeam", back_populates="inspection_team")
+
 
 class TeacherInspectionTeam(Base):
     __tablename__ = "TeacherInspectionTeam"
@@ -101,7 +107,34 @@ class Inspection(Base):
     inspectionSchedule = relationship("InspectionSchedule", back_populates="inspections")
     inspection_team = relationship("InspectionTeam", back_populates="inspections")
     lesson = relationship("Lesson", backref="inspections")
+    inspection_report = relationship("InspectionReport", back_populates="inspections")
 
+
+class InspectionReport(Base):
+    __tablename__ = "InspectionReport"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    lateness_minutes = Column(Integer, nullable=True)
+    students_attendance = Column(Integer, nullable=False)
+    room_adaptation = Column(String, nullable=False)
+    content_compatibility = Column(Integer, nullable=False)
+    substantive_rating = Column(String, nullable=False)
+    final_rating = Column(Integer, nullable=False)
+    objection = Column(Integer, nullable=False)
+
+    inspections = relationship("Inspection", backref="inspection_report")
+
+
+class TeacherInspectionReport(Base):
+    __tablename__ = "TeacherInspectionReport"
+
+    id = Column(Integer, primary_key=True, index=True)
+    fk_teacher = Column(Integer, ForeignKey("Teacher.id"), nullable=False)
+    fk_inspectionReport = Column(Integer, ForeignKey("InspectionReport.id"), nullable=False)
+
+    teacher = relationship("Teacher", backref="teacher_inspection_reports")
+    inspection_report = relationship("InspectionReport", backref="teacher_inspection_reports")
 
 class TeacherBase(BaseModel):
     id: int
@@ -146,12 +179,155 @@ class InspectionScheduleBase(BaseModel):
     year_semester: str
     fk_administrator: int
 
+
+class InspectionReportBase(BaseModel):
+    id: int
+    name: str
+    lateness_minutes: int | None
+    students_attendance: int
+    room_adaptation: str
+    content_compatibility: int
+    substantive_rating: str
+    final_rating: int
+    objection: int
+
+    class Config:
+        from_attributes = True
+
+
+class TeacherInspectionReportBase(BaseModel):
+    id: int
+    fk_teacher: int
+    fk_inspectionReport: int
+
+    class Config:
+        from_attributes = True    
+
+class CreateInspectionReport(BaseModel):
+    name: str
+    lateness_minutes: int | None
+    students_attendance: int
+    room_adaptation: str
+    content_compatibility: int
+    substantive_rating: str
+    final_rating: int
+    objection: int
+
+class EditInspectionReport(BaseModel):
+    lateness_minutes: int 
+    student_attendance: int | None
+    room_adaptation: str 
+    content_compatibility: int 
+    substantive_rating: str 
+    final_rating: int 
+    objection: int 
+
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
+
+@app.get("/inspection-docs/",response_model=list[dict]) 
+def get_inspection_docs(db: SessionLocal = Depends(get_db)):
+    inspection_docs = (
+        db.query(
+            InspectionReport.id.label("document_id"),
+            Inspection.inspection_date.label("inspection_date"),
+            Subject.name.label("subject_name"),
+            Teacher.name.label("teacher_name"),
+            Teacher.surname.label("teacher_surname"),
+            Teacher.title.label("teacher_title")
+        )
+        .join(Inspection, Inspection.fk_inspectionReport == InspectionReport.id)
+        .join(Lesson, Inspection.fk_lesson == Lesson.id)
+        .join(Subject, Lesson.fk_subject == Subject.id)
+        .join(Teacher, Lesson.fk_teacher == Teacher.id)
+        .all()
+    )
+    result = [
+    {
+        "id": doc.document_id,
+        "date": doc.inspection_date,
+        "subject": doc.subject_name,
+        "teacher": f"{doc.teacher_title} {doc.teacher_name} {doc.teacher_surname}"
+    }
+    for doc in inspection_docs
+    ]
+    return result
+
+@app.get("/inspection-docs/{docs_id}/", response_model=dict)
+def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
+    inspection = (
+        db.query(Inspection)
+        .join(Lesson, Lesson.id == Inspection.fk_lesson)
+        .join(Subject, Subject.id == Lesson.fk_subject)
+        .join(Teacher, Teacher.id == Lesson.fk_teacher)
+        .join(InspectionReport, InspectionReport.id == Inspection.fk_inspectionReport)
+        .outerjoin(InspectionTeam, InspectionTeam.id == Inspection.fk_inspectionTeam)
+        .outerjoin(TeacherInspectionTeam, TeacherInspectionTeam.fk_inspectionTeam == InspectionTeam.id)
+        .outerjoin(Teacher, Teacher.id == TeacherInspectionTeam.fk_teacher)
+        .filter(Inspection.id == docs_id)
+        .first()
+    )
+
+    # if not inspection:
+    #     raise HTTPException(status_code=404, detail="Inspection document not found")
+    
+    inspection_details = {
+        "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name}",
+        "department_name": inspection.lesson.teacher.department,
+        "date_of_inspection": inspection.inspectionSchedule.year_semester,
+        "subject_name": inspection.lesson.subject.name,
+        "subject_code": inspection.lesson.subject.id,
+        "inspectors": [
+            {
+                "name": inspector.teacher.name,
+                "title": inspector.teacher.title,
+            }
+            for inspector in inspection.inspection_team.teachers if inspector.teacher
+        ] if inspection.inspection_team else [],
+        "lateness_minutes": inspection.inspection_report.lateness_minutes if inspection.inspection_report.lateness_minutes else 0,
+        "student_attendance": inspection.inspection_report.students_attendance,
+        "room_adaptation": inspection.inspection_report.room_adaptation,
+        "content_compatibility": inspection.inspection_report.content_compatibility,
+        "substantive_rating": inspection.inspection_report.substantive_rating,
+        "final_rating": inspection.inspection_report.final_rating,
+        "objection": inspection.inspection_report.objection,
+    }
+
+    return inspection_details
+
+@app.post("/inspection-docs/{docs_id}/edit/")
+def edit_inspection_report(
+    docs_id: int, 
+    updated_data: EditInspectionReport, 
+    db: SessionLocal = Depends(get_db)
+): 
+    inspection = (
+        db.query(Inspection)
+        .join(InspectionReport, InspectionReport.id == Inspection.fk_inspectionReport)
+        .filter(Inspection.id == docs_id)
+        .first()
+    )
+
+    if not inspection:
+        raise HTTPException(status_code=404, detail="Inspection document not found")
+
+    inspection_report = inspection.inspection_report
+    if not inspection_report:
+        raise HTTPException(status_code=404, detail="Inspection report not found")
+
+    update_fields = updated_data.dict(exclude_unset=True)
+    for field, value in update_fields.items():
+        setattr(inspection_report, field, value)
+
+    db.commit()
+
+    return {"message": "Inspection report updated successfully"}
+
+
 
 @app.get("/inspection-teams/")
 def get_inspection_teams(db: SessionLocal = Depends(get_db)):
