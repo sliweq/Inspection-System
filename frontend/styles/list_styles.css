@@ -1,0 +1,33 @@
+.containder_scroll {
+    border: 2px solid #0078d4;
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 20px 0;
+    }
+    
+    .containder_scroll ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    }
+    
+    .containder_scroll li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    }
+    
+    .containder_scroll li:last-child {
+    border-bottom: none;
+    }
+    
+    
+.container_list{
+    position: relative;
+    width: 40%;
+    padding:  20px 20px 20px 20px;
+    margin: 20px ;
+    border: 1px solid rgb(85, 85, 85);
+    border-radius: 10px;
+    height: 700px;
+}

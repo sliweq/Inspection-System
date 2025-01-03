@@ -52,7 +52,8 @@ function isInspectionConducted(date) {
 }
 
 async function deleteTerm(id, date) {   
-    if (isInspectionConducted(date)) {
+    // if (isInspectionConducted(date)) {
+    if (false) {
         console.log('Inspection conducted');
         createPopup('This term has been conducted. You cannot delete this term', [
             {
@@ -67,12 +68,12 @@ async function deleteTerm(id, date) {
         createPopup('Are you sure you want to delete this term?', [
             {
                 text: 'Yes',
-                color: 'cancel_popup_btn',
+                color: 'save_popup_btn',
                 onClick: () => deleteTermAsync(id),
             },
             {
                 text: 'No',
-                color: 'save_popup_btn',
+                color: 'cancel_popup_btn',
                 onClick: () => {},
             }
         ]);
@@ -82,6 +83,23 @@ async function deleteTerm(id, date) {
 async function deleteTermAsync(id) {
     // Perform the delete action here, then reload
     reload();
+}
+
+function classExists(className) {
+    // Iteruj przez wszystkie załadowane arkusze stylów
+    for (let sheet of document.styleSheets) {
+        try {
+            // Przeszukaj wszystkie reguły w arkuszu stylów
+            for (let rule of sheet.cssRules) {
+                if (rule.selectorText === `.${className}`) {
+                    return true;  // Klasa istnieje
+                }
+            }
+        } catch (e) {
+            console.error("Błąd w dostępie do arkusza stylów:", e);
+        }
+    }
+    return false;  // Klasa nie istnieje
 }
 
 function createPopup(message, buttons) {
@@ -112,20 +130,22 @@ function createPopup(message, buttons) {
     content.appendChild(text);
     
     buttons.forEach(button => {
-        console.log("button");
+        console.log(button.color);
         const buttonElement = document.createElement('button');
+        console.log(classExists(button.color)); 
+        buttonElement.classList.add(button.color);
         buttonElement.className = button.color;
         buttonElement.textContent = button.text;
-
         
-
+        
+        
         buttonElement.addEventListener('click', () => {
             overlay.remove();
             if (button.onClick) {
                 button.onClick();
             }
         });
-
+        
         content.appendChild(buttonElement);
     });
 

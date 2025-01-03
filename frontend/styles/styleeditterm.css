@@ -1,24 +1,3 @@
-body {
-    font-family: Arial, sans-serif;
-    font-size: 14pt;
-    margin: 20px;
-}
-
-.hidden {
-    display: none;
-}
-
-
-.container_list{
-    position: relative;
-    width: 40%;
-    padding:  20px 20px 20px 20px;
-    margin: 20px ;
-    border: 1px solid rgb(85, 85, 85);
-    border-radius: 10px;
-    height: 700px;
-}
-
 #editable{
     position: relative;
     width: 50%;
@@ -74,47 +53,6 @@ body {
 }
 
 
-.button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px 0;
-    color: white;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.button:hover {
-    background-color: #0056b3;
-}
-
-/* Lista */
-  
-.containder_scroll {
-border: 2px solid #0078d4;
-border-radius: 8px;
-max-height: 200px;
-overflow-y: auto;
-margin: 20px 0;
-}
-
-.containder_scroll ul {
-list-style: none;
-padding: 0;
-margin: 0;
-}
-
-.containder_scroll li {
-padding: 10px;
-border-bottom: 1px solid #ddd;
-}
-
-.containder_scroll li:last-child {
-border-bottom: none;
-}
-
 .row {
 display: block;
 justify-content: space-between;
@@ -128,51 +66,6 @@ label {
     padding-right: 10px;
 }
 
-.input_docs{
-    flex: 1; 
-    text-align: right;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-
-.button_save  {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px 0;
-    color: #ffffff;
-    background-color: #00ff11;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-}
-
-.button_save:hover {
-    background-color: #00d40e;
-}
-
-
-.button_cancel {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px 0; 
-    color: white;
-    background-color: #ff2f00;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
-}
-.button_cancel:hover {
-    background-color: #cd2701;
-}
-
-
-.input_error {
-    border: 2px solid red;
-}
 
 .buttons_container {
     display: flex; 
