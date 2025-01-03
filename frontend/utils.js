@@ -8,12 +8,32 @@ export function convertDateToStringDate(date){
     const day = String(date.getDate()).padStart(2, '0');
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
     
-    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`;
     return formattedDate;
 }
 
 export function fixStringDate(dateString){
     return convertDateToStringDate(new Date(dateString.replace(" ", "T")));
+}
+
+export function checkNumberInput(number, max) {
+    const parsedNumber = parseInt(number);
+    if (isNaN(parsedNumber)) {
+        return `Value must vbe a number.`;
+    } else if (parsedNumber < 0) {
+        return `Value must be greater than 0.`;
+    } else if (parsedNumber > max) {
+        return `Value must be lower than ${max}.`;
+    }
+    return true; 
+}
+
+export function checkStringInput(string, max) {
+    if (string.trim() === "") {
+        return `Filed cannot be empty.`;
+    } else if (string.length > max) {
+        return `Text cannot be longer than ${max}.`;
+    }
+    return true;
 }

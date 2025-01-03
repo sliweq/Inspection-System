@@ -1,7 +1,6 @@
 import { convertDateToStringDate, convertStringDateToDate, fixStringDate } from './utils.js';
 
 document.addEventListener("DOMContentLoaded", loadTerms);
-console.log("loaded2");
 
 export async function loadTerms() {
     const termsList = document.getElementById("itemList");
@@ -39,7 +38,7 @@ export async function loadTerms() {
             });
         });
     } catch (error) {
-        console.error("Error loading semesters:", error);
+        console.error("Error loading terms:", error);
     }
 }
 
@@ -52,8 +51,8 @@ function isInspectionConducted(date) {
 }
 
 async function deleteTerm(id, date) {   
-    // if (isInspectionConducted(date)) {
-    if (false) {
+    if (isInspectionConducted(date)) {
+    // if (false) {
         console.log('Inspection conducted');
         createPopup('This term has been conducted. You cannot delete this term', [
             {
@@ -61,9 +60,6 @@ async function deleteTerm(id, date) {
                 color: 'ok_popup_btn',
             }
         ]);
-                //Ensure u want to delete 
-        // yes -> delete
-        // no -> return
     } else {
         createPopup('Are you sure you want to delete this term?', [
             {
@@ -81,25 +77,22 @@ async function deleteTerm(id, date) {
 }
 
 async function deleteTermAsync(id) {
-    // Perform the delete action here, then reload
-    reload();
-}
+    try {
+        const response = await fetch(`http://localhost:5000/inspection-terms/${id}/remove-term/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-function classExists(className) {
-    // Iteruj przez wszystkie załadowane arkusze stylów
-    for (let sheet of document.styleSheets) {
-        try {
-            // Przeszukaj wszystkie reguły w arkuszu stylów
-            for (let rule of sheet.cssRules) {
-                if (rule.selectorText === `.${className}`) {
-                    return true;  // Klasa istnieje
-                }
-            }
-        } catch (e) {
-            console.error("Błąd w dostępie do arkusza stylów:", e);
+        if (!response.ok) {
+            throw new Error('Failed to remove term');
         }
+    } catch (error) {
+        console.error("Error loading :", error);
     }
-    return false;  // Klasa nie istnieje
+
+    window.location.reload();
 }
 
 function createPopup(message, buttons) {
@@ -130,9 +123,7 @@ function createPopup(message, buttons) {
     content.appendChild(text);
     
     buttons.forEach(button => {
-        console.log(button.color);
         const buttonElement = document.createElement('button');
-        console.log(classExists(button.color)); 
         buttonElement.classList.add(button.color);
         buttonElement.className = button.color;
         buttonElement.textContent = button.text;

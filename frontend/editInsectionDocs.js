@@ -1,3 +1,11 @@
+import { convertDateToStringDate, convertStringDateToDate, fixStringDate, checkStringInput, checkNumberInput } from './utils.js';
+
+document.addEventListener("DOMContentLoaded", loadDocs);
+document.getElementById("buttonSave").addEventListener("click", save_docs);
+document.getElementById("buttonCancel").addEventListener("click", cancel_docs);
+document.getElementById("searchInput").addEventListener("input", filterByName);
+
+
 async function loadDocs() {
     const itemList = document.getElementById("itemList");
 
@@ -12,39 +20,24 @@ async function loadDocs() {
             const listItem = document.createElement("li");
             listItem.setAttribute("name","tmp")
             listItem.innerHTML = `
-                <div class="inner_list_div">
-                    <span>${doc.date} ${doc.subject} ${doc.teacher}</span>
+                <div class="inner_list_div" id="document_${doc.id}">
+                    <span>${fixStringDate(doc.date)} ${doc.subject} ${doc.teacher}</span>
                     <button type="button" style="border: none; background: none; padding: 0;">
-                        <img src="edit.png" alt="Edit button" class="trash_img" onclick="editItem(${doc.id})">
+                        <img src="edit.png" alt="Edit button" class="trash_img">
                     </button>
                 </div>
             `;
             itemList.appendChild(listItem);
+            const deleteButton = listItem.querySelector('.inner_list_div button img');
+            deleteButton.addEventListener('click', () => {
+                editItem(doc.id);
+            });
+
+
         });
     } catch (error) {
         console.error("Error loading semesters:", error);
     }
-}
-
-function checkNumberInput(number, max) {
-    const parsedNumber = parseInt(number);
-    if (isNaN(parsedNumber)) {
-        return `Value must vbe a number.`;
-    } else if (parsedNumber < 0) {
-        return `Value must be greater than 0.`;
-    } else if (parsedNumber > max) {
-        return `Value must be lower than ${max}.`;
-    }
-    return true; 
-}
-
-function checkStringInput(string, max) {
-    if (string.trim() === "") {
-        return `Filed cannot be empty.`;
-    } else if (string.length > max) {
-        return `Text cannot be longer than ${max}.`;
-    }
-    return true;
 }
 
 function createPopup(message, onSave) {
@@ -74,8 +67,7 @@ function createPopup(message, onSave) {
     saveButton.addEventListener('click', () => {
         overlay.remove();
         if (onSave){
-            onSave();
-            // async SAVE TODO   
+            onSave(); 
         } 
     });
 
@@ -169,6 +161,7 @@ function cancel_docs() {
 }
 
 function filterByName() {
+    console.log("Filtering by name");
     const editableDiv = document.getElementById("editable");
     editableDiv.classList.remove("hidden");
 
@@ -193,39 +186,10 @@ function filterByName() {
             
         }
     });
-}      
+}     
 
  
 async function editItem(id) {   
-    if(false){
-        // TODO u have popup func !! 
-        const overlay = document.createElement('div');
-                overlay.className = 'popup_overlay';
-                
-                const content = document.createElement('div');
-                content.className = 'popup_content';
-
-                
-                const text = document.createElement('p');
-                text.className = 'popup_text';
-                text.textContent = 'Selected inspection already has been conducted';
-                content.appendChild(text);
-
-
-                const okButton = document.createElement('button');
-                okButton.className = 'ok_popup_btn';
-                okButton.textContent = 'Ok';
-                content.appendChild(okButton);
-
-                overlay.appendChild(content);
-                document.body.appendChild(overlay);
-
-                okButton.addEventListener('click', () => {
-                    overlay.remove();
-                });
-        return;
-    }
-
     const editableDiv = document.getElementById("editable");
 
     // const listItems = document.querySelectorAll("#itemList li");
@@ -247,7 +211,7 @@ async function editItem(id) {
         if (docDetails) {
             setDocDetailId("Inspected_name", docDetails.inspected_name);
             setDocDetailId("Inspected_department", docDetails.department_name);
-            setDocDetailId("Inspection_date", docDetails.date_of_inspection);
+            setDocDetailId("Inspection_date", fixStringDate(docDetails.date_of_inspection));
             setDocDetailId("Inspected_Subject", docDetails.subject_name);
             setDocDetailId("Inspected_Subject_code", docDetails.subject_code);
             setDocDetailId("Inspectors", docDetails.inspectors.map(inspector => `${inspector.title} ${inspector.name}`).join(" "));
@@ -287,7 +251,7 @@ function setDocDetailValue(id, valu, type) {
 
 async function fetchDocDetails(id) {
     try {
-        const response = await fetch(`http://localhost:5000/inspection-docs/${id}`);
+        const response = await fetch(`http://localhost:5000/inspection-docs/${id}/`);
         if (!response.ok) {
             throw new Error("Cannot load docs details");
         }

@@ -265,11 +265,11 @@ def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
         db.query(Inspection)
         .join(Lesson, Lesson.id == Inspection.fk_lesson)
         .join(Subject, Subject.id == Lesson.fk_subject)
-        .join(teacher_alias_1, teacher_alias_1.id == Lesson.fk_teacher)  # Use the alias for Teacher
+        .join(teacher_alias_1, teacher_alias_1.id == Lesson.fk_teacher)  
         .join(InspectionReport, InspectionReport.id == Inspection.fk_inspectionReport)
         .outerjoin(InspectionTeam, InspectionTeam.id == Inspection.fk_inspectionTeam)
         .outerjoin(TeacherInspectionTeam, TeacherInspectionTeam.fk_inspectionTeam == InspectionTeam.id)
-        .outerjoin(teacher_alias_2, teacher_alias_2.id == TeacherInspectionTeam.fk_teacher)  # Use the second alias
+        .outerjoin(teacher_alias_2, teacher_alias_2.id == TeacherInspectionTeam.fk_teacher) 
         .filter(Inspection.id == docs_id)
         .first()
     )
@@ -280,7 +280,7 @@ def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
     inspection_details = {
         "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name}",
         "department_name": inspection.lesson.teacher.department,
-        "date_of_inspection": inspection.inspectionSchedule.year_semester,
+        "date_of_inspection": inspection.lesson.time,
         "subject_name": inspection.lesson.subject.name,
         "subject_code": inspection.lesson.subject.id,
         "inspectors": [
@@ -315,7 +315,7 @@ def edit_inspection_report(
     )
 
     if not inspection:
-        raise HTTPException(status_code=404, detail="Inspection document not found")
+        raise HTTPException(status_code=404, detail="Inspection report not found")
 
     inspection_report = inspection.inspection_report
     if not inspection_report:
@@ -324,7 +324,7 @@ def edit_inspection_report(
     update_fields = updated_data.dict(exclude_unset=True)
     for field, value in update_fields.items():
         setattr(inspection_report, field, value)
-
+    
     db.commit()
 
     return {"message": "Inspection report updated successfully"}
@@ -355,6 +355,66 @@ def get_inspection_docs(db: SessionLocal = Depends(get_db)):
     for term in inspection_terms
     ]
     return result
+
+# TODO 
+@app.get("/teachers-with-inspections/", response_model=list[dict])
+def get_teachers_with_inspections(db: SessionLocal = Depends(get_db)):
+    teachers_with_inspections = (
+        db.query(Teacher)
+        .join(Lesson, Lesson.fk_teacher == Teacher.id)
+        .join(Subject, Lesson.fk_subject == Subject.id)
+        .join(Inspection, Inspection.fk_lesson == Lesson.id)
+        .join(InspectionTeam, InspectionTeam.id == Inspection.fk_inspectionTeam)
+        .all()
+    )
+
+    teacher_data = {}
+    
+    for teacher in teachers_with_inspections:
+        if teacher.id not in teacher_data:
+            teacher_data[teacher.id] = {
+                "teacher": {
+                    "id": teacher.id,
+                    "title": teacher.title,
+                    "name": teacher.name,
+                    "surname": teacher.surname,
+                },
+                "lessons": []
+            }
+
+        lesson_data = {
+            "lesson_time": teacher.lesson.time,
+            "lesson_room": teacher.lesson.room,
+            "subject_name": teacher.lesson.subject.name,
+            "teams": [] 
+        }
+
+        for inspection in teacher.lesson.inspections:
+            if inspection.inspection_team:
+                for team in inspection.inspection_team.teachers:
+                    lesson_data["teams"].append({
+                        "team_name": inspection.inspection_team.name,
+                        "teacher": f"{team.teacher.title} {team.teacher.name} {team.teacher.surname}"
+                    })
+
+        teacher_data[teacher.id]["lessons"].append(lesson_data)
+
+    return [{"teacher": teacher_info["teacher"], "lessons": teacher_info["lessons"]} for teacher_info in teacher_data.values()]
+
+
+@app.delete("/inspection-terms/{term_id}/remove-term/")
+def remove_teacher_from_team(term_id: int, db: SessionLocal = Depends(get_db)):
+    try:
+        term = db.query(Inspection).filter(Inspection.id == term_id).one_or_none()
+    except NoResultFound:
+        raise HTTPException(status_code=404, detail="Inspection term not found")
+    print(term)
+    db.delete(term)
+    db.commit()
+    return {"message": "Term has been deleted successfully"}
+
+
+
 
 
 @app.get("/inspection-teams/")

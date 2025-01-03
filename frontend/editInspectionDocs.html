@@ -16,27 +16,17 @@
     <div id="search"  class="container_list">
 
         
-        <input type="text" id="searchInput" placeholder="Search document..." oninput="filterByName()">
+        <input type="text" id="searchInput" placeholder="Search document...">
         Sort by           
         <select id="filterSelect">
             <option value="new">Newest</option>
             <option value="old">Oldest</option>
-            <option value="recently">Recently added</option>
         </select>
         
         <hr style="border-top: 3px static #000000;">
 
         <div class="containder_scroll">
             <ul id="itemList">
-                <!--TODO add li -->
-                <!-- <li name="tmp">
-                    <div class="inner_list_div">
-                        <span>08.01.2023, dr. Iwona Perła - Fizyka 2</span>
-                        <button type="submit" style="border: none; background: none; padding: 0;">
-                            <img src="edit.png" alt="Edit button" class="trash_img" onclick="editItem(this)">
-                        </button>
-                    </div>
-                </li> -->
             </ul>
         </div>
         
@@ -113,8 +103,8 @@
             </div>
         </div>
 
-        <a class="button_save" id="buttonSave" onclick="save_docs()" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save ✅</a>
-        <a class="button_cancel" id="buttonCancel" onclick="cancel_docs()" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel ❌</a>
+        <a class="button_save" id="buttonSave" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save</a>
+        <a class="button_cancel" id="buttonCancel" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
         
 
 
@@ -123,9 +113,7 @@
 </div>  
     
     <script type="module" src="editInsectionDocs.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", loadDocs);
-    </script>
+
     
 </body>
 </html>
