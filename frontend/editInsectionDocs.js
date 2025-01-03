@@ -1,5 +1,5 @@
 async function loadDocs() {
-    const semesterList = document.getElementById("itemList");
+    const itemList = document.getElementById("itemList");
 
     try {
         const response = await fetch("http://localhost:5000/inspection-docs/");
@@ -15,7 +15,7 @@ async function loadDocs() {
                 <div class="inner_list_div">
                     <span>${doc.date} ${doc.subject} ${doc.teacher}</span>
                     <button type="button" style="border: none; background: none; padding: 0;">
-                        <img src="edit.png" alt="Edit button" class="trash_img" onclick="editItem(${doc.id},${doc.date})">
+                        <img src="edit.png" alt="Edit button" class="trash_img" onclick="editItem(${doc.id})">
                     </button>
                 </div>
             `;
@@ -84,13 +84,13 @@ function createPopup(message, onSave) {
     });
 }
 
-function save_docs() {
+async function save_docs() {
     const inputs = [
         {element: document.getElementById("Inspected_lateness_input"), max: 240, checkFunc: checkNumberInput, label: "Inspected Lateness"},
-        {element: document.getElementById("Student_attendance_input"), max: 100, checkFunc: checkNumberInput, label: "Student Attendance"},
-        {element: document.getElementById("Room_adaptation_input"), max: 100, checkFunc: checkStringInput, label: "Room Adaptation"},
+        {element: document.getElementById("Student_attendance_input"), max: 500, checkFunc:  (value) => value === "" ? NaN : checkNumberInput(value), label: "Student Attendance"},
+        {element: document.getElementById("Room_adaptation_input"), max: 500, checkFunc: checkStringInput, label: "Room Adaptation"},
         {element: document.getElementById("Content_compatibility_input"), max: 100, checkFunc: checkNumberInput, label: "Content Compatibility"},
-        {element: document.getElementById("Substantive_assessment_input"), max: 100, checkFunc: checkStringInput, label: "Substantive Assessment"},
+        {element: document.getElementById("Substantive_assessment_input"), max: 500, checkFunc: checkStringInput, label: "Substantive Assessment"},
         {element: document.getElementById("Final_assessment_input"), max: 100, checkFunc: checkNumberInput, label: "Final Assessment"},
         {element: document.getElementById("Recommendation_input"), max: 100, checkFunc: checkStringInput, label: "Recommendation"}
     ];
@@ -110,23 +110,21 @@ function save_docs() {
     }
 
     if (invalidFields.length > 0) {
-        const invalidFieldList = invalidFields.join("\n");
-        createPopup(`Invalid input data!\n${invalidFieldList}`);
+        createPopup(`Invalid input data!\n${invalidFields.join("\n")}`);
         return;
     }
 
     const editableDiv = document.getElementById("editable");
     createPopup('Do you want to save document?', () => {
         editableDiv.classList.add("hidden");
-        const editable = document.getElementById("editable");
-        saveDocsChanges(editable.name, {
-            lateness_minutes: document.getElementById("Inspected_lateness_input").value,
-            students_attendance: document.getElementById("Student_attendance_input").value,
-            room_adaptation: document.getElementById("Room_adaptation_input").value,
-            content_compatibility: document.getElementById("Content_compatibility_input").value,
-            substantive_rating: document.getElementById("Substantive_assessment_input").value,
-            final_rating: document.getElementById("Final_assessment_input").value,
-            objection: document.getElementById("Recommendation_input").value
+        saveDocsChanges(editableDiv.name, {
+            lateness_minutes: inputs[0].element.value,
+            students_attendance: inputs[1].element.value,
+            room_adaptation: inputs[2].element.value,
+            content_compatibility: inputs[3].element.value,
+            substantive_rating: inputs[4].element.value,
+            final_rating: inputs[5].element.value,
+            objection: inputs[6].element.value
         });
     });
 }
@@ -134,6 +132,7 @@ function save_docs() {
 async function saveDocsChanges(docsId, data) {
     // const message = document.getElementById("message");
     try {
+        console.log(data)
         const response = await fetch(`http://localhost:5000/inspection-docs/${docsId}/edit/`, {
             method: 'POST',
             headers: {
@@ -152,6 +151,9 @@ async function saveDocsChanges(docsId, data) {
 
         if (!response.ok) {
             throw new Error('Failed to save document');
+        }
+        else {
+            console.log("Document saved added successfully!");
         }
 
         // message.textContent = "Document saved added successfully!";
@@ -194,7 +196,7 @@ function filterByName() {
 }      
 
  
-async function editItem(id,date) {   
+async function editItem(id) {   
     if(false){
         // TODO u have popup func !! 
         const overlay = document.createElement('div');
@@ -240,7 +242,8 @@ async function editItem(id,date) {
 
     try {
         const docDetails = await fetchDocDetails(id);
-    
+        console.log(docDetails);
+        console.log(typeof docDetails.students_attendance);
         if (docDetails) {
             setDocDetailId("Inspected_name", docDetails.inspected_name);
             setDocDetailId("Inspected_department", docDetails.department_name);
@@ -250,7 +253,7 @@ async function editItem(id,date) {
             setDocDetailId("Inspectors", docDetails.inspectors.map(inspector => `${inspector.title} ${inspector.name}`).join(" "));
 
             setDocDetailValue("Inspected_lateness_input",docDetails.lateness_minutes, Number)
-            setDocDetailValue("Student_attendance_input",docDetails.students_attendance, Number)
+            setDocDetailValue("Student_attendance_input",docDetails.student_attendance, Number)
             setDocDetailValue("Room_adaptation_input", docDetails.room_adaptation,String) 
             setDocDetailValue("Content_compatibility_input",docDetails.content_compatibility, Number)
             setDocDetailValue("Substantive_assessment_input",docDetails.substantive_rating, String)
@@ -269,11 +272,15 @@ function setDocDetailId(id, detail){
     document.getElementById(id).innerHTML = detail;
 }
 function setDocDetailValue(id, valu, type) {
+    console.log(typeof valu);
+    console.log(valu);
     if (type === Number) {
         valu = Number(valu); 
     } else if (type === String) {
         valu = String(valu);
     }
+    console.log(valu);
+    
 
     document.getElementById(id).value = valu;
 }

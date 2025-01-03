@@ -174,8 +174,14 @@ label {
     border: 2px solid red;
 }
 
+.buttons_container {
+    display: flex; 
+    gap: 10px;
+}
+
 .inner_list_div {
-    position: relative; display: flex; justify-content: space-between; align-items: center;
+    /* position: relative; */
+    display: flex; justify-content: space-between; align-items: center;
 }
 
 .edit_button{
@@ -219,9 +225,8 @@ label {
 }
 
 .ok_popup_btn {
-    padding: 10px 20px;
-        
-margin: 20px;
+    padding: 10px 20px;    
+    margin: 20px;
     background-color: #007BFF;
     color: white;
     border: none;
@@ -230,4 +235,8 @@ margin: 20px;
 }
 .ok_popup_btn:hover {
     background-color: #0056b3;
+}
+
+.delete_button{
+    border: none; background: none; padding: 0;
 }

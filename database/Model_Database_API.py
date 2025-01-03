@@ -329,6 +329,32 @@ def edit_inspection_report(
 
     return {"message": "Inspection report updated successfully"}
 
+@app.get("/inspection-terms/",response_model=list[dict]) 
+def get_inspection_docs(db: SessionLocal = Depends(get_db)):
+    inspection_terms = (
+        db.query(
+            Inspection.id.label("inspection_id"),
+            Lesson.time.label("inspection_date"),
+            Subject.name.label("subject_name"),
+            Teacher.name.label("teacher_name"),
+            Teacher.surname.label("teacher_surname"),
+            Teacher.title.label("teacher_title")
+        )
+        .join(Lesson, Inspection.fk_lesson == Lesson.id)
+        .join(Subject, Lesson.fk_subject == Subject.id)
+        .join(Teacher, Lesson.fk_teacher == Teacher.id)
+        .all()
+    )
+    result = [
+    {
+        "id": term.inspection_id,
+        "date": term.inspection_date,
+        "subject": term.subject_name,
+        "teacher": f"{term.teacher_title} {term.teacher_name} {term.teacher_surname}"
+    }
+    for term in inspection_terms
+    ]
+    return result
 
 
 @app.get("/inspection-teams/")

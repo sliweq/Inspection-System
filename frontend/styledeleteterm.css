@@ -121,7 +121,7 @@ border-bottom: none;
     display: none;
 }
 
-
+/* popup  */
 .popup_overlay {
     position: fixed;
     top: 0;
@@ -151,6 +151,8 @@ border-bottom: none;
     color: #333;
 }
 
+/* buttons */
+
 .ok_popup_btn {
     padding: 10px 20px;
     margin: 20px;
@@ -167,18 +169,16 @@ border-bottom: none;
 .cancel_popup_btn {
     padding: 10px 20px;
     margin: 20px;
-    background-color: #ff2f00;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    background-color: #ff2f00;
 }
 
 .cancel_popup_btn:hover {
     background-color: #cd2701;
 }
-
-
 
 .save_popup_btn {
     padding: 10px 20px;

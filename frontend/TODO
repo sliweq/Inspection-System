@@ -1,0 +1,8 @@
+database:
+    -remove name from inspection report
+    -change objection to text
+edit inspection docs:
+    -database doesnt save lateness
+    - sure u want to exit (cancel)
+    
+add, edit, delete inspection term    

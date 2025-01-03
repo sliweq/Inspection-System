@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styleeditterm.css">
+    <title>Edit Inspection Term</title>
+</head>
+<body>
+    <h1>Edit Inspection Term</h1>
+    <div style="width: 100%; display: flex; ">
+    <div id="search"  class="container_list">
+
+        
+        <input type="text" id="searchInput" placeholder="Search document..." oninput="filterByName()">
+        Search date
+        <input type="date" id="datePicker" name="date_picker" value="" oninput="filterByDate()" >
+        Sort by           
+        <select id="filterSelect">
+            <option value="new">Newest</option>
+            <option value="old">Oldest</option>
+            <option value="recently">Recently added</option>
+        </select>
+        
+        <hr style="border-top: 3px static #000000;">
+
+        <div class="containder_scroll">
+            <ul id="itemList">
+               
+                <!-- <li name="tmp" data-date="2024-12-09">
+                    <div class="inner_list_div">
+                        <span>2024-12-08, dr. Iwona Perła - Fizyka 2</span>
+                        <dev class="buttons_container">
+                            <button type="submit" class="edit_button">
+                                <img src="edit.png" alt="Edit button" class="trash_img" onclick="deleteItem(this)">
+                            </button>
+                            <button type="submit" class="delete_button">
+                                <img src="trash.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
+                            </button>
+                        </dev>
+                    </div>
+                </li> -->
+                
+            </ul>
+        </div>
+
+
+
+        
+        <a href="index.html" class="button" id="button" style="position: absolute; bottom: 0; right: 0; margin: 20px ;">Return to Main</a>
+    </div>    
+
+    <div id="editable" class="hidden">
+        <div style="padding: 10px;">
+            <h3> 
+                Inspection Document:
+            </h3>
+            <div class="row">
+                Inspected: mgr inż. Anna Bąk
+            </div>
+            <div  class="row"> 
+                Department: Applied Computer Science
+            </div>
+            <div  class="row">
+                Subject: Podstawy Przedsiębiorczości
+            </div>
+            <div  class="row">
+                Subject code: W04ITE-SI0016W
+            </div>
+            <div  class="row"> Inspectors:
+                <select id="teamPicker" selected="Team A">
+                    <option value="Team A">Team A - dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak</option>
+                    <option value="Team B">Team B - dr. Jerzy Śliwka, dr. Mirosława Gruszka, dr. Jan Nowak</option>
+                    <option value="Team C">Team C - dr. Jan Marek, dr. Katrzyna Kić, dr. Jan Nowak</option>
+                </select>
+            </div>
+            
+            <div  class="row">
+                Inspection Date:
+                <input type="date" id="datePicker2" name="date_picker" value="2024-12-03" >
+            </div>
+        </div>
+
+
+        <a class="button_save" id="buttonSave" onclick="save_docs()" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save</a>
+        <a class="button_cancel" id="buttonCancel" onclick="cancel_docs()" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
+        
+    </div> 
+</div>  
+    
+    <script type="module" src="manageInspectionTerm.js">
+    </script>
+    
+    <!-- <script>
+        function save_docs() {
+
+            if (false){
+
+const overlay = document.createElement('div');
+        overlay.className = 'popup_overlay';
+        
+        const content = document.createElement('div');
+        content.className = 'popup_content';
+
+        
+        const text = document.createElement('p');
+        text.className = 'popup_text';
+        text.textContent = 'Past date cannot be selected';
+        content.appendChild(text);
+
+
+        const okButton = document.createElement('button');
+        okButton.className = 'ok_popup_btn';
+        okButton.textContent = 'Ok';
+        content.appendChild(okButton);
+
+        overlay.appendChild(content);
+        document.body.appendChild(overlay);
+
+        okButton.addEventListener('click', () => {
+            overlay.remove();
+        });
+return;
+}
+
+            const editableDiv = document.getElementById("editable");                
+            editableDiv.classList.add("hidden");
+            
+            }
+ 
+
+        function cancel_docs() {
+            const editableDiv = document.getElementById("editable");
+            editableDiv.classList.add("hidden");
+        }
+
+
+        function filterByDate() {
+            const selectedDate = document.getElementById("datePicker").value; 
+            const items = document.querySelectorAll("#itemList li"); 
+
+            console.log(items);
+            console.log(selectedDate);
+
+            if (selectedDate === "") { 
+                items.forEach(item => {
+                    item.style.display = "block";
+                });
+                return;
+            }
+
+            items.forEach(item => {
+                const itemDate = item.getAttribute("data-date"); 
+                console.log(item);
+                console.log(item.date);
+                console.log(itemDate);
+                if (itemDate === selectedDate) {
+                    item.style.display = "block";
+                    console.log(itemDate);
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+    
+            function filterByName() {
+            const searchValue = document.getElementById("searchInput").value.toLowerCase();
+            const items = document.querySelectorAll("#itemList li");
+            console.log(items);
+            console.log(searchValue);
+            if(searchValue === "") {
+                    items.forEach(item => {
+                        item.style.display = "block";
+                    });
+            return;}   
+
+
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+
+                if (text.includes(searchValue)) {
+                    item.style.display = "block";
+                    console.log(text);
+                } else {
+                    item.style.display = "none";
+                    
+                }
+            });
+        }        
+
+
+        function deleteItem(button) {
+
+            // alert("selected Inspection term already has been conducted");
+            // return;
+
+            const listItem = button.closest("li"); 
+            const listItems = document.querySelectorAll("#itemList li");
+            const editableDiv = document.getElementById("editable");
+
+            listItems.forEach((item) => {
+                item.addEventListener("click", () => {
+                    
+                    editableDiv.classList.remove("hidden");
+                });
+            });
+            
+            }
+    
+   
+    </script> -->
+    
+</body>
+</html>
