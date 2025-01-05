@@ -132,7 +132,7 @@ async function saveDocsChanges(docsId, data) {
             },
             body: JSON.stringify({
                 lateness_minutes: parseInt(data.lateness_minutes),
-                student_attendance: parseInt(data.students_attendance),
+                students_attendance: parseInt(data.students_attendance),
                 room_adaptation: data.room_adaptation,
                 content_compatibility: parseInt(data.content_compatibility),
                 substantive_rating: data.substantive_rating,
