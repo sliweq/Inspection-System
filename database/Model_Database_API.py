@@ -1,8 +1,8 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, or_
-from sqlalchemy.orm import aliased, declarative_base, sessionmaker, relationship
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, or_, and_
+from sqlalchemy.orm import aliased, declarative_base, sessionmaker, relationship, Session
 from sqlalchemy.exc import NoResultFound, IntegrityError
 import uvicorn
 
@@ -56,6 +56,7 @@ class Subject(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     type = Column(String, nullable=False)
+    code = Column(String, nullable=False)
 
     lessons = relationship("Lesson", back_populates="subject")
 
@@ -165,6 +166,7 @@ class RemoveTeacherFromTeam(BaseModel):
 class SubjectBase(BaseModel):
     name: str
     type: str
+    code: str
 
 class LessonBase(BaseModel):
     id: int
@@ -213,6 +215,10 @@ class CreateInspectionReport(BaseModel):
     final_rating: int
     objection: int
 
+class CreateInspection(BaseModel):
+    lesson_id: int 
+    team_id: int
+  
 class EditInspectionReport(BaseModel):
     lateness_minutes: int 
     student_attendance: int | None
@@ -356,51 +362,12 @@ def get_inspection_docs(db: SessionLocal = Depends(get_db)):
     ]
     return result
 
-# TODO 
-@app.get("/teachers-with-inspections/", response_model=list[dict])
-def get_teachers_with_inspections(db: SessionLocal = Depends(get_db)):
-    teachers_with_inspections = (
-        db.query(Teacher)
-        .join(Lesson, Lesson.fk_teacher == Teacher.id)
-        .join(Subject, Lesson.fk_subject == Subject.id)
-        .join(Inspection, Inspection.fk_lesson == Lesson.id)
-        .join(InspectionTeam, InspectionTeam.id == Inspection.fk_inspectionTeam)
-        .all()
-    )
+@app.post("/inspection-terms/") 
+def get_inspection_docs(term : CreateInspection,db: SessionLocal = Depends(get_db)):
+    # sprawdzanie czy mozna dodać dla pewności i defaultowo pierwszy sem xd
 
-    teacher_data = {}
-    
-    for teacher in teachers_with_inspections:
-        if teacher.id not in teacher_data:
-            teacher_data[teacher.id] = {
-                "teacher": {
-                    "id": teacher.id,
-                    "title": teacher.title,
-                    "name": teacher.name,
-                    "surname": teacher.surname,
-                },
-                "lessons": []
-            }
 
-        lesson_data = {
-            "lesson_time": teacher.lesson.time,
-            "lesson_room": teacher.lesson.room,
-            "subject_name": teacher.lesson.subject.name,
-            "teams": [] 
-        }
-
-        for inspection in teacher.lesson.inspections:
-            if inspection.inspection_team:
-                for team in inspection.inspection_team.teachers:
-                    lesson_data["teams"].append({
-                        "team_name": inspection.inspection_team.name,
-                        "teacher": f"{team.teacher.title} {team.teacher.name} {team.teacher.surname}"
-                    })
-
-        teacher_data[teacher.id]["lessons"].append(lesson_data)
-
-    return [{"teacher": teacher_info["teacher"], "lessons": teacher_info["lessons"]} for teacher_info in teacher_data.values()]
-
+    return result
 
 @app.delete("/inspection-terms/{term_id}/remove-term/")
 def remove_teacher_from_team(term_id: int, db: SessionLocal = Depends(get_db)):
@@ -412,6 +379,18 @@ def remove_teacher_from_team(term_id: int, db: SessionLocal = Depends(get_db)):
     db.delete(term)
     db.commit()
     return {"message": "Term has been deleted successfully"}
+
+@app.get("/lesson_with_dates/{teacher_id}/{subject_id}/")
+def get_lesson_with_dates(teacher_id: int, subject_id:int ,db: SessionLocal = Depends(get_db)):
+    lessons = db.query(Lesson).join(Teacher).join(Subject).filter(
+        Teacher.id == teacher_id,
+        Subject.id == subject_id
+    ).all()
+
+    # if not lessons:
+    #     raise HTTPException(status_code=404, detail="No lessons found for this teacher and subject.")
+
+    return lessons if lessons else []
 
 
 
@@ -499,10 +478,69 @@ def remove_teacher_from_team(team_id: int, payload: RemoveTeacherFromTeam, db: S
     db.commit()
     return {"message": "Teacher removed from the team successfully"}
 
+
+@app.get("/inspection-teams/{teacher_id}/{lesson_id}/")
+def get_specified_inspection_teams(teacher_id: int, lesson_id:int, db: SessionLocal = Depends(get_db)):
+    lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lesson not found.")
+    
+    inspection_teams = db.query(InspectionTeam) \
+        .join(TeacherInspectionTeam, TeacherInspectionTeam.fk_inspectionTeam == InspectionTeam.id) \
+        .join(Teacher, Teacher.id == TeacherInspectionTeam.fk_teacher) \
+        .filter(Lesson.id == lesson_id) \
+        .filter(TeacherInspectionTeam.fk_teacher != teacher_id) \
+        .all()
+    
+    available_teams = []
+    for team in inspection_teams:
+        available_members = []
+        for member in team.teachers:
+            
+            member_lessons = db.query(Lesson).filter(Lesson.fk_teacher == member.fk_teacher).all()
+            
+            conflict_found = any(lesson.time == member_lesson.time for member_lesson in member_lessons)
+            if not conflict_found:
+                available_members.append({
+                    "teacher_id": member.teacher.id,
+                    "teacher_name": member.teacher.name,
+                    "teacher_surname": member.teacher.surname,
+                    "teacher_title": member.teacher.title,
+                    "teacher_department": member.teacher.department,
+                })
+        
+        if available_members:
+            available_teams.append({
+                "inspection_team_id": team.id,
+                "inspection_team_name": team.name,
+                "members": available_members
+            })
+    
+    if not available_teams:
+        raise HTTPException(status_code=404, detail="No inspection teams available.")
+    
+    return available_teams
+
 @app.get("/teachers/")
 def get_teachers(db: SessionLocal = Depends(get_db)):
     teachers = db.query(Teacher).all()
-    return [{"id": teacher.id, "title": teacher.title, "name": teacher.name, "surname": teacher.surname} for teacher in teachers]
+    return [{"id": teacher.id, "title": teacher.title, "name": teacher.name, "surname": teacher.surname, "department" :teacher.department} for teacher in teachers]
+
+@app.get("/unique-subjects/{teacher_id}/")
+def get_subjects(teacher_id:int,db: SessionLocal = Depends(get_db)):
+    subjects = (
+        db.query(Subject.id, Subject.name, Subject.code)
+        .join(Lesson, Lesson.fk_subject == Subject.id)
+        .join(Teacher, Teacher.id == Lesson.fk_teacher)
+        .filter(Teacher.id == teacher_id)
+        .all()
+    )
+    result = [
+        {"subject_id": subject.id, "subject_name": subject.name, "subject_code": subject.code}
+        for subject in subjects
+    ]
+
+    return result
 
 @app.get("/lessons/", response_model=list[LessonBase])
 def get_lessons(semester: str, db: SessionLocal = Depends(get_db)):

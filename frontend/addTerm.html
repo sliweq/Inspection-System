@@ -16,43 +16,36 @@
     <div id="search"  class="container_list">
         <div style="padding: 10px;">
             <h3> 
-                Inspection Document:
+                Inspection Terms:
             </h3>
 
             <div style="width: 50%;">
 
-                <div class="row">
-                    Inspected:
+                <div class="row" id="select_inspected">
+                    Select inspected:
                     <select id="inspectedPicker" class="pickers">
                         <option value="">Select Inspected</option>
-                        <option value="Team A">dr. Jan Nowak</option>
-                        <option value="Team B">mgr inż Anna Bąk</option>
-                        <option value="Team C">dr. Miłosz Kowalski</option>
                     </select>
                 </div>
     
-                <div  class="row">
+                <div class="row" id="select_subject">
                     Subject: 
                     <select id="subjectPicker" class="pickers">
                         <option value="">Select Subject</option>
-                        <option value="Sub A">Podstawy Przedsiębiorczości</option>
-                        <option value="Sub B">Podstawy Zarządzania Projektami</option>
-                        <option value="Sub C">Podstawy prezentacji</option>
                     </select>
                 </div>
     
-                <div  class="row">
+                <div class="row" id="select_date">
                     Date
-                    <input type="date" class="pickers" id="datePicker" value="">
+                    <select id="datePicker" class="pickers">
+                        <option value="">Select Date</option>
+                    </select>
                 </div>
                 
-                <div  class="row">
+                <div class="row" id="select_inspectors">
                     Inspectors:
                     <select id="teamPicker"  class="pickers">
                         <option value="">Select Inspectors</option>
-                        <option value="Team A">Team A - dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak</option>
-                        <option value="Team B">Team B - dr. Jerzy Śliwka, dr. Mirosława Gruszka, dr. Jan Nowak</option>
-                        <option value="Team C">Team C - dr. Jan Marek, dr. Katrzyna Kić, dr. Jan Nowak</option>
                     </select>
                 </div>
             </div>
@@ -61,26 +54,28 @@
                 <h3>
                     Term details:
                 </h3>
-                <div  class="row">
-                    Inspected: dr. Jan Nowak
+                <div class="row">
+                    Inspected:
+                    <div id="info_inspected">
+
+                    </div>
                 </div>
                 <div  class="row">
-                    Department: Applied Computer Science
+                    Department: 
+                    <div id="info_department"></div>
+
                 </div>
                 <div  class="row">
-                    Subject: Architektura Komputerów
+                    Subject:
+                    <div id="info_subject"></div>
                 </div>
                 <div  class="row">
-                    Subject code: W04ITE-SI0016W
-                </div>
-                <div  class="row">
-                    Date: 2024-12-03 / 13:15
-                </div>
-                <div  class="row">
-                    Location: D-2 / 123
+                    Date and location: 
+                    <div id="info_date"></div>
                 </div>
                 <div>
-                    Inspectors: Team A - dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak
+                    Inspectors:
+                    <div id="info_inspectors"></div>
                 </div>
             </div>
     
@@ -91,7 +86,7 @@
     </div>    
 </div>  
     
-
+    <script type="module" src="addTerm.js"></script>
     <script>
         function checkPickers() {
             const inspectedPicker = document.getElementById("inspectedPicker");
@@ -118,10 +113,10 @@
             const subjectPicker = document.getElementById("subjectPicker");
             const datePicker = document.getElementById("datePicker");
             const teamPicker = document.getElementById("teamPicker");
-console.log(inspectedPicker.value); 
-console.log(subjectPicker.value);
-console.log(datePicker.value);
-console.log(teamPicker.value);
+            console.log(inspectedPicker.value); 
+            console.log(subjectPicker.value);
+            console.log(datePicker.value);
+            console.log(teamPicker.value);
 
 
             if(inspectedPicker.value === "" || subjectPicker.value === "" || datePicker.value === "" || teamPicker.value === ""){

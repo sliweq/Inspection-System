@@ -37,3 +37,15 @@ export function checkStringInput(string, max) {
     }
     return true;
 }
+
+export function removeSubjectsDuplicates(subjects) {
+    const tmp = new Set();
+    return subjects.filter(subject => {
+        const uniqueIdentifier = subject.subject_id || subject.subject_code;
+        if (tmp.has(uniqueIdentifier)) {
+            return false; 
+        }
+        tmp.add(uniqueIdentifier);
+        return true;
+    });
+}
