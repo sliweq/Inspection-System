@@ -27,6 +27,8 @@
                         <option value="">Select Inspected</option>
                     </select>
                 </div>
+                <!-- TODO department -->
+                 <!-- TODO something else to show xd -->
     
                 <div class="row" id="select_subject">
                     Subject: 
@@ -79,104 +81,12 @@
                 </div>
             </div>
     
-            <a class="button_save" id="buttonSave" style="position: absolute; bottom: 0;left: 0; margin: 20px ;" onclick="save_docs()">Add</a>
+            <a class="button_save" id="buttonSave" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Add</a>
             <a class="button_cancel" id="buttonCancel" href="index.html" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
             
         </div>
     </div>    
 </div>  
-    
-    <script type="module" src="addTerm.js"></script>
-    <script>
-        function checkPickers() {
-            const inspectedPicker = document.getElementById("inspectedPicker");
-            const subjectPicker = document.getElementById("subjectPicker");
-            const datePicker = document.getElementById("datePicker");
-            const teamPicker = document.getElementById("teamPicker");
-
-            const editableDiv = document.getElementById("editable");
-
-            if(inspectedPicker.value === "" || subjectPicker.value === "" || datePicker.value === "" || teamPicker.value === ""){
-                editableDiv.classList.add("hidden");
-                return;
-            }
-                editableDiv.classList.remove("hidden");
-            }
-
-            const pickers = document.querySelectorAll('.pickers');
-    pickers.forEach(picker => {
-        picker.addEventListener('change', checkPickers);
-    });
-
-    function save_docs() {
-            const inspectedPicker = document.getElementById("inspectedPicker");
-            const subjectPicker = document.getElementById("subjectPicker");
-            const datePicker = document.getElementById("datePicker");
-            const teamPicker = document.getElementById("teamPicker");
-            console.log(inspectedPicker.value); 
-            console.log(subjectPicker.value);
-            console.log(datePicker.value);
-            console.log(teamPicker.value);
-
-
-            if(inspectedPicker.value === "" || subjectPicker.value === "" || datePicker.value === "" || teamPicker.value === ""){
-
-                    const overlay = document.createElement('div');
-                    overlay.className = 'popup_overlay';
-                    
-                    const content = document.createElement('div');
-                    content.className = 'popup_content';
-
-                    
-                    const text = document.createElement('p');
-                    text.className = 'popup_text';
-                    text.textContent = 'Ivalid input data!';
-                    content.appendChild(text);
-
-
-                    const okButton = document.createElement('button');
-                    okButton.className = 'ok_popup_btn';
-                    okButton.textContent = 'Ok';
-                    content.appendChild(okButton);
-
-                    overlay.appendChild(content);
-                    document.body.appendChild(overlay);
-
-                    okButton.addEventListener('click', () => {
-                        overlay.remove();
-                    });
-
-                    
-                    if(inspectedPicker.value === ""){
-                        inspectedPicker.classList.add("input_error")
-                    }else
-                    {
-                        inspectedPicker.classList.remove("input_error")
-                    }
-                    if(subjectPicker.value === "" ){
-                        subjectPicker.classList.add("input_error")
-                    }else
-                    {
-                        subjectPicker.classList.remove("input_error")
-                    }
-                    if(datePicker.value === "" ){
-                        datePicker.classList.add("input_error")
-                    }else
-                    {
-                        datePicker.classList.remove("input_error")
-                    }
-                    if(teamPicker.value === "" ){
-                        teamPicker.classList.add("input_error")
-                    }else
-                    {
-                        teamPicker.classList.remove("input_error")
-                    }
-                    return;
-                }
-                
-            }
-        
-    </script>
-    
+    <script type="module" src="addTerm.js"></script> 
 </body>
 </html>

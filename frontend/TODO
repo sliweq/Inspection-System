@@ -1,7 +1,0 @@
-database:
-    -remove name from inspection report
-    -change objection to text
-edit inspection docs:
-    -database doesnt save lateness
-    
-add, edit inspection term    

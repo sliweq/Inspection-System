@@ -1,4 +1,4 @@
-import { convertDateToStringDate, convertStringDateToDate, fixStringDate, checkStringInput, checkNumberInput } from './utils.js';
+import {fixStringDate, checkStringInput, checkNumberInput } from './utils.js';
 
 document.addEventListener("DOMContentLoaded", loadDocs);
 document.getElementById("buttonSave").addEventListener("click", save_docs);

@@ -16,35 +16,19 @@
     <div id="search"  class="container_list">
 
         
-        <input type="text" id="searchInput" placeholder="Search document..." oninput="filterByName()">
+        <input type="text" id="searchInput" placeholder="Search document...">
         Search date
-        <input type="date" id="datePicker" name="date_picker" value="" oninput="filterByDate()" >
+        <input type="date" id="datePicker1" name="date_picker" value="">
         Sort by           
         <select id="filterSelect">
-            <option value="new">Newest</option>
             <option value="old">Oldest</option>
-            <option value="recently">Recently added</option>
+            <option value="new">Newest</option>
         </select>
         
         <hr style="border-top: 3px static #000000;">
 
         <div class="containder_scroll">
-            <ul id="itemList">
-               
-                <!-- <li name="tmp" data-date="2024-12-09">
-                    <div class="inner_list_div">
-                        <span>2024-12-08, dr. Iwona Perła - Fizyka 2</span>
-                        <dev class="buttons_container">
-                            <button type="submit" class="edit_button">
-                                <img src="edit.png" alt="Edit button" class="trash_img" onclick="deleteItem(this)">
-                            </button>
-                            <button type="submit" class="delete_button">
-                                <img src="trash.png" alt="Delete button" class="trash_img" onclick="deleteItem(this)">
-                            </button>
-                        </dev>
-                    </div>
-                </li> -->
-                
+            <ul id="itemList">               
             </ul>
         </div>
 
@@ -57,37 +41,46 @@
     <div id="editable" class="hidden">
         <div style="padding: 10px;">
             <h3> 
-                Inspection Document:
+                Inspection Term:
             </h3>
             <div class="row">
-                Inspected: mgr inż. Anna Bąk
+                Inspected: 
+                <div id="info_inspected">
+
+                </div>
             </div>
-            <div  class="row"> 
-                Department: Applied Computer Science
+            <div class="row"> 
+                Department:
+                <div id="info_department">
+
+                </div>
             </div>
-            <div  class="row">
-                Subject: Podstawy Przedsiębiorczości
+            <div class="row">
+                Subject:
+                <div id="info_subject">
+
+                </div>
+
             </div>
-            <div  class="row">
-                Subject code: W04ITE-SI0016W
+            <div class="row">
+                Subject code:
+                <div id="info_subject_code">
+                    
+                </div>
             </div>
-            <div  class="row"> Inspectors:
-                <select id="teamPicker" selected="Team A">
-                    <option value="Team A">Team A - dr. Jerzy Dąbek, dr. Hanna Kowalska, dr. Jan Nowak</option>
-                    <option value="Team B">Team B - dr. Jerzy Śliwka, dr. Mirosława Gruszka, dr. Jan Nowak</option>
-                    <option value="Team C">Team C - dr. Jan Marek, dr. Katrzyna Kić, dr. Jan Nowak</option>
+            <div class="row" >
+                Inspection Date:
+                <select id="datePicker">
                 </select>
             </div>
-            
-            <div  class="row">
-                Inspection Date:
-                <input type="date" id="datePicker2" name="date_picker" value="2024-12-03" >
+            <div class="row" select_inspectors> Inspectors:
+                <select id="teamPicker">  
+                </select>
             </div>
         </div>
 
-
-        <a class="button_save" id="buttonSave" onclick="save_docs()" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save</a>
-        <a class="button_cancel" id="buttonCancel" onclick="cancel_docs()" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
+        <a class="button_save" id="buttonSave" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save</a>
+        <a class="button_cancel" id="buttonCancel" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
         
     </div> 
 </div>  

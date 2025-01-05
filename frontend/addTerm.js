@@ -1,6 +1,8 @@
-import { convertDateToStringDate, convertStringDateToDate, fixStringDate,removeSubjectsDuplicates } from './utils.js';
+import {fixStringDate,removeSubjectsDuplicates, createPopup } from './utils.js';
 
 document.addEventListener("DOMContentLoaded", loadTeachers);
+
+document.getElementById('buttonSave').addEventListener('click', saveTerms);
 
 let teachers_data = {};
 
@@ -178,18 +180,18 @@ async function loadInspectorsTeam(lesson_id, teacher_id){
             selectElement.appendChild(option);
         });
 
-            selectElement.addEventListener("change", function(event) {
-                const selectedValue = event.target.value;
-                if (selectedValue == "") {
-                    clearResult();
-                    return;
-                }  
-                const team = teams.find(team => team.inspection_team_id == selectedValue );
-                
-                teachers_data.team = team.members.map(member => member.teacher_title + " " +member.teacher_name  + " " + member.teacher_surname).join(", ");
-                
-                showResult();
-            });
+        selectElement.addEventListener("change", function(event) {
+            const selectedValue = event.target.value;
+            if (selectedValue == "") {
+                clearResult();
+                return;
+            }  
+            const team = teams.find(team => team.inspection_team_id == selectedValue );
+            
+            teachers_data.team = team.members.map(member => member.teacher_title + " " +member.teacher_name  + " " + member.teacher_surname).join(", ");
+            
+            showResult();
+        });
        
     } catch (error) {
         console.error("Error loading subjects:", error);
@@ -263,10 +265,39 @@ async function saveTerms(){
     const team_id = document.getElementById("teamPicker").value;
 
     if(teacher_id == "" || subject_id == "" || lesson_id == "" || team_id == ""){
-        // TODO popup and highlight fields
+        let message = "Please select:";
+        if (teacher_id == ""){
+            message += " Inspected";
+        }
+        if (subject_id == ""){
+            message += " Subject";
+        }
+        if (lesson_id == ""){
+            message += " Date";
+        }
+        if (team_id == ""){
+            message += " Inspectors";
+        }
+        createPopup(message,[{text: 'Ok',color: 'ok_popup_btn',onClick: () => {},}]);
         return;
     }
 
+    createPopup("Are you sure you want to save this term?",
+        [
+            {
+                text: 'Yes',color: 'save_popup_btn',
+                onClick: () => saveTermAsync(
+                    document.getElementById("datePicker").value,
+                    document.getElementById("teamPicker").value)
+                },
+                {
+                    text: 'No',color: 'cancel_popup_btn',onClick: () => {}
+                }
+            ]
+        );
+}
+
+async function saveTermAsync(lesson_id, team_id){
     const response = await fetch("http://localhost:5000/inspection-terms/", {
         method: "POST",
         headers: {
@@ -282,13 +313,6 @@ async function saveTerms(){
         alert("Failed to save term");
         return;
     }
-
-    // alert("Term saved successfully");
-    // clearResult();
-    // deleteOptions("inspectedPicker","Select Inspected")
-    // deleteOptions("subjectPicker","Select Subject")
-    // deleteOptions("datePicker","Select Date")
-    // deleteOptions("teamPicker","Select Inspectors")
-    // loadTeachers();
-
+    window.location.href = "index.html";
+    // TODO jakis popup że zapisało pomyślnie czy coś 
 }

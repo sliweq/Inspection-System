@@ -49,3 +49,53 @@ export function removeSubjectsDuplicates(subjects) {
         return true;
     });
 }
+
+
+export function createPopup(message, buttons) {
+    // message main string to display
+    
+// buttons pattern
+// buttons:[{
+//     text: 'Save',
+//     color: 'green',
+//     hoverColor: 'lightgreen',
+//     onClick: () => {
+//         console.log('Save clicked');
+//     }
+// }]
+if (!buttons) {
+    console.error('No buttons provided');
+    return;
+}
+const overlay = document.createElement('div');
+overlay.className = 'popup_overlay';
+
+const content = document.createElement('div');
+content.className = 'popup_content';
+
+const text = document.createElement('p');
+text.className = 'popup_text';
+text.textContent = message;
+content.appendChild(text);
+
+buttons.forEach(button => {
+    const buttonElement = document.createElement('button');
+    buttonElement.classList.add(button.color);
+    buttonElement.className = button.color;
+    buttonElement.textContent = button.text;
+    
+    
+    
+    buttonElement.addEventListener('click', () => {
+        overlay.remove();
+        if (button.onClick) {
+            button.onClick();
+        }
+    });
+    
+    content.appendChild(buttonElement);
+});
+
+overlay.appendChild(content);
+document.body.appendChild(overlay);
+}
