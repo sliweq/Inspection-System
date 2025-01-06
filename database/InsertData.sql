@@ -46,11 +46,6 @@ VALUES
 (13, 3),
 (14, 4),
 (15, 5),
-(16, 1),
-(17, 2),
-(18, 3),
-(19, 4),
-(20, 5);
 
 INSERT INTO "Administrator" ("name", "surname", "login", "password_hash")
 VALUES
