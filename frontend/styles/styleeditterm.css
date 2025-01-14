@@ -133,3 +133,16 @@ label {
 .delete_button{
     border: none; background: none; padding: 0;
 }
+
+.delete_button{
+    border: none; background: none; padding: 0;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.trash_img{
+    width: 20px; height: 20px; display: block;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.trash_img:hover{
+    width: 20px; height: 20px; display: block; filter: invert(0.5);
+    transform: scale(1.15);
+}

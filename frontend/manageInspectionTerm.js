@@ -1,5 +1,5 @@
-import { convertStringDateToDate, fixStringDate, createPopup} from './utils.js';
-// TODO popup somewhere!! Use function from utils.js 
+import { convertStringDateToDate, fixStringDate, createPopup} from './utils/utils.js';
+
 document.addEventListener("DOMContentLoaded", loadTerms);
 document.getElementById('buttonCancel').addEventListener('click',() => {
     const editable = document.getElementById("editable");
@@ -45,10 +45,10 @@ export async function loadTerms() {
                     <span>${fixStringDate(term.date)} ${term.subject} ${term.teacher}</span>
                     <div class="buttons_container">
                         <button type="submit" class="edit_button">
-                            <img src="edit.png" alt="Edit button" class="trash_img">
+                            <img src="images/edit.png" alt="Edit button" class="trash_img">
                         </button>
                         <button type="submit" class="delete_button">
-                            <img src="trash.png" alt="Delete button" class="trash_img"">
+                            <img src="images/trash.png" alt="Delete button" class="trash_img"">
                         </button>
                     </div>
                 </div>

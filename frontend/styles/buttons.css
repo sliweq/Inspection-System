@@ -6,9 +6,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 .ok_popup_btn:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 .cancel_popup_btn {
@@ -19,10 +21,12 @@
     border-radius: 5px;
     cursor: pointer;
     background-color: #ff2f00;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .cancel_popup_btn:hover {
     background-color: #cd2701;
+    transform: scale(1.05);
 }
 
 .save_popup_btn {
@@ -33,10 +37,12 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .save_popup_btn:hover {
     background-color: #00d40e;
+    transform: scale(1.05);
 }
 
 .button_save  {
@@ -49,10 +55,12 @@
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .button_save:hover {
     background-color: #00d40e;
+    transform: scale(1.05);
 }
 
 .button_cancel {
@@ -65,9 +73,11 @@
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 .button_cancel:hover {
     background-color: #cd2701;
+    transform: scale(1.05);
 }
 
 .button {
@@ -80,8 +90,10 @@
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.1s ease;
 }
 
 .button:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }

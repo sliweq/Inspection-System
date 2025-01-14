@@ -1,4 +1,4 @@
-import {fixStringDate,removeSubjectsDuplicates, createPopup } from './utils.js';
+import {fixStringDate,removeSubjectsDuplicates, createPopup } from './utils/utils.js';
 
 document.addEventListener("DOMContentLoaded", loadTeachers);
 

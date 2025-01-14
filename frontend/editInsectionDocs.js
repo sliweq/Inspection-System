@@ -1,4 +1,4 @@
-import {fixStringDate, checkStringInput, checkNumberInput } from './utils.js';
+import {fixStringDate, checkStringInput, checkNumberInput, createPopup } from './utils/utils.js';
 
 document.addEventListener("DOMContentLoaded", loadDocs);
 document.getElementById("buttonSave").addEventListener("click", save_docs);
@@ -23,7 +23,7 @@ async function loadDocs() {
                 <div class="inner_list_div" id="document_${doc.id}">
                     <span>${fixStringDate(doc.date)} ${doc.subject} ${doc.teacher}</span>
                     <button type="button" style="border: none; background: none; padding: 0;">
-                        <img src="edit.png" alt="Edit button" class="trash_img">
+                        <img src="images/edit.png" alt="Edit button" class="trash_img">
                     </button>
                 </div>
             `;
@@ -38,42 +38,6 @@ async function loadDocs() {
     } catch (error) {
         console.error("Error loading semesters:", error);
     }
-}
-
-function createPopup(message, onSave) {
-    const overlay = document.createElement('div');
-    overlay.className = 'popup_overlay';
-    
-    const content = document.createElement('div');
-    content.className = 'popup_content';
-
-    const text = document.createElement('p');
-    text.className = 'popup_text';
-    text.textContent = message;
-    content.appendChild(text);
-
-    const saveButton = document.createElement('button');
-    const cancelButton = document.createElement('button');
-    saveButton.className = 'save_popup_btn';
-    cancelButton.className = 'cancel_popup_btn';
-    saveButton.textContent = 'Save';
-    cancelButton.textContent = 'Cancel';
-    content.appendChild(saveButton);
-    content.appendChild(cancelButton);
-
-    overlay.appendChild(content);
-    document.body.appendChild(overlay);
-
-    saveButton.addEventListener('click', () => {
-        overlay.remove();
-        if (onSave){
-            onSave(); 
-        } 
-    });
-
-    cancelButton.addEventListener('click', () => {
-        overlay.remove();
-    });
 }
 
 async function save_docs() {
@@ -102,27 +66,41 @@ async function save_docs() {
     }
 
     if (invalidFields.length > 0) {
-        createPopup(`Invalid input data!\n${invalidFields.join("\n")}`);
+        createPopup(`Invalid input data!\n${invalidFields.join("\n")}`, [
+            {
+                text: 'Ok',
+                color: 'ok_popup_btn',
+            }
+        ]);
         return;
     }
 
     const editableDiv = document.getElementById("editable");
-    createPopup('Do you want to save document?', () => {
-        editableDiv.classList.add("hidden");
-        saveDocsChanges(editableDiv.name, {
-            lateness_minutes: inputs[0].element.value,
-            students_attendance: inputs[1].element.value,
-            room_adaptation: inputs[2].element.value,
-            content_compatibility: inputs[3].element.value,
-            substantive_rating: inputs[4].element.value,
-            final_rating: inputs[5].element.value,
-            objection: inputs[6].element.value
-        });
-    });
+    createPopup('Do you want to save document?', [
+                {
+                    text: 'Yes',
+                    color: 'save_popup_btn',
+                    onClick: () => 
+                        {editableDiv.classList.add("hidden");
+                        saveDocsChanges(editableDiv.name, {
+                        lateness_minutes: inputs[0].element.value,
+                        students_attendance: inputs[1].element.value,
+                        room_adaptation: inputs[2].element.value,
+                        content_compatibility: inputs[3].element.value,
+                        substantive_rating: inputs[4].element.value,
+                        final_rating: inputs[5].element.value,
+                        objection: inputs[6].element.value
+                    })},
+                },
+                {
+                    text: 'No',
+                    color: 'cancel_popup_btn',
+                    onClick: () => {},
+                }
+            ]);
 }
 
 async function saveDocsChanges(docsId, data) {
-    // const message = document.getElementById("message");
     try {
         console.log(data)
         const response = await fetch(`http://localhost:5000/inspection-docs/${docsId}/edit/`, {
@@ -147,11 +125,9 @@ async function saveDocsChanges(docsId, data) {
         else {
             console.log("Document saved added successfully!");
         }
-
-        // message.textContent = "Document saved added successfully!";
         
     } catch (error) {
-        // message.textContent = "Error saving document";
+        console.error("Error during saving document", error);
     }
 }
 
