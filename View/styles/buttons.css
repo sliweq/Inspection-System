@@ -1,0 +1,99 @@
+.ok_popup_btn {
+    padding: 10px 20px;
+    margin: 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.ok_popup_btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.cancel_popup_btn {
+    padding: 10px 20px;
+    margin: 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #ff2f00;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.cancel_popup_btn:hover {
+    background-color: #cd2701;
+    transform: scale(1.05);
+}
+
+.save_popup_btn {
+    padding: 10px 20px;
+    margin: 20px;
+    background-color: #00ff11;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.save_popup_btn:hover {
+    background-color: #00d40e;
+    transform: scale(1.05);
+}
+
+.button_save  {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    color: #ffffff;
+    background-color: #00ff11;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.button_save:hover {
+    background-color: #00d40e;
+    transform: scale(1.05);
+}
+
+.button_cancel {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    color: white;
+    background-color: #ff2f00;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+.button_cancel:hover {
+    background-color: #cd2701;
+    transform: scale(1.05);
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}

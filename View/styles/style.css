@@ -1,0 +1,72 @@
+body {
+    font-family: "Consolas", monospace;
+    font-size: 14pt;
+    margin: 20px;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 10px 0;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.1s ease, transform 0.1s ease;
+}
+
+.buttonRed {
+    display: inline-block;
+    padding: 10px 10px;
+    margin: 10px 0;
+    color: white;
+    background-color: red;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.container {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.alert {
+    color: red;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+.team-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+#team-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+#team-members {
+    list-style-type: none;
+    padding: 0;
+}
