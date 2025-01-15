@@ -164,3 +164,22 @@ ALTER TABLE
     "InspectionSchedule" ADD CONSTRAINT "inspectionschedule_fk_administrator_foreign" FOREIGN KEY("fk_administrator") REFERENCES "Administrator"("id");
 ALTER TABLE
     "TeacherInspectionTeam" ADD CONSTRAINT "teacherinspectionteam_fk_teacher_foreign" FOREIGN KEY("fk_teacher") REFERENCES "Teacher"("id");
+
+CREATE OR REPLACE FUNCTION enforce_teacher_limit()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (
+        SELECT COUNT(*)
+        FROM "TeacherInspectionTeam"
+        WHERE "fk_inspectionTeam" = NEW."fk_inspectionTeam"
+    ) >= 3 THEN
+        RAISE EXCEPTION 'Cannot add more than 3 teachers to a single inspection team.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER enforce_teacher_limit_trigger
+BEFORE INSERT ON "TeacherInspectionTeam"
+FOR EACH ROW
+EXECUTE FUNCTION enforce_teacher_limit()    
