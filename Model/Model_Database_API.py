@@ -519,9 +519,13 @@ def add_teacher_to_team(team_id: int, payload: AddTeacherToTeam, db: SessionLoca
     if existing_assignment:
         raise HTTPException(status_code=400, detail="Teacher is already in the team")
 
-    assignment = TeacherInspectionTeam(fk_teacher=payload.teacher_id, fk_inspectionTeam=team_id)
-    db.add(assignment)
-    db.commit()
+    try:
+        assignment = TeacherInspectionTeam(fk_teacher=payload.teacher_id, fk_inspectionTeam=team_id)
+        db.add(assignment)
+        db.commit()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Unable to add teacher ot the team, is the team full?")
+
     return {"message": "Teacher added to the team successfully"}
 
 @app.delete("/inspection-teams/{team_id}/remove-teacher/")

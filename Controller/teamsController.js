@@ -145,7 +145,7 @@ async function addMember(teamId, memberId) {
         message.textContent = "Member added successfully!";
         loadTeams();
     } catch (error) {
-        message.textContent = "Error adding member.";
+        message.textContent = "Error adding member, is the team full?";
     }
 }
 
