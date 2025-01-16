@@ -72,58 +72,58 @@ async function loadTeams() {
 }
 
 async function showAddMemberMenu(teamId) {
-const message = document.getElementById("message");
-const existingSelect = document.getElementById(`add-member-${teamId}`);
-if (existingSelect) {
-    return;
-}
-
-
-try {
-    const teachersResponse = await fetch('http://localhost:5000/teachers/');
-    if (!teachersResponse.ok) {
-        throw new Error('Failed to fetch teachers');
-    }
-    const teachers = await teachersResponse.json();
-
-    const teamResponse = await fetch(`http://localhost:5000/inspection-teams/${teamId}/`);
-    if (!teamResponse.ok) {
-        throw new Error(`Failed to fetch details for team ${teamId}`);
-    }
-    const teamDetails = await teamResponse.json();
-    const teamMembers = teamDetails.teachers;
-
-    const availableTeachers = teachers.filter(
-        teacher => !teamMembers.some(member => member.id === teacher.id)
-    );
-
-    if (availableTeachers.length === 0) {
-        message.textContent = "No teachers available to add.";
+    const message = document.getElementById("message");
+    const existingSelect = document.getElementById(`add-member-${teamId}`);
+    if (existingSelect) {
         return;
     }
 
-    const addMemberSelect = document.createElement("select");
-    addMemberSelect.id = `add-member-${teamId}`;
 
-    availableTeachers.forEach(teacher => {
-        const option = document.createElement("option");
-        option.value = teacher.id;
-        option.textContent = `${teacher.title} ${teacher.name} ${teacher.surname}`;
-        addMemberSelect.appendChild(option);
-    });
+    try {
+        const teachersResponse = await fetch('http://localhost:5000/teachers/');
+        if (!teachersResponse.ok) {
+            throw new Error('Failed to fetch teachers');
+        }
+        const teachers = await teachersResponse.json();
 
-    const confirmButton = document.createElement("button");
-    confirmButton.classList.add("button");
-    confirmButton.id = `confirm-add-${teamId}`;
-    confirmButton.textContent = "Confirm";
-    confirmButton.onclick = () => addMember(teamId, addMemberSelect.value);
+        const teamResponse = await fetch(`http://localhost:5000/inspection-teams/${teamId}/`);
+        if (!teamResponse.ok) {
+            throw new Error(`Failed to fetch details for team ${teamId}`);
+        }
+        const teamDetails = await teamResponse.json();
+        const teamMembers = teamDetails.teachers;
 
-    const teamDiv = document.getElementById(`members-${teamId}`).parentNode;
-    teamDiv.appendChild(addMemberSelect);
-    teamDiv.appendChild(confirmButton);
-} catch (error) {
-    message.textContent = "Error loading teacher options.";
-}
+        const availableTeachers = teachers.filter(
+            teacher => !teamMembers.some(member => member.id === teacher.id)
+        );
+
+        if (availableTeachers.length === 0) {
+            message.textContent = "No teachers available to add.";
+            return;
+        }
+
+        const addMemberSelect = document.createElement("select");
+        addMemberSelect.id = `add-member-${teamId}`;
+
+        availableTeachers.forEach(teacher => {
+            const option = document.createElement("option");
+            option.value = teacher.id;
+            option.textContent = `${teacher.title} ${teacher.name} ${teacher.surname}`;
+            addMemberSelect.appendChild(option);
+        });
+
+        const confirmButton = document.createElement("button");
+        confirmButton.classList.add("button");
+        confirmButton.id = `confirm-add-${teamId}`;
+        confirmButton.textContent = "Confirm";
+        confirmButton.onclick = () => addMember(teamId, addMemberSelect.value);
+
+        const teamDiv = document.getElementById(`members-${teamId}`).parentNode;
+        teamDiv.appendChild(addMemberSelect);
+        teamDiv.appendChild(confirmButton);
+    } catch (error) {
+        message.textContent = "Error loading teacher options.";
+    }
 }
 
 
