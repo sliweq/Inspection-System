@@ -1,11 +1,11 @@
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI, HTTPException, Depends
-from sqlalchemy import create_engine
-from sqlalchemy.orm import aliased, declarative_base, sessionmaker
-from sqlalchemy.exc import NoResultFound, IntegrityError
 import uvicorn
-from models_sqlalchemy import *
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from models_pydantic import *
+from models_sqlalchemy import *
+from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.orm import aliased, declarative_base, sessionmaker
 
 DATABASE_URL = "postgresql://postgres:postgres@localhost/inspections"
 engine = create_engine(DATABASE_URL)
@@ -83,7 +83,8 @@ def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
     )
 
     if not inspection:
-        raise HTTPException(status_code=404, detail="Inspection document not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection document not found")
 
     inspection_details = {
         "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name}",
@@ -131,11 +132,13 @@ def edit_inspection_report(
     )
 
     if not inspection:
-        raise HTTPException(status_code=404, detail="Inspection report not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection report not found")
 
     inspection_report = inspection.inspection_report
     if not inspection_report:
-        raise HTTPException(status_code=404, detail="Inspection report not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection report not found")
 
     update_fields = updated_data.dict(exclude_unset=True)
     for field, value in update_fields.items():
@@ -159,7 +162,8 @@ def get_inspection_term(term_id: int, db: SessionLocal = Depends(get_db)):
     # Achtung - hier gibt es viele Dinge !!
 
     if not data:
-        raise HTTPException(status_code=404, detail="Inspection term not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection term not found")
 
     return {
         "lesson_id": data.lesson.id,
@@ -184,7 +188,8 @@ def edit_inspection_team(
 ):
     inspection = db.query(Inspection).filter(Inspection.id == term_id).first()
     if not inspection:
-        raise HTTPException(status_code=404, detail="Inspection term not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection term not found")
 
     update_fields = updated_data.dict(exclude_unset=True)
     for field, value in update_fields.items():
@@ -233,7 +238,8 @@ def get_inspection_terms(db: SessionLocal = Depends(get_db)):
 def get_inspection_terms(term: CreateInspection, db: SessionLocal = Depends(get_db)):
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
-        raise HTTPException(status_code=404, detail="No inspection schedule found.")
+        raise HTTPException(
+            status_code=404, detail="No inspection schedule found.")
 
     inspection = Inspection(
         fk_inspectionSchedule=schedule,
@@ -257,9 +263,11 @@ def get_inspection_terms(term: CreateInspection, db: SessionLocal = Depends(get_
 @app.delete("/inspection-terms/{term_id}/remove-term/")
 def remove_teacher_from_team(term_id: int, db: SessionLocal = Depends(get_db)):
     try:
-        term = db.query(Inspection).filter(Inspection.id == term_id).one_or_none()
+        term = db.query(Inspection).filter(
+            Inspection.id == term_id).one_or_none()
     except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection term not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection term not found")
     db.delete(term)
     db.commit()
     return {"message": "Term has been deleted successfully"}
@@ -300,7 +308,8 @@ def create_inspection_team(
     except IntegrityError as e:
         db.rollback()
         if "inspectionteam_name_unique" in str(e.orig):
-            raise HTTPException(status_code=400, detail="Team name already exists.")
+            raise HTTPException(
+                status_code=400, detail="Team name already exists.")
         raise HTTPException(
             status_code=500, detail="An error occurred while creating the team."
         )
@@ -309,7 +318,8 @@ def create_inspection_team(
 @app.get("/inspection-teams/{team_id}/", response_model=InspectionTeamBase)
 def view_inspection_team(team_id: int, db: SessionLocal = Depends(get_db)):
     try:
-        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
+        team = db.query(InspectionTeam).filter(
+            InspectionTeam.id == team_id).one()
         teachers = (
             db.query(Teacher)
             .join(TeacherInspectionTeam)
@@ -320,12 +330,14 @@ def view_inspection_team(team_id: int, db: SessionLocal = Depends(get_db)):
             id=team.id,
             name=team.name,
             teachers=[
-                TeacherBase(id=t.id, name=t.name, surname=t.surname, title=t.title)
+                TeacherBase(id=t.id, name=t.name,
+                            surname=t.surname, title=t.title)
                 for t in teachers
             ],
         )
     except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection Team not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection Team not found")
 
 
 @app.post("/inspection-teams/{team_id}/add-teacher/")
@@ -333,11 +345,14 @@ def add_teacher_to_team(
     team_id: int, payload: AddTeacherToTeam, db: SessionLocal = Depends(get_db)
 ):
     try:
-        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
+        team = db.query(InspectionTeam).filter(
+            InspectionTeam.id == team_id).one()
     except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection Team not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection Team not found")
 
-    teacher = db.query(Teacher).filter(Teacher.id == payload.teacher_id).one_or_none()
+    teacher = db.query(Teacher).filter(
+        Teacher.id == payload.teacher_id).one_or_none()
     if not teacher:
         raise HTTPException(status_code=404, detail="Teacher not found")
 
@@ -351,7 +366,8 @@ def add_teacher_to_team(
     )
 
     if existing_assignment:
-        raise HTTPException(status_code=400, detail="Teacher is already in the team")
+        raise HTTPException(
+            status_code=400, detail="Teacher is already in the team")
 
     try:
         assignment = TeacherInspectionTeam(
@@ -373,9 +389,11 @@ def remove_teacher_from_team(
     team_id: int, payload: RemoveTeacherFromTeam, db: SessionLocal = Depends(get_db)
 ):
     try:
-        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
+        team = db.query(InspectionTeam).filter(
+            InspectionTeam.id == team_id).one()
     except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection Team not found")
+        raise HTTPException(
+            status_code=404, detail="Inspection Team not found")
 
     assignment = (
         db.query(TeacherInspectionTeam)
@@ -387,7 +405,8 @@ def remove_teacher_from_team(
     )
 
     if not assignment:
-        raise HTTPException(status_code=404, detail="Teacher is not in the team")
+        raise HTTPException(
+            status_code=404, detail="Teacher is not in the team")
 
     db.delete(assignment)
     db.commit()
@@ -403,9 +422,11 @@ def get_specified_inspection_teams(
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found.")
 
-    inspected_teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
+    inspected_teacher = db.query(Teacher).filter(
+        Teacher.id == teacher_id).first()
     if not inspected_teacher:
-        raise HTTPException(status_code=404, detail="Inspected teacher not found.")
+        raise HTTPException(
+            status_code=404, detail="Inspected teacher not found.")
 
     inspected_department = inspected_teacher.department
 
@@ -429,7 +450,8 @@ def get_specified_inspection_teams(
 
         for member in team.teachers:
             member_lessons = (
-                db.query(Lesson).filter(Lesson.fk_teacher == member.fk_teacher).all()
+                db.query(Lesson).filter(
+                    Lesson.fk_teacher == member.fk_teacher).all()
             )
             member_inspections = (
                 db.query(Lesson)
