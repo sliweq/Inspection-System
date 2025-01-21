@@ -28,7 +28,7 @@
     border-radius: 10px;
 }
 
-#datePicker {
+#datePicker1 {
     padding: 8px;
     margin-right: 12px;
     font-size: 16px;
@@ -37,7 +37,7 @@
     border: 1px solid #1d1d1d;
 }
 
-#datePicker2 {
+#datePicker {
     padding: 4px;
     font-size: 16px;
     border-radius: 10px;

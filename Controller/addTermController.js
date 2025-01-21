@@ -139,7 +139,6 @@ async function loadLessonsAndDates(subject_id, teacher_id){
 
                 deleteOptions("teamPicker","Select Inspectors")
                 loadInspectorsTeam(selectedValue,teacher_id)
-                // TODO 
 
                 showElement("select_inspectors")
                 selectFirst("teamPicker")
@@ -168,7 +167,6 @@ async function loadInspectorsTeam(lesson_id, teacher_id){
 
         teams.forEach(element => {
             const option = document.createElement("option");
-            // option.textContent = element.inspection_team_name;
             
             element.members.forEach( member => {
                 option.textContent += member.teacher_title + " " +member.teacher_name  + " " + member.teacher_surname + " ";
@@ -314,5 +312,4 @@ async function saveTermAsync(lesson_id, team_id){
         return;
     }
     window.location.href = "index.html";
-    // TODO jakis popup że zapisało pomyślnie czy coś 
 }

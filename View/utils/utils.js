@@ -50,6 +50,39 @@ export function removeSubjectsDuplicates(subjects) {
     });
 }
 
+export function filterByDate(){
+    const value = document.getElementById("datePicker1").value
+    const itemList = document.getElementById("itemList");
+    const items = Array.from(itemList.children);
+    items.forEach(element => {
+        if (element.getAttribute("value").includes(value)) {
+            element.classList.remove("hidden");
+        }
+        else{
+            element.classList.add("hidden");
+        }
+    });
+    if(value == ""){
+        items.forEach(item => {
+            item.classList.remove("hidden");
+        });
+    }
+}
+
+export function sortByDate(){
+    const value = document.getElementById("filterSelect").value
+    const itemList = document.getElementById("itemList");
+    const items = Array.from(itemList.children);
+    if (value == "old") {
+        items.sort((a, b) => new Date(a.getAttribute("value")) - new Date(b.getAttribute("value")));
+    }else{
+        items.sort((a, b) => new Date(b.getAttribute("value")) - new Date(a.getAttribute("value")));
+    }
+    itemList.innerHTML = "";
+
+    items.forEach(item => itemList.appendChild(item));
+}
+
 
 export function createPopup(message, buttons) {
     // message main string to display

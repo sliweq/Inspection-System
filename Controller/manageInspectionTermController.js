@@ -1,4 +1,4 @@
-import { convertStringDateToDate, fixStringDate, createPopup} from '../View/utils/utils.js';
+import { convertStringDateToDate, fixStringDate, createPopup, sortByDate,filterByDate} from '../View/utils/utils.js';
 
 document.addEventListener("DOMContentLoaded", loadTerms);
 document.getElementById('buttonCancel').addEventListener('click',() => {
@@ -7,6 +7,10 @@ document.getElementById('buttonCancel').addEventListener('click',() => {
 } );
 
 let inspection_id = undefined;
+document.getElementById("filterSelect").onchange = sortByDate;
+document.getElementById("filterSelect").addEventListener("onchange", sortByDate);
+document.getElementById("datePicker1").addEventListener("onchange", filterByDate);
+document.getElementById("datePicker1").onchange = filterByDate;
 
 document.getElementById('buttonSave').addEventListener('click',() => {
     createPopup("Are you sure you want to save this term?",
@@ -39,6 +43,7 @@ export async function loadTerms() {
         terms.forEach(term => {
             const listItem = document.createElement("li");
             listItem.setAttribute("name", "tmp");
+            listItem.setAttribute("value",term.date);
 
             listItem.innerHTML = `
                 <div class="inner_list_div">
@@ -53,7 +58,6 @@ export async function loadTerms() {
                     </div>
                 </div>
             `;
-            console.log(term);
             termsList.appendChild(listItem);
             const deleteButton = listItem.querySelector('.delete_button img');
             deleteButton.addEventListener('click', () => {
@@ -66,6 +70,8 @@ export async function loadTerms() {
                 editTerm(term.lesson_id,term.teacher_id,term.team_id);
             });
         });
+
+        sortByDate();
     } catch (error) {
         console.error("Error loading terms:", error);
     }
@@ -81,8 +87,6 @@ function isInspectionConducted(date) {
 
 async function deleteTerm(id, date) {   
     if (isInspectionConducted(date)) {
-    // if (false) {
-        console.log('Inspection conducted');
         createPopup('This term has been conducted. You cannot delete this term', [
             {
                 text: 'Ok',
@@ -125,7 +129,6 @@ async function deleteTermAsync(id) {
 }
 
 async function editTerm(term_id,teacher_id, team_id) {
-    console.log('Edit term');
     const editable = document.getElementById("editable");
 
     try {
@@ -134,7 +137,6 @@ async function editTerm(term_id,teacher_id, team_id) {
             throw new Error("Failed to fetch terms");
         }
         const term_data = await response.json();
-        console.log(term_data);
 
         const info_inspected = document.getElementById("info_inspected");
         info_inspected.innerHTML = term_data.teacher_title + " " + term_data.teacher_name + " " + term_data.teacher_surname;
@@ -167,7 +169,7 @@ async function editTerm(term_id,teacher_id, team_id) {
                 selectElement.selected = element.id;
             }
         });
-
+        
         selectElement.addEventListener("change", function(event) {
 
             const selectedValue = event.target.value;
@@ -219,13 +221,11 @@ async function fetchSpecificInspectionTeams(editable,teacher_id,term_id, team_id
                 editable.classList.add("hidden");
                 return;
             }
-            console.log(teams);
             const teamPicker = document.getElementById("teamPicker");
     
             teams.forEach(element => {
                 const option = document.createElement("option");
-                // option.textContent = element.inspection_team_name;
-                // TODO change to map instead foreach, same thing in addTerms 
+                
                 element.members.forEach( member => {
                     option.textContent += member.teacher_title + " " +member.teacher_name  + " " + member.teacher_surname + " ";
                 }
@@ -240,16 +240,6 @@ async function fetchSpecificInspectionTeams(editable,teacher_id,term_id, team_id
             });
     
             teamPicker.addEventListener("change", function(event) {
-                // TODO Do i really need selector ?
-    
-                // const selectedValue = event.target.value;
-                // if (selectedValue == "") {
-                //     clearResult();
-                //     return;
-                // }  
-                // const team = teams.find(team => team.inspection_team_id == selectedValue );
-                
-                // teachers_data.team = team.members.map(member => member.teacher_title + " " +member.teacher_name  + " " + member.teacher_surname).join(", ");
     
             });
     }catch (error) {
@@ -257,11 +247,9 @@ async function fetchSpecificInspectionTeams(editable,teacher_id,term_id, team_id
         console.error("Error loading:", error);
     }
 
-
 }
 
 async function saveTermAsync(lesson_id, team_id, term_id){
-    console.log(lesson_id, team_id, term_id);
     const response = await fetch(`http://localhost:5000/inspection-term/edit/${term_id}/`, {
         method: "POST",
         headers: {
@@ -278,6 +266,5 @@ async function saveTermAsync(lesson_id, team_id, term_id){
         return;
     }
     inspection_id = undefined;
-    // window.location.reload();
-    // TODO jakis popup że zapisało pomyślnie czy coś 
+    window.location.reload();
 }

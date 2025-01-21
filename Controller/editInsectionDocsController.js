@@ -1,9 +1,10 @@
-import {fixStringDate, checkStringInput, checkNumberInput, createPopup } from '../View/utils/utils.js';
+import {fixStringDate, checkStringInput, checkNumberInput, createPopup,sortByDate } from '../View/utils/utils.js';
 
 document.addEventListener("DOMContentLoaded", loadDocs);
 document.getElementById("buttonSave").addEventListener("click", save_docs);
 document.getElementById("buttonCancel").addEventListener("click", cancel_docs);
 document.getElementById("searchInput").addEventListener("input", filterByName);
+document.getElementById("filterSelect").onchange = sortByDate;
 
 
 async function loadDocs() {
@@ -18,6 +19,7 @@ async function loadDocs() {
 
         docs.forEach(doc => {
             const listItem = document.createElement("li");
+            listItem.setAttribute("value",doc.date);
             listItem.setAttribute("name","tmp")
             listItem.innerHTML = `
                 <div class="inner_list_div" id="document_${doc.id}">
@@ -32,9 +34,9 @@ async function loadDocs() {
             deleteButton.addEventListener('click', () => {
                 editItem(doc.id);
             });
-
-
         });
+
+        sortByDate();
     } catch (error) {
         console.error("Error loading semesters:", error);
     }
@@ -102,7 +104,6 @@ async function save_docs() {
 
 async function saveDocsChanges(docsId, data) {
     try {
-        console.log(data)
         const response = await fetch(`http://localhost:5000/inspection-docs/${docsId}/edit/`, {
             method: 'POST',
             headers: {
@@ -122,9 +123,6 @@ async function saveDocsChanges(docsId, data) {
         if (!response.ok) {
             throw new Error('Failed to save document');
         }
-        else {
-            console.log("Document saved added successfully!");
-        }
         
     } catch (error) {
         console.error("Error during saving document", error);
@@ -137,14 +135,10 @@ function cancel_docs() {
 }
 
 function filterByName() {
-    console.log("Filtering by name");
-    const editableDiv = document.getElementById("editable");
-    editableDiv.classList.remove("hidden");
 
     const searchValue = document.getElementById("searchInput").value.toLowerCase();
     const items = document.querySelectorAll("#itemList li");
-    console.log(items);
-    console.log(searchValue);
+
     if(searchValue === "") {
             items.forEach(item => {
                 item.style.display = "block";
@@ -156,7 +150,7 @@ function filterByName() {
 
         if (text.includes(searchValue)) {
             item.style.display = "block";
-            console.log(text);
+
         } else {
             item.style.display = "none";
             
@@ -168,22 +162,13 @@ function filterByName() {
 async function editItem(id) {   
     const editableDiv = document.getElementById("editable");
 
-    // const listItems = document.querySelectorAll("#itemList li");
-    // listItems.forEach((item) => {
-    //     item.addEventListener("click", () => {  
-    //         editableDiv.classList.remove("hidden");
-
-    //     }); 
-    // });
-
     
     editableDiv.classList.remove("hidden");
     editableDiv.name = id;
 
     try {
         const docDetails = await fetchDocDetails(id);
-        console.log(docDetails);
-        console.log(typeof docDetails.students_attendance);
+
         if (docDetails) {
             setDocDetailId("Inspected_name", docDetails.inspected_name);
             setDocDetailId("Inspected_department", docDetails.department_name);
@@ -212,16 +197,11 @@ function setDocDetailId(id, detail){
     document.getElementById(id).innerHTML = detail;
 }
 function setDocDetailValue(id, valu, type) {
-    console.log(typeof valu);
-    console.log(valu);
     if (type === Number) {
         valu = Number(valu); 
     } else if (type === String) {
         valu = String(valu);
     }
-    console.log(valu);
-    
-
     document.getElementById(id).value = valu;
 }
 

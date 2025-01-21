@@ -21,8 +21,8 @@
         <input type="date" id="datePicker1" name="date_picker" value="">
         Sort by           
         <select id="filterSelect">
-            <option value="old">Oldest</option>
             <option value="new">Newest</option>
+            <option value="old">Oldest</option>
         </select>
         
         <hr style="border-top: 3px static #000000;">
@@ -87,125 +87,6 @@
     
     <script type="module" src="../Controller/manageInspectionTermController.js">
     </script>
-    
-    <!-- <script>
-        function save_docs() {
-
-            if (false){
-
-const overlay = document.createElement('div');
-        overlay.className = 'popup_overlay';
-        
-        const content = document.createElement('div');
-        content.className = 'popup_content';
-
-        
-        const text = document.createElement('p');
-        text.className = 'popup_text';
-        text.textContent = 'Past date cannot be selected';
-        content.appendChild(text);
-
-
-        const okButton = document.createElement('button');
-        okButton.className = 'ok_popup_btn';
-        okButton.textContent = 'Ok';
-        content.appendChild(okButton);
-
-        overlay.appendChild(content);
-        document.body.appendChild(overlay);
-
-        okButton.addEventListener('click', () => {
-            overlay.remove();
-        });
-return;
-}
-
-            const editableDiv = document.getElementById("editable");                
-            editableDiv.classList.add("hidden");
-            
-            }
- 
-
-        function cancel_docs() {
-            const editableDiv = document.getElementById("editable");
-            editableDiv.classList.add("hidden");
-        }
-
-
-        function filterByDate() {
-            const selectedDate = document.getElementById("datePicker").value; 
-            const items = document.querySelectorAll("#itemList li"); 
-
-            console.log(items);
-            console.log(selectedDate);
-
-            if (selectedDate === "") { 
-                items.forEach(item => {
-                    item.style.display = "block";
-                });
-                return;
-            }
-
-            items.forEach(item => {
-                const itemDate = item.getAttribute("data-date"); 
-                console.log(item);
-                console.log(item.date);
-                console.log(itemDate);
-                if (itemDate === selectedDate) {
-                    item.style.display = "block";
-                    console.log(itemDate);
-                } else {
-                    item.style.display = "none";
-                }
-            });
-        }
-    
-            function filterByName() {
-            const searchValue = document.getElementById("searchInput").value.toLowerCase();
-            const items = document.querySelectorAll("#itemList li");
-            console.log(items);
-            console.log(searchValue);
-            if(searchValue === "") {
-                    items.forEach(item => {
-                        item.style.display = "block";
-                    });
-            return;}   
-
-
-            items.forEach(item => {
-                const text = item.textContent.toLowerCase();
-
-                if (text.includes(searchValue)) {
-                    item.style.display = "block";
-                    console.log(text);
-                } else {
-                    item.style.display = "none";
-                    
-                }
-            });
-        }        
-
-
-        function deleteItem(button) {
-
-            // alert("selected Inspection term already has been conducted");
-            // return;
-
-            const listItem = button.closest("li"); 
-            const listItems = document.querySelectorAll("#itemList li");
-            const editableDiv = document.getElementById("editable");
-
-            listItems.forEach((item) => {
-                item.addEventListener("click", () => {
-                    
-                    editableDiv.classList.remove("hidden");
-                });
-            });
-            
-            }
-    
-   
-    </script> -->
     
 </body>
 </html>
