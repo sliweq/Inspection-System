@@ -32,7 +32,7 @@ def get_db():
 
 
 @app.get("/inspection-docs/", response_model=list[dict])
-def get_inspection_docs(db: SessionLocal = Depends(get_db)):
+def get_inspection_docs(db: sessionmaker = Depends(get_db)):
     inspection_docs = (
         db.query(
             InspectionReport.id.label("document_id"),
@@ -61,7 +61,7 @@ def get_inspection_docs(db: SessionLocal = Depends(get_db)):
 
 
 @app.get("/inspection-docs/{docs_id}/", response_model=dict)
-def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
+def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
     teacher_alias_1 = aliased(Teacher)
     teacher_alias_2 = aliased(Teacher)
     inspection = (
@@ -122,7 +122,7 @@ def get_inspection_doc(docs_id: int, db: SessionLocal = Depends(get_db)):
 
 @app.post("/inspection-docs/{docs_id}/edit/")
 def edit_inspection_report(
-    docs_id: int, updated_data: EditInspectionReport, db: SessionLocal = Depends(get_db)
+    docs_id: int, updated_data: EditInspectionReport, db: sessionmaker = Depends(get_db)
 ):
     inspection = (
         db.query(Inspection)
@@ -150,7 +150,7 @@ def edit_inspection_report(
 
 
 @app.get("/inspection-term/{term_id}/")
-def get_inspection_term(term_id: int, db: SessionLocal = Depends(get_db)):
+def get_inspection_term(term_id: int, db: sessionmaker = Depends(get_db)):
     data = (
         db.query(Inspection)
         .join(Lesson, Lesson.id == Inspection.fk_lesson)
@@ -159,7 +159,6 @@ def get_inspection_term(term_id: int, db: SessionLocal = Depends(get_db)):
         .filter(Lesson.id == term_id)
         .first()
     )
-    # Achtung - hier gibt es viele Dinge !!
 
     if not data:
         raise HTTPException(
@@ -184,7 +183,7 @@ def get_inspection_term(term_id: int, db: SessionLocal = Depends(get_db)):
 
 @app.post("/inspection-term/edit/{term_id}/")
 def edit_inspection_team(
-    term_id: int, updated_data: CreateInspection, db: SessionLocal = Depends(get_db)
+    term_id: int, updated_data: CreateInspection, db: sessionmaker = Depends(get_db)
 ):
     inspection = db.query(Inspection).filter(Inspection.id == term_id).first()
     if not inspection:
@@ -201,7 +200,7 @@ def edit_inspection_team(
 
 
 @app.get("/inspection-terms/", response_model=list[dict])
-def get_inspection_terms(db: SessionLocal = Depends(get_db)):
+def get_inspection_terms(db: sessionmaker = Depends(get_db)):
     inspection_terms = (
         db.query(
             Inspection.id.label("inspection_id"),
@@ -235,7 +234,7 @@ def get_inspection_terms(db: SessionLocal = Depends(get_db)):
 
 
 @app.post("/inspection-terms/")
-def get_inspection_terms(term: CreateInspection, db: SessionLocal = Depends(get_db)):
+def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_db)):
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
         raise HTTPException(
@@ -261,7 +260,7 @@ def get_inspection_terms(term: CreateInspection, db: SessionLocal = Depends(get_
 
 
 @app.delete("/inspection-terms/{term_id}/remove-term/")
-def remove_teacher_from_team(term_id: int, db: SessionLocal = Depends(get_db)):
+def remove_teacher_from_team(term_id: int, db: sessionmaker = Depends(get_db)):
     try:
         term = db.query(Inspection).filter(
             Inspection.id == term_id).one_or_none()
@@ -275,7 +274,7 @@ def remove_teacher_from_team(term_id: int, db: SessionLocal = Depends(get_db)):
 
 @app.get("/lesson_with_dates/{teacher_id}/{subject_id}/")
 def get_lesson_with_dates(
-    teacher_id: int, subject_id: int, db: SessionLocal = Depends(get_db)
+    teacher_id: int, subject_id: int, db: sessionmaker = Depends(get_db)
 ):
     lessons = (
         db.query(Lesson)
@@ -289,14 +288,14 @@ def get_lesson_with_dates(
 
 
 @app.get("/inspection-teams/")
-def get_inspection_teams(db: SessionLocal = Depends(get_db)):
+def get_inspection_teams(db: sessionmaker = Depends(get_db)):
     teams = db.query(InspectionTeam).all()
     return [{"id": team.id, "name": team.name} for team in teams]
 
 
 @app.post("/inspection-teams/", response_model=InspectionTeamBase)
 def create_inspection_team(
-    team: CreateInspectionTeam, db: SessionLocal = Depends(get_db)
+    team: CreateInspectionTeam, db: sessionmaker = Depends(get_db)
 ):
 
     new_team = InspectionTeam(name=team.name)
@@ -316,7 +315,7 @@ def create_inspection_team(
 
 
 @app.get("/inspection-teams/{team_id}/", response_model=InspectionTeamBase)
-def view_inspection_team(team_id: int, db: SessionLocal = Depends(get_db)):
+def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
     try:
         team = db.query(InspectionTeam).filter(
             InspectionTeam.id == team_id).one()
@@ -342,7 +341,7 @@ def view_inspection_team(team_id: int, db: SessionLocal = Depends(get_db)):
 
 @app.post("/inspection-teams/{team_id}/add-teacher/")
 def add_teacher_to_team(
-    team_id: int, payload: AddTeacherToTeam, db: SessionLocal = Depends(get_db)
+    team_id: int, payload: AddTeacherToTeam, db: sessionmaker = Depends(get_db)
 ):
     try:
         team = db.query(InspectionTeam).filter(
@@ -386,7 +385,7 @@ def add_teacher_to_team(
 
 @app.delete("/inspection-teams/{team_id}/remove-teacher/")
 def remove_teacher_from_team(
-    team_id: int, payload: RemoveTeacherFromTeam, db: SessionLocal = Depends(get_db)
+    team_id: int, payload: RemoveTeacherFromTeam, db: sessionmaker = Depends(get_db)
 ):
     try:
         team = db.query(InspectionTeam).filter(
@@ -415,7 +414,7 @@ def remove_teacher_from_team(
 
 @app.get("/inspection-teams/{teacher_id}/{lesson_id}/")
 def get_specified_inspection_teams(
-    teacher_id: int, lesson_id: int, db: SessionLocal = Depends(get_db)
+    teacher_id: int, lesson_id: int, db: sessionmaker = Depends(get_db)
 ):
 
     lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
@@ -499,7 +498,7 @@ def get_specified_inspection_teams(
 
 
 @app.get("/teachers/")
-def get_teachers(db: SessionLocal = Depends(get_db)):
+def get_teachers(db: sessionmaker = Depends(get_db)):
     teachers = db.query(Teacher).all()
     return [
         {
@@ -514,7 +513,7 @@ def get_teachers(db: SessionLocal = Depends(get_db)):
 
 
 @app.get("/unique-subjects/{teacher_id}/")
-def get_subjects(teacher_id: int, db: SessionLocal = Depends(get_db)):
+def get_subjects(teacher_id: int, db: sessionmaker = Depends(get_db)):
     subjects = (
         db.query(Subject.id, Subject.name, Subject.code)
         .join(Lesson, Lesson.fk_subject == Subject.id)
@@ -535,7 +534,7 @@ def get_subjects(teacher_id: int, db: SessionLocal = Depends(get_db)):
 
 
 @app.get("/lessons/", response_model=list[LessonBase])
-def get_lessons(semester: str, db: SessionLocal = Depends(get_db)):
+def get_lessons(semester: str, db: sessionmaker = Depends(get_db)):
     lessons = db.query(Lesson).filter(Lesson.semester == semester).all()
 
     if not lessons:
@@ -547,7 +546,7 @@ def get_lessons(semester: str, db: SessionLocal = Depends(get_db)):
 
 
 @app.get("/inspection-schedule/semesters/")
-def get_available_semesters(db: SessionLocal = Depends(get_db)):
+def get_available_semesters(db: sessionmaker = Depends(get_db)):
     semesters = db.query(InspectionSchedule.year_semester).distinct().all()
     if not semesters:
         return []
@@ -555,7 +554,7 @@ def get_available_semesters(db: SessionLocal = Depends(get_db)):
 
 
 @app.get("/schedule/")
-def get_schedule(semester: str, db: SessionLocal = Depends(get_db)):
+def get_schedule(semester: str, db: sessionmaker = Depends(get_db)):
     lessons = (
         db.query(Lesson)
         .join(Subject, Lesson.fk_subject == Subject.id)
