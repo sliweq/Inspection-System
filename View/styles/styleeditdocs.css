@@ -1,8 +1,8 @@
-#editable{
+#editable {
     position: relative;
     width: 50%;
-    margin: 20px ;
-    padding:  20px 20px 20px 20px;
+    margin: 20px;
+    padding: 20px 20px 20px 20px;
     border: 1px solid rgb(85, 85, 85);
     border-radius: 10px;
     height: 700px;
@@ -28,7 +28,7 @@
     border-radius: 10px;
 }
 
-  .row {
+.row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -36,24 +36,38 @@
 }
 
 label {
-    flex: 1; 
+    flex: 1;
     text-align: left;
     padding-right: 10px;
 }
 
-.delete_button{
-    border: none; background: none; padding: 0;
-    transition: background-color 0.3s ease, transform 0.1s ease;
+.delete_button {
+    border: none;
+    background: none;
+    padding: 0;
+    transition:
+        background-color 0.3s ease,
+        transform 0.1s ease;
 }
-.trash_img{
-    width: 20px; height: 20px; display: block;
-    transition: background-color 0.3s ease, transform 0.1s ease;
+.trash_img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    transition:
+        background-color 0.3s ease,
+        transform 0.1s ease;
 }
-.trash_img:hover{
-    width: 20px; height: 20px; display: block; filter: invert(0.5);
+.trash_img:hover {
+    width: 20px;
+    height: 20px;
+    display: block;
+    filter: invert(0.5);
     transform: scale(1.05);
 }
 
 .inner_list_div {
-    position: relative; display: flex; justify-content: space-between; align-items: center;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

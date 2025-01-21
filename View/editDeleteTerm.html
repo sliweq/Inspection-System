@@ -1,92 +1,109 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/styleeditterm.css">
-    <link rel="stylesheet" href="styles/buttons.css">
-    <link rel="stylesheet" href="styles/popup.css">
-    <link rel="stylesheet" href="styles/common_styles.css">
-    <link rel="stylesheet" href="styles/list_styles.css">
-    <title>Edit Inspection Term</title>
-</head>
-<body>
-    <h1>Edit Inspection Term</h1>
-    <div style="width: 100%; display: flex; ">
-    <div id="search"  class="container_list">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles/styleeditterm.css" />
+        <link rel="stylesheet" href="styles/buttons.css" />
+        <link rel="stylesheet" href="styles/popup.css" />
+        <link rel="stylesheet" href="styles/common_styles.css" />
+        <link rel="stylesheet" href="styles/list_styles.css" />
+        <title>Edit Inspection Term</title>
+    </head>
+    <body>
+        <h1>Edit Inspection Term</h1>
+        <div style="width: 100%; display: flex">
+            <div id="search" class="container_list">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search document..."
+                />
+                Search date
+                <input
+                    type="date"
+                    id="datePicker1"
+                    name="date_picker"
+                    value=""
+                />
+                Sort by
+                <select id="filterSelect">
+                    <option value="new">Newest</option>
+                    <option value="old">Oldest</option>
+                </select>
 
-        
-        <input type="text" id="searchInput" placeholder="Search document...">
-        Search date
-        <input type="date" id="datePicker1" name="date_picker" value="">
-        Sort by           
-        <select id="filterSelect">
-            <option value="new">Newest</option>
-            <option value="old">Oldest</option>
-        </select>
-        
-        <hr style="border-top: 3px static #000000;">
+                <hr style="border-top: 3px static #000000" />
 
-        <div class="containder_scroll">
-            <ul id="itemList">               
-            </ul>
+                <div class="containder_scroll">
+                    <ul id="itemList"></ul>
+                </div>
+
+                <a
+                    href="index.html"
+                    class="button"
+                    id="button"
+                    style="
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        margin: 20px;
+                    "
+                    >Return to Main</a
+                >
+            </div>
+
+            <div id="editable" class="hidden">
+                <div style="padding: 10px">
+                    <h3>Inspection Term:</h3>
+                    <div class="row">
+                        Inspected:
+                        <div id="info_inspected"></div>
+                    </div>
+                    <div class="row">
+                        Department:
+                        <div id="info_department"></div>
+                    </div>
+                    <div class="row">
+                        Subject:
+                        <div id="info_subject"></div>
+                    </div>
+                    <div class="row">
+                        Subject code:
+                        <div id="info_subject_code"></div>
+                    </div>
+                    <div class="row">
+                        Inspection Date:
+                        <select id="datePicker"></select>
+                    </div>
+                    <div class="row" select_inspectors>
+                        Inspectors:
+                        <select id="teamPicker"></select>
+                    </div>
+                </div>
+
+                <a
+                    class="button_save"
+                    id="buttonSave"
+                    style="position: absolute; bottom: 0; left: 0; margin: 20px"
+                    >Save</a
+                >
+                <a
+                    class="button_cancel"
+                    id="buttonCancel"
+                    style="
+                        position: absolute;
+                        bottom: 0;
+                        left: 105px;
+                        margin: 20px;
+                    "
+                    >Cancel</a
+                >
+            </div>
         </div>
 
-
-
-        
-        <a href="index.html" class="button" id="button" style="position: absolute; bottom: 0; right: 0; margin: 20px ;">Return to Main</a>
-    </div>    
-
-    <div id="editable" class="hidden">
-        <div style="padding: 10px;">
-            <h3> 
-                Inspection Term:
-            </h3>
-            <div class="row">
-                Inspected: 
-                <div id="info_inspected">
-
-                </div>
-            </div>
-            <div class="row"> 
-                Department:
-                <div id="info_department">
-
-                </div>
-            </div>
-            <div class="row">
-                Subject:
-                <div id="info_subject">
-
-                </div>
-
-            </div>
-            <div class="row">
-                Subject code:
-                <div id="info_subject_code">
-                    
-                </div>
-            </div>
-            <div class="row" >
-                Inspection Date:
-                <select id="datePicker">
-                </select>
-            </div>
-            <div class="row" select_inspectors> Inspectors:
-                <select id="teamPicker">  
-                </select>
-            </div>
-        </div>
-
-        <a class="button_save" id="buttonSave" style="position: absolute; bottom: 0;left: 0; margin: 20px ;">Save</a>
-        <a class="button_cancel" id="buttonCancel" style="position: absolute; bottom: 0; left: 105px;  margin: 20px ;">Cancel</a>
-        
-    </div> 
-</div>  
-    
-    <script type="module" src="../Controller/manageInspectionTermController.js">
-    </script>
-    
-</body>
+        <script
+            type="module"
+            src="../Controller/manageInspectionTermController.js"
+        ></script>
+    </body>
 </html>

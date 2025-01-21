@@ -1,8 +1,8 @@
-#editable{
+#editable {
     position: relative;
     width: 50%;
-    margin: 20px ;
-    padding:  20px 20px 20px 20px;
+    margin: 20px;
+    padding: 20px 20px 20px 20px;
     border: 1px solid rgb(85, 85, 85);
     border-radius: 10px;
     height: 700px;
@@ -52,41 +52,47 @@
     border: 1px solid #1d1d1d;
 }
 
-
 .row {
-display: block;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 10px;
+    display: block;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 label {
-    flex: 1; 
+    flex: 1;
     text-align: left;
     padding-right: 10px;
 }
 
-
 .buttons_container {
-    display: flex; 
+    display: flex;
     gap: 10px;
 }
 
 .inner_list_div {
     /* position: relative; */
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.edit_button{
-    border: none; background: none; padding: 0;
+.edit_button {
+    border: none;
+    background: none;
+    padding: 0;
 }
-.trash_img{
-    width: 20px; height: 20px; display: block;
+.trash_img {
+    width: 20px;
+    height: 20px;
+    display: block;
 }
-.trash_img:hover{
-    width: 20px; height: 20px; display: block; filter: invert(0.5);
+.trash_img:hover {
+    width: 20px;
+    height: 20px;
+    display: block;
+    filter: invert(0.5);
 }
-
 
 .popup_overlay {
     position: fixed;
@@ -118,9 +124,9 @@ label {
 }
 
 .ok_popup_btn {
-    padding: 10px 20px;    
+    padding: 10px 20px;
     margin: 20px;
-    background-color: #007BFF;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
@@ -130,19 +136,32 @@ label {
     background-color: #0056b3;
 }
 
-.delete_button{
-    border: none; background: none; padding: 0;
+.delete_button {
+    border: none;
+    background: none;
+    padding: 0;
 }
 
-.delete_button{
-    border: none; background: none; padding: 0;
-    transition: background-color 0.3s ease, transform 0.1s ease;
+.delete_button {
+    border: none;
+    background: none;
+    padding: 0;
+    transition:
+        background-color 0.3s ease,
+        transform 0.1s ease;
 }
-.trash_img{
-    width: 20px; height: 20px; display: block;
-    transition: background-color 0.3s ease, transform 0.1s ease;
+.trash_img {
+    width: 20px;
+    height: 20px;
+    display: block;
+    transition:
+        background-color 0.3s ease,
+        transform 0.1s ease;
 }
-.trash_img:hover{
-    width: 20px; height: 20px; display: block; filter: invert(0.5);
+.trash_img:hover {
+    width: 20px;
+    height: 20px;
+    display: block;
+    filter: invert(0.5);
     transform: scale(1.15);
 }

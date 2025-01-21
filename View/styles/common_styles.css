@@ -1,5 +1,5 @@
 body {
-    font-family: "Consolas", monospace;
+    font-family: 'Consolas', monospace;
     font-size: 14pt;
     margin: 20px;
 }
@@ -8,8 +8,8 @@ body {
     display: none;
 }
 
-.input_docs{
-    flex: 1; 
+.input_docs {
+    flex: 1;
     text-align: right;
     padding: 5px;
     border: 1px solid #ccc;
