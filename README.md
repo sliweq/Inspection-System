@@ -17,6 +17,7 @@ Before running the project, ensure you have the following installed on your syst
 - **Localhost Server (e.g VSCode extension "Live Server" by Ritwick Dey)**
 - **PostgreSQL**
   - `Windows Users: Use ImportSQL.bat to create database, structure and insert data to database (make sure you have configured this file beforehand)`
+  - `Linux Users: Use ImportSQL.sh (make sure you have configured this file beforehand)`
 - **Python (recommended latest version)**
 - **Python Libraries:**
   - `fastapi`
