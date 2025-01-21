@@ -7,9 +7,12 @@ __pycache__/
 /.vscode
 # C extensions
 *.so
+
+# JS 
 /node_modules
 package.json
 package-lock.json
+.prettierrc
 # Distribution / packaging
 .Python
 build/
