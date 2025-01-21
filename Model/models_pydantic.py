@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class TeacherBase(BaseModel):
     id: int
     name: str
@@ -9,6 +10,7 @@ class TeacherBase(BaseModel):
     class Config:
         from_attributes = True
 
+
 class InspectionTeamBase(BaseModel):
     id: int
     name: str
@@ -17,19 +19,24 @@ class InspectionTeamBase(BaseModel):
     class Config:
         from_attributes = True
 
+
 class CreateInspectionTeam(BaseModel):
-    name: str  
+    name: str
+
 
 class AddTeacherToTeam(BaseModel):
     teacher_id: int
 
+
 class RemoveTeacherFromTeam(BaseModel):
     teacher_id: int
+
 
 class SubjectBase(BaseModel):
     name: str
     type: str
     code: str
+
 
 class LessonBase(BaseModel):
     id: int
@@ -38,6 +45,7 @@ class LessonBase(BaseModel):
     building: str
     fk_subject: int
     fk_teacher: int
+
 
 class InspectionScheduleBase(BaseModel):
     id: int
@@ -66,7 +74,8 @@ class TeacherInspectionReportBase(BaseModel):
     fk_inspectionReport: int
 
     class Config:
-        from_attributes = True    
+        from_attributes = True
+
 
 class CreateInspectionReport(BaseModel):
     name: str
@@ -78,20 +87,24 @@ class CreateInspectionReport(BaseModel):
     final_rating: int
     objection: int
 
+
 class CreateInspection(BaseModel):
-    fk_lesson: int 
+    fk_lesson: int
     fk_inspectionTeam: int
+
 
 class InspectionBase(BaseModel):
     fk_inspectionSchedule: int
     fk_inspectionTeam: int | None
     fk_inspectionReport: int | None
-    fk_lesson: int | None  
+    fk_lesson: int | None
+
+
 class EditInspectionReport(BaseModel):
-    lateness_minutes: int 
+    lateness_minutes: int
     students_attendance: int | None
-    room_adaptation: str 
-    content_compatibility: int 
-    substantive_rating: str 
-    final_rating: int 
-    objection: int 
+    room_adaptation: str
+    content_compatibility: int
+    substantive_rating: str
+    final_rating: int
+    objection: int
