@@ -6,6 +6,8 @@ import {
     sortByDate,
 } from '../View/utils/utils.js'
 
+import {fetchData} from './controllerUtils.js' 
+
 document.addEventListener('DOMContentLoaded', loadDocs)
 document.getElementById('buttonSave').addEventListener('click', save_docs)
 document.getElementById('buttonCancel').addEventListener('click', cancel_docs)
@@ -16,11 +18,8 @@ async function loadDocs() {
     const itemList = document.getElementById('itemList')
 
     try {
-        const response = await fetch('http://localhost:5000/inspection-docs/')
-        if (!response.ok) {
-            throw new Error('Failed to fetch available docs')
-        }
-        const docs = await response.json()
+        const docs = await fetchData('http://localhost:5000/inspection-docs/')
+
 
         docs.forEach((doc) => {
             const listItem = document.createElement('li')
@@ -286,13 +285,11 @@ function setDocDetailValue(id, valu, type) {
 
 async function fetchDocDetails(id) {
     try {
-        const response = await fetch(
+        
+        const response = await fetchData(
             `http://localhost:5000/inspection-docs/${id}/`
         )
-        if (!response.ok) {
-            throw new Error('Cannot load docs details')
-        }
-        return await response.json()
+        return response
     } catch (error) {
         console.error('Error during loading doc details', error)
         return null

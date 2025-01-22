@@ -6,6 +6,8 @@ import {
     filterByDate,
 } from '../View/utils/utils.js'
 
+import {fetchData} from './controllerUtils.js' 
+
 document.addEventListener('DOMContentLoaded', loadTerms)
 document.getElementById('buttonCancel').addEventListener('click', () => {
     const editable = document.getElementById('editable')
@@ -46,11 +48,7 @@ export async function loadTerms() {
     const termsList = document.getElementById('itemList')
 
     try {
-        const response = await fetch('http://localhost:5000/inspection-terms/')
-        if (!response.ok) {
-            throw new Error('Failed to fetch terms')
-        }
-        const terms = await response.json()
+        const terms = await fetchData('http://localhost:5000/inspection-terms/')
 
         terms.forEach((term) => {
             const listItem = document.createElement('li')
@@ -150,13 +148,9 @@ async function editTerm(term_id, teacher_id, team_id) {
     const editable = document.getElementById('editable')
 
     try {
-        const response = await fetch(
+        const term_data = await terms(
             `http://localhost:5000/inspection-term/${term_id}/`
         )
-        if (!response.ok) {
-            throw new Error('Failed to fetch terms')
-        }
-        const term_data = await response.json()
 
         const info_inspected = document.getElementById('info_inspected')
         info_inspected.innerHTML =

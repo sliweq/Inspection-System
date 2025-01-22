@@ -4,76 +4,82 @@ import {
     createPopup,
 } from '../View/utils/utils.js'
 
+import {fetchData} from './controllerUtils.js' 
+
 document.addEventListener('DOMContentLoaded', loadTeachers)
 
 document.getElementById('buttonSave').addEventListener('click', saveTerms)
 
 let teachers_data = {}
 
+function fillSelectElement(id, data, func) {
+    const selectElement = document.getElementById(id);
+
+    data.forEach((item) => {
+        const option = document.createElement('option');
+        
+        const { text, value } = func(item);
+        option.textContent = text;
+        option.value = value;
+
+        selectElement.appendChild(option);
+    });
+
+}
+
 async function loadTeachers() {
-    hideElement('select_subject')
-    hideElement('select_date')
-    hideElement('select_inspectors')
+    ['select_subject', 'select_date','select_inspectors'].forEach(element => hideElement(element))
+
     try {
-        const response = await fetch('http://localhost:5000/teachers/')
-        if (!response.ok) {
-            throw new Error('Failed to fetch teachers')
-        }
-        const teachers = await response.json()
-        const selectElement = document.getElementById('inspectedPicker')
+        const teachers = await fetchData('http://localhost:5000/teachers/')
 
-        for (var i = 0; i < teachers.length; i++) {
-            const option = document.createElement('option')
-            option.textContent =
-                teachers[i].title +
-                ' ' +
-                teachers[i].name +
-                ' ' +
-                teachers[i].surname
-            option.value = teachers[i].id
-            selectElement.appendChild(option)
-        }
+        
+        fillSelectElement('inspectedPicker',teachers, (teacher) => ({
+            text: `${teacher.title} ${teacher.name} ${teacher.surname}`,
+            value: teacher.id,
+        }));
 
-        selectElement.addEventListener('change', function (event) {
-            clearResult()
-            const selectedValue = event.target.value
-            if (selectedValue == '') {
-                hideElement('select_subject')
-                hideElement('select_date')
-                hideElement('select_inspectors')
-                return
-            }
-            const teacher = teachers.find(
-                (teacher) => teacher.id == selectedValue
-            )
-            teachers_data.teacher =
-                teacher.title + ' ' + teacher.name + ' ' + teacher.surname
-            teachers_data.department = teacher.department
+        document.getElementById('inspectedPicker').addEventListener('change', (event) => {handleTaecherChange(event,teachers)})
 
-            deleteOptions('subjectPicker', 'Select Subject')
-            deleteOptions('datePicker', 'Select Date')
-            deleteOptions('teamPicker', 'Select Inspectors')
-            loadSubjects(selectedValue)
-
-            selectFirst('subjectPicker')
-            showElement('select_subject')
-            hideElement('select_date')
-            hideElement('select_inspectors')
-        })
     } catch (error) {
         console.error('Error loading teachers:', error)
     }
 }
 
+function handleTaecherChange(event, teachers){
+
+    applyToResult(["","","","","",""])
+    document.getElementById('editable').classList.add('hidden')
+
+    hideElement('select_date')
+    hideElement('select_inspectors')
+    const selectedValue = event.target.value
+    if (selectedValue == '') {
+        hideElement('select_subject')
+        return
+    }
+    const teacher = teachers.find(
+        (teacher) => teacher.id == selectedValue
+    )
+    teachers_data.teacher =
+        teacher.title + ' ' + teacher.name + ' ' + teacher.surname
+    teachers_data.department = teacher.department
+
+    deleteOptions('subjectPicker', 'Select Subject')
+    deleteOptions('datePicker', 'Select Date')
+    deleteOptions('teamPicker', 'Select Inspectors')
+    loadSubjects(selectedValue)
+
+    selectFirst('subjectPicker')
+    showElement('select_subject')
+}
+
+
 async function loadSubjects(teacher_id) {
     try {
-        const response = await fetch(
+        const subjects = await fetchData(
             `http://localhost:5000/unique-subjects/${teacher_id}/`
         )
-        if (!response.ok) {
-            throw new Error('Failed to fetch teachers')
-        }
-        const subjects = await response.json()
 
         const uniquesubjects = removeSubjectsDuplicates(subjects)
 
@@ -89,7 +95,11 @@ async function loadSubjects(teacher_id) {
 
         selectElement.addEventListener('change', function (event) {
             const selectedValue = event.target.value
-            clearResult()
+
+            applyToResult(["","","","","",""])
+            document.getElementById('editable').classList.add('hidden')
+
+
             if (selectedValue == '') {
                 hideElement('select_date')
                 hideElement('select_inspectors')
@@ -117,13 +127,9 @@ async function loadSubjects(teacher_id) {
 
 async function loadLessonsAndDates(subject_id, teacher_id) {
     try {
-        const response = await fetch(
+        const lessons = await fetchData(
             `http://localhost:5000/lesson_with_dates/${teacher_id}/${subject_id}/`
         )
-        if (!response.ok) {
-            throw new Error('Failed to fetch dates')
-        }
-        const lessons = await response.json()
 
         if (lessons.length === 0) {
             return
@@ -144,7 +150,9 @@ async function loadLessonsAndDates(subject_id, teacher_id) {
         })
 
         selectElement.addEventListener('change', function (event) {
-            clearResult()
+            applyToResult(["","","","","",""])
+            document.getElementById('editable').classList.add('hidden')
+
             const selectedValue = event.target.value
             if (selectedValue == '') {
                 hideElement('select_inspectors')
@@ -168,13 +176,9 @@ async function loadLessonsAndDates(subject_id, teacher_id) {
 
 async function loadInspectorsTeam(lesson_id, teacher_id) {
     try {
-        const response = await fetch(
+        const teams = await fetchData(
             `http://localhost:5000/inspection-teams/${teacher_id}/${lesson_id}/`
         )
-        if (!response.ok) {
-            throw new Error('Failed to fetch inspectors')
-        }
-        const teams = await response.json()
 
         if (teams.length === 0) {
             return
@@ -203,7 +207,8 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
         selectElement.addEventListener('change', function (event) {
             const selectedValue = event.target.value
             if (selectedValue == '') {
-                clearResult()
+                applyToResult(["","","","","",""])
+                document.getElementById('editable').classList.add('hidden')
                 return
             }
             const team = teams.find(
@@ -221,7 +226,9 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
                 )
                 .join(', ')
 
-            showResult()
+            
+            document.getElementById('editable').classList.remove('hidden')
+            applyToResult([teachers_data.teacher, teachers_data.department, teachers_data.subject, teachers_data.date])
         })
     } catch (error) {
         console.error('Error loading subjects:', error)
@@ -257,35 +264,11 @@ function showElement(id) {
     element.classList.remove('hidden')
 }
 
-function clearResult() {
-    const element = document.getElementById('info_inspected')
-    element.textContent = ''
-    const element2 = document.getElementById('info_department')
-    element2.textContent = ''
-    const element3 = document.getElementById('info_subject')
-    element3.textContent = ''
-    const element4 = document.getElementById('info_date')
-    element4.textContent = ''
-    const element5 = document.getElementById('info_inspectors')
-    element5.textContent = ''
-    const element6 = document.getElementById('editable')
-    element6.classList.add('hidden')
-}
 
-function showResult() {
-    const element = document.getElementById('editable')
-    element.classList.remove('hidden')
-
-    const element2 = document.getElementById('info_inspected')
-    element2.textContent = teachers_data.teacher
-    const element3 = document.getElementById('info_department')
-    element3.textContent = teachers_data.department
-    const element4 = document.getElementById('info_subject')
-    element4.textContent = teachers_data.subject
-    const element5 = document.getElementById('info_date')
-    element5.textContent = teachers_data.date
-    const element6 = document.getElementById('info_inspectors')
-    element6.textContent = teachers_data.team
+function applyToResult(data) {
+    ['info_inspected', 'info_department', 'info_subject', 'info_date', 'info_inspectors'].forEach(
+        (id) => (document.getElementById(id).textContent = data[id])
+    )
 }
 
 async function saveTerms() {
