@@ -4,7 +4,7 @@ import {
     checkNumberInput,
     createPopup,
     sortByDate,
-} from '../View/utils/utils.js'
+} from './utils.js'
 
 import {fetchData} from './controllerUtils.js' 
 
