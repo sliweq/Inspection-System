@@ -735,6 +735,35 @@ def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
 def add_teacher_to_team(
     team_id: int, payload: AddTeacherToTeam, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Add a teacher to an inspection team.
+
+    This endpoint assigns a teacher to a specific inspection team. If the teacher is already part of the team,
+    an error is raised. If the teacher or the team is not found, a corresponding error message is returned.
+
+    Args:
+        team_id (int): The unique identifier of the inspection team.
+        payload (AddTeacherToTeam): The data model containing the teacher's ID to be added to the team.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection team or teacher is not found, or if the teacher is already assigned to the team,
+        or if there is an issue adding the teacher to the team.
+
+    Returns:
+        dict: A success message indicating the teacher was added to the team.
+
+    Example Request Body (JSON):
+        {
+            "teacher_id": 5
+        }
+
+    Example Response:
+        {
+            "message": "Teacher added to the team successfully"
+        }
+    """
+
     try:
         team = db.query(InspectionTeam).filter(
             InspectionTeam.id == team_id).one()
@@ -779,6 +808,34 @@ def add_teacher_to_team(
 def remove_teacher_from_team(
     team_id: int, payload: RemoveTeacherFromTeam, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Remove a teacher from an inspection team.
+
+    This endpoint removes a teacher from a specific inspection team. If the teacher is not assigned to the team,
+    an error is raised. If the team or the teacher is not found, a corresponding error message is returned.
+
+    Args:
+        team_id (int): The unique identifier of the inspection team.
+        payload (RemoveTeacherFromTeam): The data model containing the teacher's ID to be removed from the team.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection team or teacher is not found, or if the teacher is not part of the team.
+
+    Returns:
+        dict: A success message indicating the teacher was removed from the team.
+
+    Example Request Body (JSON):
+        {
+            "teacher_id": 5
+        }
+
+    Example Response:
+        {
+            "message": "Teacher removed from the team successfully"
+        }
+    """
+
     try:
         team = db.query(InspectionTeam).filter(
             InspectionTeam.id == team_id).one()
@@ -808,6 +865,49 @@ def remove_teacher_from_team(
 def get_specified_inspection_teams(
     teacher_id: int, lesson_id: int, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Get available inspection teams for a specified teacher and lesson.
+
+    This endpoint retrieves inspection teams that are available to participate in an inspection for a specific
+    lesson, excluding teams that already have scheduling conflicts or teams with more than one member from the
+    teacher's department.
+
+    Args:
+        teacher_id (int): The unique identifier of the teacher who is being inspected.
+        lesson_id (int): The unique identifier of the lesson being inspected.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the lesson or the inspected teacher is not found.
+
+    Returns:
+        list[dict]: A list of inspection teams that are available for the specified lesson, including the team name
+            and members that do not have scheduling conflicts, with no more than one member from the inspected teacher's department.
+
+    Example Response:
+        [
+            {
+                "inspection_team_id": 1,
+                "inspection_team_name": "Team A",
+                "members": [
+                    {
+                        "teacher_id": 3,
+                        "teacher_name": "Alice",
+                        "teacher_surname": "Johnson",
+                        "teacher_title": "Dr.",
+                        "teacher_department": "Math"
+                    },
+                    {
+                        "teacher_id": 4,
+                        "teacher_name": "Bob",
+                        "teacher_surname": "Lee",
+                        "teacher_title": "Prof.",
+                        "teacher_department": "Physics"
+                    }
+                ]
+            }
+        ]
+    """
 
     lesson = db.query(Lesson).filter(Lesson.id == lesson_id).first()
     if not lesson:
@@ -891,6 +991,41 @@ def get_specified_inspection_teams(
 
 @app.get("/teachers/")
 def get_teachers(db: sessionmaker = Depends(get_db)):
+    """
+    Fetch all teachers.
+
+    This endpoint retrieves a list of all teachers, including their ID, title, name, surname, and department.
+
+    Args:
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Returns:
+        list[dict]: A list of dictionaries containing the teacher details:
+            - id (int): The ID of the teacher.
+            - title (str): The title of the teacher.
+            - name (str): The first name of the teacher.
+            - surname (str): The surname of the teacher.
+            - department (str): The department of the teacher.
+
+    Example Response:
+        [
+            {
+                "id": 1,
+                "title": "Dr.",
+                "name": "John",
+                "surname": "Doe",
+                "department": "Mathematics"
+            },
+            {
+                "id": 2,
+                "title": "Prof.",
+                "name": "Jane",
+                "surname": "Smith",
+                "department": "Physics"
+            }
+        ]
+    """
+
     teachers = db.query(Teacher).all()
     return [
         {
@@ -939,6 +1074,21 @@ def get_lessons(semester: str, db: sessionmaker = Depends(get_db)):
 
 @app.get("/inspection-schedule/semesters/")
 def get_available_semesters(db: sessionmaker = Depends(get_db)):
+    """
+    Get a list of available semesters for inspection schedules.
+
+    This endpoint retrieves a list of distinct semesters from the inspection schedules available in the database.
+
+    Args:
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Returns:
+        list[str]: A list of distinct semesters (e.g., "2021-Spring", "2022-Fall").
+
+    Example Response:
+        ["2021-Spring", "2022-Fall"]
+    """
+
     semesters = db.query(InspectionSchedule.year_semester).distinct().all()
     if not semesters:
         return []
