@@ -1,6 +1,5 @@
 import {
     fixStringDate,
-    removeSubjectsDuplicates,
     createPopup,
 } from './utils.js'
 
@@ -18,14 +17,15 @@ function fillSelectElement(id, data, func) {
     data.forEach((item) => {
         const option = document.createElement('option');
         
-        const { text, value } = func(item);
-        option.textContent = text;
+        const { textContent, value } = func(item);
+        option.textContent = textContent;
         option.value = value;
 
         selectElement.appendChild(option);
     });
 
 }
+
 
 async function loadTeachers() {
     ['select_subject', 'select_date','select_inspectors'].forEach(element => hideElement(element))
@@ -35,7 +35,7 @@ async function loadTeachers() {
 
         
         fillSelectElement('inspectedPicker',teachers, (teacher) => ({
-            text: `${teacher.title} ${teacher.name} ${teacher.surname}`,
+            textContent: `${teacher.title} ${teacher.name} ${teacher.surname}`,
             value: teacher.id,
         }));
 
@@ -74,59 +74,61 @@ function handleTaecherChange(event, teachers){
     showElement('select_subject')
 }
 
-
 async function loadSubjects(teacher_id) {
     try {
         const subjects = await fetchData(
             `http://localhost:5000/unique-subjects/${teacher_id}/`
         )
-        const uniqueSubjects = subjects
+        
+        fillSelectElement('subjectPicker', subjects, (subject) => ({
+            textContent: `${subject.subject_name} ${subject.subject_code}`,
+            value: subject.subject_id,
+        }))
 
-        const selectElement = document.getElementById('subjectPicker')
+        document.getElementById('subjectPicker').addEventListener('change', (event) => {handleSubjectChange(event, subjects, teacher_id)})
 
-        uniqueSubjects.forEach((element) => {
-            const option = document.createElement('option')
-            option.textContent =
-                element.subject_name + ' ' + element.subject_code
-            option.value = element.subject_id
-            selectElement.appendChild(option)
-        })
+        handleSubjectChange(subjects, teacher_id)
 
-        selectElement.addEventListener('change', function (event) {
-            const selectedValue = event.target.value
-
-            applyToResult(["","","","","",""])
-            document.getElementById('editable').classList.add('hidden')
-
-
-            if (selectedValue == '') {
-                hideElement('select_date')
-                hideElement('select_inspectors')
-                return
-            }
-
-            var subject = undefined
-
-            subjects.forEach((element) => {
-                if (element.subject_id == selectedValue) {
-                    subject = element
-                }
-            })
-
-            teachers_data.subject = subject.subject_name
-            teachers_data.subject_code = subject.subject_code
-
-            deleteOptions('datePicker', 'Select Date')
-            deleteOptions('teamPicker', 'Select Inspectors')
-            loadLessonsAndDates(selectedValue, teacher_id)
-
-            showElement('select_date')
-            selectFirst('datePicker')
-            hideElement('select_inspectors')
-        })
     } catch (error) {
         console.error('Error loading subjects:', error)
     }
+}
+
+function handleSubjectChange(event, subjects, teacher_id) {
+    
+    applyToResult(["","","","","",""])
+    document.getElementById('editable').classList.add('hidden')
+    
+    
+    if(event.target == undefined){
+        return
+    }
+    
+    const selectedValue = event.target.value
+
+    if (selectedValue == '') {
+        hideElement('select_date')
+        hideElement('select_inspectors')
+        return
+    }
+    var subject = undefined
+    subjects.forEach((element) => {
+        if (element.subject_id == selectedValue) {
+            subject = element
+        }
+    })
+
+    teachers_data.subject = subject.subject_name
+    teachers_data.subject_code = subject.subject_code
+
+    deleteOptions('datePicker', 'Select Date')
+    deleteOptions('teamPicker', 'Select Inspectors')
+    loadLessonsAndDates(selectedValue, teacher_id)
+
+    showElement('select_date')
+    selectFirst('datePicker')
+    hideElement('select_inspectors')
+    
 }
 
 async function loadLessonsAndDates(subject_id, teacher_id) {
@@ -332,8 +334,8 @@ async function saveTermAsync(lesson_id, team_id) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            lesson_id: lesson_id,
-            team_id: team_id,
+            fk_lesson: parseInt(lesson_id),
+            fk_inspectionTeam: parseInt(team_id),
         }),
     })
 
@@ -345,8 +347,9 @@ async function saveTermAsync(lesson_id, team_id) {
         {
             text: 'Ok',
             color: 'ok_popup_btn',
-            onClick: () => {},
+            onClick: () => {location.reload();
+            },
         },
     ])
-    window.location.href = 'index.html'
+    
 }

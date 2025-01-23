@@ -156,7 +156,7 @@ async function editTerm(term_id, teacher_id, team_id) {
     const editable = document.getElementById('editable')
 
     try {
-        const term_data = await terms(
+        const term_data = await fetchData(
             `http://localhost:5000/inspection-term/${term_id}/`
         )
 
@@ -283,7 +283,7 @@ async function fetchSpecificInspectionTeams(
             }
         })
 
-        teamPicker.addEventListener('change', function (event) {})
+        teamPicker.addEventListener('change', function () {})
     } catch (error) {
         editable.classList.add('hidden')
         console.error('Error loading:', error)

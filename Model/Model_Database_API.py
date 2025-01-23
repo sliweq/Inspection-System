@@ -484,7 +484,6 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
             "message": "Inspection report updated successfully"
         }
     """
-
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
         raise HTTPException(
@@ -492,8 +491,8 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
 
     inspection = Inspection(
         fk_inspectionSchedule=schedule,
-        fk_inspectionTeam=term.team_id,
-        fk_lesson=term.lesson_id,
+        fk_inspectionTeam=term.fk_inspectionTeam,
+        fk_lesson=term.fk_lesson,
     )
     try:
         db.add(inspection)

@@ -4,6 +4,7 @@ coverage
 # Byte-compiled / optimized / DLL files
 .history
 jest.config.js
+eslint.config.mjs
 
 /.history
 __pycache__/

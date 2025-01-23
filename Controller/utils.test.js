@@ -56,20 +56,20 @@ describe('checkNumberInput', () => {
 
 describe('convertDateToStringDate', () => {
     test('should convert Date object to string in "YYYY-MM-DD HH:mm" format', () => {
-        const date = new Date('2023-10-05T14:30:00');
+        const date = new Date('2025-10-05T14:30:00');
         const result = convertDateToStringDate(date);
-        expect(result).toBe('2023-10-05 14:30');
+        expect(result).toBe('2025-10-05 14:30');
     });
 
     test('should pad single digit month and day with leading zero', () => {
-        const date = new Date('2023-01-05T09:05:00');
+        const date = new Date('2025-01-05T21:37:00');
         const result = convertDateToStringDate(date);
-        expect(result).toBe('2023-01-05 09:05');
+        expect(result).toBe('2025-01-05 21:37');
     });
 
     test('should handle midnight time correctly', () => {
-        const date = new Date('2023-10-05T00:00:00');
+        const date = new Date('2025-10-05T00:00:00');
         const result = convertDateToStringDate(date);
-        expect(result).toBe('2023-10-05 00:00');
+        expect(result).toBe('2025-10-05 00:00');
     });
 });
