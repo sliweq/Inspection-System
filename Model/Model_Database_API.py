@@ -33,6 +33,34 @@ def get_db():
 
 @app.get("/inspection-docs/", response_model=list[dict])
 def get_inspection_docs(db: sessionmaker = Depends(get_db)):
+    """
+    Fetch inspection documents from the database.
+
+    This endpoint retrieves a list of inspection documents, including details such as 
+    the inspection date, subject, and teacher information. Data is queried from the 
+    database using SQLAlchemy and structured into a response-friendly format.
+
+    Args:
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Returns:
+        list[dict]: A list of dictionaries containing the following keys:
+            - id (int): The ID of the inspection document.
+            - date (datetime): The date of the inspection.
+            - subject (str): The name of the subject.
+            - teacher (str): The full name of the teacher, including title, first name, and surname.
+    
+    Example Response:
+        [
+            {
+                "id": 1,
+                "date": "2025-01-01T10:00:00",
+                "subject": "Mathematics",
+                "teacher": "Dr. John Doe"
+            },
+            ...
+        ]
+    """
     inspection_docs = (
         db.query(
             InspectionReport.id.label("document_id"),
@@ -62,6 +90,57 @@ def get_inspection_docs(db: sessionmaker = Depends(get_db)):
 
 @app.get("/inspection-docs/{docs_id}/", response_model=dict)
 def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
+    """
+    Fetch a specific inspection document by its ID.
+
+    This endpoint retrieves detailed information about a specific inspection document, 
+    including teacher, subject, inspection team, and report ratings.
+
+    Args:
+        docs_id (int): The unique identifier of the inspection document.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection document with the given ID is not found.
+
+    Returns:
+        dict: A dictionary containing the inspection document details:
+            - inspected_name (str): Full name (with title) of the inspected teacher.
+            - department_name (str): Department of the inspected teacher.
+            - date_of_inspection (datetime): Date and time of the inspection.
+            - subject_name (str): Name of the subject inspected.
+            - subject_code (int): Code/ID of the subject inspected.
+            - inspectors (list[dict]): List of inspectors, with:
+                - name (str): Inspector's name.
+                - title (str): Inspector's title.
+            - lateness_minutes (int): Lateness duration in minutes, if any.
+            - student_attendance (int): Number of students present during inspection.
+            - room_adaptation (bool): Whether the room was adapted for the lesson.
+            - content_compatibility (bool): Whether content was compatible with objectives.
+            - substantive_rating (float): Rating for the substantive content.
+            - final_rating (float): Final rating of the inspection.
+            - objection (str | None): Any objections noted in the report.
+    
+    Example Response:
+        {
+            "inspected_name": "Dr. Jane Doe",
+            "department_name": "Mathematics",
+            "date_of_inspection": "2025-01-01T10:00:00",
+            "subject_name": "Calculus",
+            "subject_code": 101,
+            "inspectors": [
+                {"name": "Mr. John Smith", "title": "Senior Inspector"}
+            ],
+            "lateness_minutes": 0,
+            "student_attendance": 25,
+            "room_adaptation": true,
+            "content_compatibility": true,
+            "substantive_rating": 4.5,
+            "final_rating": 4.8,
+            "objection": None
+        }
+    """
+
     teacher_alias_1 = aliased(Teacher)
     teacher_alias_2 = aliased(Teacher)
     inspection = (
@@ -124,6 +203,36 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
 def edit_inspection_report(
     docs_id: int, updated_data: EditInspectionReport, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Edit an existing inspection report.
+
+    This endpoint allows updating specific fields of an inspection report identified by its ID.
+    Partial updates are supported, and only the provided fields in the request body will be updated.
+
+    Args:
+        docs_id (int): The unique identifier of the inspection document.
+        updated_data (EditInspectionReport): Data model containing the fields to update.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection or its associated report is not found.
+
+    Returns:
+        dict: A success message indicating the report was updated.
+
+    Example Request Body (JSON):
+        {
+            "lateness_minutes": 5,
+            "student_attendance": 20,
+            "final_rating": 4.7
+        }
+
+    Example Response:
+        {
+            "message": "Inspection report updated successfully"
+        }
+    """
+
     inspection = (
         db.query(Inspection)
         .join(InspectionReport, InspectionReport.id == Inspection.fk_inspectionReport)
@@ -151,6 +260,53 @@ def edit_inspection_report(
 
 @app.get("/inspection-term/{term_id}/")
 def get_inspection_term(term_id: int, db: sessionmaker = Depends(get_db)):
+    """
+    Fetch details of an inspection term by its ID.
+
+    This endpoint retrieves information about a specific inspection term, including details
+    about the lesson, subject, and teacher.
+
+    Args:
+        term_id (int): The unique identifier of the inspection term.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection term is not found.
+
+    Returns:
+        dict: A dictionary containing the inspection term details:
+            - lesson_id (int): ID of the lesson.
+            - subject_id (int): ID of the subject.
+            - subject_code (str): Code of the subject.
+            - subject_name (str): Name of the subject.
+            - subject_type (str): Type/category of the subject.
+            - teacher_id (int): ID of the teacher.
+            - teacher_name (str): First name of the teacher.
+            - teacher_surname (str): Surname of the teacher.
+            - teacher_title (str): Title of the teacher (e.g., Dr., Mr.).
+            - department (str): Department the teacher belongs to.
+            - time (datetime): Date and time of the lesson.
+            - room (str): Room where the lesson took place.
+            - building (str): Building where the lesson took place.
+
+    Example Response:
+        {
+            "lesson_id": 1,
+            "subject_id": 101,
+            "subject_code": "MATH101",
+            "subject_name": "Calculus",
+            "subject_type": "Core",
+            "teacher_id": 10,
+            "teacher_name": "Jane",
+            "teacher_surname": "Doe",
+            "teacher_title": "Dr.",
+            "department": "Mathematics",
+            "time": "2025-01-01T10:00:00",
+            "room": "101",
+            "building": "Science Block"
+        }
+    """
+
     data = (
         db.query(Inspection)
         .join(Lesson, Lesson.id == Inspection.fk_lesson)
@@ -185,6 +341,36 @@ def get_inspection_term(term_id: int, db: sessionmaker = Depends(get_db)):
 def edit_inspection_team(
     term_id: int, updated_data: CreateInspection, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Edit an existing inspection term.
+
+    This endpoint updates the details of an inspection term identified by its ID. Partial updates
+    are supported, and only the fields provided in the request body will be updated.
+
+    Args:
+        term_id (int): The unique identifier of the inspection term.
+        updated_data (CreateInspection): Data model containing the fields to update.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection term with the given ID is not found.
+
+    Returns:
+        dict: A success message indicating the inspection term was updated.
+
+    Example Request Body (JSON):
+        {
+            "fk_lesson": 5,
+            "fk_inspectionReport": 3,
+            "fk_inspectionTeam": 2
+        }
+
+    Example Response:
+        {
+            "message": "Inspection term updated successfully"
+        }
+    """
+
     inspection = db.query(Inspection).filter(Inspection.id == term_id).first()
     if not inspection:
         raise HTTPException(
@@ -201,6 +387,40 @@ def edit_inspection_team(
 
 @app.get("/inspection-terms/", response_model=list[dict])
 def get_inspection_terms(db: sessionmaker = Depends(get_db)):
+    """
+    Fetch all inspection terms.
+
+    This endpoint retrieves a list of inspection terms, including information about 
+    the inspection date, subject, teacher, and associated lesson and team details.
+
+    Args:
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Returns:
+        list[dict]: A list of dictionaries containing inspection term details:
+            - id (int): ID of the inspection term.
+            - date (datetime): Date of the inspection.
+            - subject (str): Name of the subject.
+            - teacher (str): Full name of the teacher (title, first name, surname).
+            - teacher_id (int): ID of the teacher.
+            - lesson_id (int): ID of the lesson associated with the inspection.
+            - team_id (int): ID of the inspection team associated with the inspection.
+
+    Example Response:
+        [
+            {
+                "id": 1,
+                "date": "2025-01-01T10:00:00",
+                "subject": "Physics",
+                "teacher": "Dr. John Smith",
+                "teacher_id": 12,
+                "lesson_id": 101,
+                "team_id": 3
+            },
+            ...
+        ]
+    """
+
     inspection_terms = (
         db.query(
             Inspection.id.label("inspection_id"),
@@ -235,6 +455,36 @@ def get_inspection_terms(db: sessionmaker = Depends(get_db)):
 
 @app.post("/inspection-terms/")
 def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_db)):
+    """
+    Create a new inspection term.
+
+    This endpoint adds a new inspection term to the database, associating it with an inspection schedule,
+    team, and lesson.
+
+    Args:
+        term (CreateInspection): The data model containing inspection term details.
+            - team_id (int): ID of the inspection team.
+            - lesson_id (int): ID of the lesson.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If no inspection schedule is found or if an error occurs during creation.
+
+    Returns:
+        dict: A success message indicating the inspection term was created successfully.
+
+    Example Request Body (JSON):
+        {
+            "team_id": 2,
+            "lesson_id": 5
+        }
+
+    Example Response:
+        {
+            "message": "Inspection report updated successfully"
+        }
+    """
+
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
         raise HTTPException(
@@ -261,6 +511,27 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
 
 @app.delete("/inspection-terms/{term_id}/remove-term/")
 def remove_teacher_from_team(term_id: int, db: sessionmaker = Depends(get_db)):
+    """
+    Remove an inspection term by its ID.
+
+    This endpoint deletes a specific inspection term from the database.
+
+    Args:
+        term_id (int): The unique identifier of the inspection term to be deleted.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection term with the given ID is not found.
+
+    Returns:
+        dict: A success message indicating the term was deleted successfully.
+
+    Example Response:
+        {
+            "message": "Term has been deleted successfully"
+        }
+    """
+
     try:
         term = db.query(Inspection).filter(
             Inspection.id == term_id).one_or_none()
@@ -276,6 +547,33 @@ def remove_teacher_from_team(term_id: int, db: sessionmaker = Depends(get_db)):
 def get_lesson_with_dates(
     teacher_id: int, subject_id: int, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Fetch lessons for a specific teacher and subject.
+
+    This endpoint retrieves all lessons for a given teacher and subject, including the relevant details.
+
+    Args:
+        teacher_id (int): The unique identifier of the teacher.
+        subject_id (int): The unique identifier of the subject.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Returns:
+        list[dict]: A list of lesson details, or an empty list if no lessons are found.
+
+    Example Response:
+        [
+            {
+                "id": 1,
+                "teacher_id": 10,
+                "subject_id": 101,
+                "time": "2025-01-01T10:00:00",
+                "room": "101",
+                "building": "Science Block"
+            },
+            ...
+        ]
+    """
+
     lessons = (
         db.query(Lesson)
         .join(Teacher, Lesson.fk_teacher == Teacher.id)
@@ -289,6 +587,32 @@ def get_lesson_with_dates(
 
 @app.get("/inspection-teams/")
 def get_inspection_teams(db: sessionmaker = Depends(get_db)):
+    """
+    Fetch all inspection teams.
+
+    This endpoint retrieves a list of all inspection teams, including their ID and name.
+
+    Args:
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Returns:
+        list[dict]: A list of dictionaries containing the inspection team details:
+            - id (int): ID of the inspection team.
+            - name (str): Name of the inspection team.
+
+    Example Response:
+        [
+            {
+                "id": 1,
+                "name": "Team A"
+            },
+            {
+                "id": 2,
+                "name": "Team B"
+            }
+        ]
+    """
+
     teams = db.query(InspectionTeam).all()
     return [{"id": team.id, "name": team.name} for team in teams]
 
@@ -297,6 +621,33 @@ def get_inspection_teams(db: sessionmaker = Depends(get_db)):
 def create_inspection_team(
     team: CreateInspectionTeam, db: sessionmaker = Depends(get_db)
 ):
+    """
+    Create a new inspection team.
+
+    This endpoint allows for the creation of a new inspection team by providing its name.
+    If the team name already exists, an error is raised.
+
+    Args:
+        team (CreateInspectionTeam): The data model containing the name of the inspection team.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the team name already exists or an error occurs during team creation.
+
+    Returns:
+        InspectionTeamBase: The newly created inspection team details.
+
+    Example Request Body (JSON):
+        {
+            "name": "Team C"
+        }
+
+    Example Response:
+        {
+            "id": 3,
+            "name": "Team C"
+        }
+    """
 
     new_team = InspectionTeam(name=team.name)
     try:
@@ -316,6 +667,47 @@ def create_inspection_team(
 
 @app.get("/inspection-teams/{team_id}/", response_model=InspectionTeamBase)
 def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
+    """
+    View details of a specific inspection team.
+
+    This endpoint retrieves the details of an inspection team, including its name and a list of teachers
+    associated with the team.
+
+    Args:
+        team_id (int): The unique identifier of the inspection team.
+        db (sessionmaker): The database session dependency injected by FastAPI.
+
+    Raises:
+        HTTPException: If the inspection team with the given ID is not found.
+
+    Returns:
+        InspectionTeamBase: The inspection team details along with a list of teachers:
+            - id (int): The ID of the inspection team.
+            - name (str): The name of the inspection team.
+            - teachers (list[TeacherBase]): A list of teachers associated with the team, where each teacher
+              includes their ID, name, surname, and title.
+
+    Example Response:
+        {
+            "id": 1,
+            "name": "Team A",
+            "teachers": [
+                {
+                    "id": 10,
+                    "name": "Jane",
+                    "surname": "Doe",
+                    "title": "Dr."
+                },
+                {
+                    "id": 11,
+                    "name": "John",
+                    "surname": "Smith",
+                    "title": "Prof."
+                }
+            ]
+        }
+    """
+
     try:
         team = db.query(InspectionTeam).filter(
             InspectionTeam.id == team_id).one()
