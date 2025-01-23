@@ -4,7 +4,7 @@ import {
     createPopup,
     sortByDate,
     filterByDate,
-} from '../View/utils/utils.js'
+} from './utils.js'
 
 import {fetchData} from './controllerUtils.js' 
 
