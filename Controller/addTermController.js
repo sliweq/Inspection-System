@@ -1,9 +1,6 @@
-import {
-    fixStringDate,
-    createPopup,
-} from './utils.js'
+import { fixStringDate, createPopup } from './utils.js'
 
-import {fetchData} from './controllerUtils.js' 
+import { fetchData } from './controllerUtils.js'
 
 document.addEventListener('DOMContentLoaded', loadTeachers)
 
@@ -12,43 +9,46 @@ document.getElementById('buttonSave').addEventListener('click', saveTerms)
 let teachers_data = {}
 
 function fillSelectElement(id, data, func) {
-    const selectElement = document.getElementById(id);
+    const selectElement = document.getElementById(id)
 
     data.forEach((item) => {
-        const option = document.createElement('option');
-        
-        const { textContent, value } = func(item);
-        option.textContent = textContent;
-        option.value = value;
+        const option = document.createElement('option')
 
-        selectElement.appendChild(option);
-    });
+        const { textContent, value } = func(item)
+        option.textContent = textContent
+        option.value = value
 
+        selectElement.appendChild(option)
+    })
 }
 
+function addChangeListener(id, callback) {
+    document.getElementById(id).addEventListener('change', callback)
+}
 
 async function loadTeachers() {
-    ['select_subject', 'select_date','select_inspectors'].forEach(element => hideElement(element))
+    ;['select_subject', 'select_date', 'select_inspectors'].forEach((element) =>
+        hideElement(element)
+    )
 
     try {
         const teachers = await fetchData('http://localhost:5000/teachers/')
 
-        
-        fillSelectElement('inspectedPicker',teachers, (teacher) => ({
+        fillSelectElement('inspectedPicker', teachers, (teacher) => ({
             textContent: `${teacher.title} ${teacher.name} ${teacher.surname}`,
             value: teacher.id,
-        }));
+        }))
 
-        document.getElementById('inspectedPicker').addEventListener('change', (event) => {handleTaecherChange(event,teachers)})
-
+        addChangeListener('inspectedPicker', (event) =>
+            handleTeacherChange(event, teachers)
+        )
     } catch (error) {
         console.error('Error loading teachers:', error)
     }
 }
 
-function handleTaecherChange(event, teachers){
-
-    applyToResult(["","","","","",""])
+function handleTeacherChange(event, teachers) {
+    applyToResult(['', '', '', '', '', ''])
     document.getElementById('editable').classList.add('hidden')
 
     hideElement('select_date')
@@ -58,16 +58,14 @@ function handleTaecherChange(event, teachers){
         hideElement('select_subject')
         return
     }
-    const teacher = teachers.find(
-        (teacher) => teacher.id == selectedValue
-    )
+    const teacher = teachers.find((teacher) => teacher.id == selectedValue)
     teachers_data.teacher =
         teacher.title + ' ' + teacher.name + ' ' + teacher.surname
     teachers_data.department = teacher.department
 
-    deleteOptions('subjectPicker', 'Select Subject')
-    deleteOptions('datePicker', 'Select Date')
-    deleteOptions('teamPicker', 'Select Inspectors')
+    resetOptions('subjectPicker', 'Select Subject')
+    resetOptions('datePicker', 'Select Date')
+    resetOptions('teamPicker', 'Select Inspectors')
     loadSubjects(selectedValue)
 
     selectFirst('subjectPicker')
@@ -79,31 +77,28 @@ async function loadSubjects(teacher_id) {
         const subjects = await fetchData(
             `http://localhost:5000/unique-subjects/${teacher_id}/`
         )
-        
+
         fillSelectElement('subjectPicker', subjects, (subject) => ({
             textContent: `${subject.subject_name} ${subject.subject_code}`,
             value: subject.subject_id,
         }))
 
-        document.getElementById('subjectPicker').addEventListener('change', (event) => {handleSubjectChange(event, subjects, teacher_id)})
-
-        handleSubjectChange(subjects, teacher_id)
-
+        addChangeListener('subjectPicker', (event) =>
+            handleSubjectChange(event, subjects, teacher_id)
+        )
     } catch (error) {
         console.error('Error loading subjects:', error)
     }
 }
 
 function handleSubjectChange(event, subjects, teacher_id) {
-    
-    applyToResult(["","","","","",""])
+    applyToResult(['', '', '', '', '', ''])
     document.getElementById('editable').classList.add('hidden')
-    
-    
-    if(event.target == undefined){
+
+    if (event.target == undefined) {
         return
     }
-    
+
     const selectedValue = event.target.value
 
     if (selectedValue == '') {
@@ -121,14 +116,13 @@ function handleSubjectChange(event, subjects, teacher_id) {
     teachers_data.subject = subject.subject_name
     teachers_data.subject_code = subject.subject_code
 
-    deleteOptions('datePicker', 'Select Date')
-    deleteOptions('teamPicker', 'Select Inspectors')
+    resetOptions('datePicker', 'Select Date')
+    resetOptions('teamPicker', 'Select Inspectors')
     loadLessonsAndDates(selectedValue, teacher_id)
 
     showElement('select_date')
     selectFirst('datePicker')
     hideElement('select_inspectors')
-    
 }
 
 async function loadLessonsAndDates(subject_id, teacher_id) {
@@ -137,47 +131,43 @@ async function loadLessonsAndDates(subject_id, teacher_id) {
             `http://localhost:5000/lesson_with_dates/${teacher_id}/${subject_id}/`
         )
 
-        if (lessons.length === 0) {
-            return
-        }
-
-        const selectElement = document.getElementById('datePicker')
-
-        lessons.forEach((element) => {
-            const option = document.createElement('option')
-            option.textContent =
-                fixStringDate(element.time) +
+        fillSelectElement('datePicker', lessons, (lesson) => ({
+            textContent:
+                fixStringDate(lesson.time) +
                 ' ' +
-                element.building +
+                lesson.building +
                 '-' +
-                element.room
-            option.value = element.id
-            selectElement.appendChild(option)
-        })
+                lesson.room,
+            value: lesson.id,
+        }))
 
-        selectElement.addEventListener('change', function (event) {
-            applyToResult(["","","","","",""])
-            document.getElementById('editable').classList.add('hidden')
-
-            const selectedValue = event.target.value
-            if (selectedValue == '') {
-                hideElement('select_inspectors')
-                return
-            }
-
-            const lesson = lessons.find((lesson) => lesson.id == selectedValue)
-            teachers_data.date = fixStringDate(lesson.time)
-            teachers_data.building = lesson.building + '-' + lesson.room
-
-            deleteOptions('teamPicker', 'Select Inspectors')
-            loadInspectorsTeam(selectedValue, teacher_id)
-
-            showElement('select_inspectors')
-            selectFirst('teamPicker')
-        })
+        addChangeListener('datePicker', (event) =>
+            handleLessonChange(lessons, teacher_id, event)
+        )
     } catch (error) {
         console.error('Error loading subjects:', error)
     }
+}
+
+function handleLessonChange(lessons, teacher_id, event) {
+    applyToResult(['', '', '', '', '', ''])
+    document.getElementById('editable').classList.add('hidden')
+
+    const selectedValue = event.target.value
+    if (selectedValue == '') {
+        hideElement('select_inspectors')
+        return
+    }
+
+    const lesson = lessons.find((lesson) => lesson.id == selectedValue)
+    teachers_data.date = fixStringDate(lesson.time)
+    teachers_data.building = lesson.building + '-' + lesson.room
+
+    resetOptions('teamPicker', 'Select Inspectors')
+    loadInspectorsTeam(selectedValue, teacher_id)
+
+    showElement('select_inspectors')
+    selectFirst('teamPicker')
 }
 
 async function loadInspectorsTeam(lesson_id, teacher_id) {
@@ -186,62 +176,56 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
             `http://localhost:5000/inspection-teams/${teacher_id}/${lesson_id}/`
         )
 
-        if (teams.length === 0) {
-            return
-        }
-
-        const selectElement = document.getElementById('teamPicker')
-
-        teams.forEach((element) => {
-            const option = document.createElement('option')
-
-            element.members.forEach((member) => {
-                option.textContent +=
-                    member.teacher_title +
-                    ' ' +
-                    member.teacher_name +
-                    ' ' +
-                    member.teacher_surname +
-                    ' '
-            })
-
-            option.value = element.inspection_team_id
-
-            selectElement.appendChild(option)
-        })
-
-        selectElement.addEventListener('change', function (event) {
-            const selectedValue = event.target.value
-            if (selectedValue == '') {
-                applyToResult(["","","","","",""])
-                document.getElementById('editable').classList.add('hidden')
-                return
-            }
-            const team = teams.find(
-                (team) => team.inspection_team_id == selectedValue
-            )
-
-            teachers_data.team = team.members
+        fillSelectElement('teamPicker', teams, (team) => ({
+            textContent: team.members
                 .map(
                     (member) =>
-                        member.teacher_title +
-                        ' ' +
-                        member.teacher_name +
-                        ' ' +
-                        member.teacher_surname
+                        `${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
                 )
-                .join(', ')
+                .join(', '),
+            value: team.inspection_team_id,
+        }))
 
-            
-            document.getElementById('editable').classList.remove('hidden')
-            applyToResult([teachers_data.teacher, teachers_data.department, teachers_data.subject, teachers_data.date, teachers_data.team])
-        })
+        document
+            .getElementById('teamPicker')
+            .addEventListener('change', function (event) {
+                handleInspectorsChange(teams, event)
+            })
     } catch (error) {
         console.error('Error loading subjects:', error)
     }
 }
 
-function deleteOptions(html_id, default_text) {
+function handleInspectorsChange(teams, event) {
+    const selectedValue = event.target.value
+    if (selectedValue == '') {
+        applyToResult(['', '', '', '', '', ''])
+        document.getElementById('editable').classList.add('hidden')
+        return
+    }
+    const team = teams.find((team) => team.inspection_team_id == selectedValue)
+
+    document.getElementById('editable').classList.remove('hidden')
+
+    applyToResult([
+        teachers_data.teacher,
+        teachers_data.department,
+        teachers_data.subject,
+        teachers_data.date,
+        team.members
+            .map(
+                (member) =>
+                    member.teacher_title +
+                    ' ' +
+                    member.teacher_name +
+                    ' ' +
+                    member.teacher_surname
+            )
+            .join(', '),
+    ])
+}
+
+function resetOptions(html_id, default_text) {
     const element = document.getElementById(html_id)
     element.innerHTML = ''
 
@@ -270,9 +254,14 @@ function showElement(id) {
     element.classList.remove('hidden')
 }
 
-
 function applyToResult(data) {
-    const ids = ['info_inspected', 'info_department', 'info_subject', 'info_date', 'info_inspectors']
+    const ids = [
+        'info_inspected',
+        'info_department',
+        'info_subject',
+        'info_date',
+        'info_inspectors',
+    ]
     ids.forEach((id) => {
         document.getElementById(id).textContent = data[ids.indexOf(id)]
     })
@@ -347,9 +336,9 @@ async function saveTermAsync(lesson_id, team_id) {
         {
             text: 'Ok',
             color: 'ok_popup_btn',
-            onClick: () => {location.reload();
+            onClick: () => {
+                location.reload()
             },
         },
     ])
-    
 }

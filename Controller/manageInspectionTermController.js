@@ -6,7 +6,7 @@ import {
     filterByDate,
 } from './utils.js'
 
-import {fetchData} from './controllerUtils.js' 
+import { fetchData } from './controllerUtils.js'
 
 document.addEventListener('DOMContentLoaded', loadTerms)
 document.getElementById('buttonCancel').addEventListener('click', () => {
@@ -143,8 +143,7 @@ async function deleteTermAsync(id) {
                 color: 'ok_popup_btn',
                 onClick: () => {},
             },
-        ]
-    )
+        ])
     } catch (error) {
         console.error('Error loading :', error)
     }
@@ -310,7 +309,6 @@ async function saveTermAsync(lesson_id, team_id, term_id) {
         return
     }
 
-
     inspection_id = undefined
 
     createPopup('Term saved successfully', [
@@ -319,8 +317,7 @@ async function saveTermAsync(lesson_id, team_id, term_id) {
             color: 'ok_popup_btn',
             onClick: () => {},
         },
-    ]
-)
+    ])
 
     window.location.reload()
 }

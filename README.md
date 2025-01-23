@@ -52,7 +52,9 @@ Required: npm package jest
 ```bash
 npm i jest
 ```
+
 Run
+
 ```bash
 jest
 ```

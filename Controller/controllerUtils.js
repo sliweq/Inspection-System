@@ -1,7 +1,7 @@
 export async function fetchData(url) {
-    const response = await fetch(url);
+    const response = await fetch(url)
     if (!response.ok) {
-        throw new Error(`Failed to fetch data from ${url}`);
+        throw new Error(`Failed to fetch data from ${url}`)
     }
-    return response.json();
+    return response.json()
 }

@@ -199,13 +199,16 @@ async function addTeam() {
     }
 
     try {
-        const response = await fetch('http://localhost:5000/inspection-teams/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name: teamName }),
-        })
+        const response = await fetch(
+            'http://localhost:5000/inspection-teams/',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: teamName }),
+            }
+        )
 
         if (!response.ok) {
             throw new Error('Failed to add team')
@@ -216,5 +219,4 @@ async function addTeam() {
     } catch (error) {
         message.textContent = 'Error adding team.'
     }
-
 }

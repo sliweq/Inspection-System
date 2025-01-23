@@ -6,7 +6,7 @@ import {
     sortByDate,
 } from './utils.js'
 
-import {fetchData} from './controllerUtils.js' 
+import { fetchData } from './controllerUtils.js'
 
 document.addEventListener('DOMContentLoaded', loadDocs)
 document.getElementById('buttonSave').addEventListener('click', save_docs)
@@ -19,7 +19,6 @@ async function loadDocs() {
 
     try {
         const docs = await fetchData('http://localhost:5000/inspection-docs/')
-
 
         docs.forEach((doc) => {
             const listItem = document.createElement('li')
@@ -175,9 +174,7 @@ async function saveDocsChanges(docsId, data) {
                 color: 'ok_popup_btn',
                 onClick: () => {},
             },
-        ]
-    )
-
+        ])
     } catch (error) {
         console.error('Error during saving document', error)
     }
@@ -294,7 +291,6 @@ function setDocDetailValue(id, valu, type) {
 
 async function fetchDocDetails(id) {
     try {
-        
         const response = await fetchData(
             `http://localhost:5000/inspection-docs/${id}/`
         )
