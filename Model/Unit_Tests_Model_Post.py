@@ -36,7 +36,7 @@ def test_create_inspection_team_success(mock_db_session):
     team_data = {"name": "New Team"}
 
     # Mock the database behavior for adding a new team
-    new_team = MagicMock(id=3, name="New Team")
+    new_team = MagicMock(id=3, name="New Team", teachers=[])
     mock_db_session.add.return_value = None
     mock_db_session.commit.return_value = None
     mock_db_session.refresh.side_effect = lambda obj: obj.__setattr__("id", new_team.id)
@@ -46,7 +46,7 @@ def test_create_inspection_team_success(mock_db_session):
 
     # Check the response
     assert response.status_code == 200
-    assert response.json() == {"id": 3, "name": "New Team"}
+    assert response.json() == {"id": 3, "name": "New Team", "teachers": []}
 
 # Test team creation with a duplicate name
 def test_create_inspection_team_duplicate_name(mock_db_session):
@@ -61,7 +61,9 @@ def test_create_inspection_team_duplicate_name(mock_db_session):
 
     # Mock IntegrityError for duplicate team name
     mock_db_session.add.side_effect = IntegrityError(
-        orig=Exception("inspectionteam_name_unique"), params={}
+        statement="INSERT INTO InspectionTeam (name) VALUES (:name)",
+        params={"name": "Existing Team"},
+        orig=Exception("inspectionteam_name_unique"),
     )
     mock_db_session.rollback.return_value = None
 
@@ -84,7 +86,11 @@ def test_create_inspection_team_unexpected_error(mock_db_session):
     team_data = {"name": "Another Team"}
 
     # Mock IntegrityError for unexpected database error
-    mock_db_session.add.side_effect = IntegrityError(orig=Exception("unexpected_error"), params={})
+    mock_db_session.add.side_effect = IntegrityError(
+        statement="INSERT INTO InspectionTeam (name) VALUES (:name)",
+        params={"name": "Another Team"},
+        orig=Exception("unexpected_error"),
+    )
     mock_db_session.rollback.return_value = None
 
     # Send the POST request to the endpoint
