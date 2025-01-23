@@ -80,12 +80,11 @@ async function loadSubjects(teacher_id) {
         const subjects = await fetchData(
             `http://localhost:5000/unique-subjects/${teacher_id}/`
         )
-
-        const uniquesubjects = removeSubjectsDuplicates(subjects)
+        const uniqueSubjects = subjects
 
         const selectElement = document.getElementById('subjectPicker')
 
-        uniquesubjects.forEach((element) => {
+        uniqueSubjects.forEach((element) => {
             const option = document.createElement('option')
             option.textContent =
                 element.subject_name + ' ' + element.subject_code
@@ -106,9 +105,14 @@ async function loadSubjects(teacher_id) {
                 return
             }
 
-            const subject = uniquesubjects.find(
-                (subject) => subject.subject_id == selectedValue
-            )
+            var subject = undefined
+
+            subjects.forEach((element) => {
+                if (element.subject_id == selectedValue) {
+                    subject = element
+                }
+            })
+
             teachers_data.subject = subject.subject_name
             teachers_data.subject_code = subject.subject_code
 
@@ -228,7 +232,7 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
 
             
             document.getElementById('editable').classList.remove('hidden')
-            applyToResult([teachers_data.teacher, teachers_data.department, teachers_data.subject, teachers_data.date])
+            applyToResult([teachers_data.teacher, teachers_data.department, teachers_data.subject, teachers_data.date, teachers_data.team])
         })
     } catch (error) {
         console.error('Error loading subjects:', error)
@@ -266,9 +270,10 @@ function showElement(id) {
 
 
 function applyToResult(data) {
-    ['info_inspected', 'info_department', 'info_subject', 'info_date', 'info_inspectors'].forEach(
-        (id) => (document.getElementById(id).textContent = data[id])
-    )
+    const ids = ['info_inspected', 'info_department', 'info_subject', 'info_date', 'info_inspectors']
+    ids.forEach((id) => {
+        document.getElementById(id).textContent = data[ids.indexOf(id)]
+    })
 }
 
 async function saveTerms() {
@@ -336,5 +341,12 @@ async function saveTermAsync(lesson_id, team_id) {
         alert('Failed to save term')
         return
     }
+    createPopup('Term saved successfully', [
+        {
+            text: 'Ok',
+            color: 'ok_popup_btn',
+            onClick: () => {},
+        },
+    ])
     window.location.href = 'index.html'
 }

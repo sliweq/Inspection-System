@@ -137,6 +137,14 @@ async function deleteTermAsync(id) {
         if (!response.ok) {
             throw new Error('Failed to remove term')
         }
+        createPopup('Document deleted successfully', [
+            {
+                text: 'Ok',
+                color: 'ok_popup_btn',
+                onClick: () => {},
+            },
+        ]
+    )
     } catch (error) {
         console.error('Error loading :', error)
     }
@@ -301,6 +309,18 @@ async function saveTermAsync(lesson_id, team_id, term_id) {
         alert('Failed to save term')
         return
     }
+
+
     inspection_id = undefined
+
+    createPopup('Term saved successfully', [
+        {
+            text: 'Ok',
+            color: 'ok_popup_btn',
+            onClick: () => {},
+        },
+    ]
+)
+
     window.location.reload()
 }

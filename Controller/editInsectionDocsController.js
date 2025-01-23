@@ -169,6 +169,15 @@ async function saveDocsChanges(docsId, data) {
         if (!response.ok) {
             throw new Error('Failed to save document')
         }
+        createPopup('Document saved successfully', [
+            {
+                text: 'Ok',
+                color: 'ok_popup_btn',
+                onClick: () => {},
+            },
+        ]
+    )
+
     } catch (error) {
         console.error('Error during saving document', error)
     }
