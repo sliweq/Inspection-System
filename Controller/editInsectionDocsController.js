@@ -9,8 +9,8 @@ import {
 import { fetchData } from './controllerUtils.js'
 
 document.addEventListener('DOMContentLoaded', loadDocs)
-document.getElementById('buttonSave').addEventListener('click', save_docs)
-document.getElementById('buttonCancel').addEventListener('click', cancel_docs)
+document.getElementById('buttonSave').addEventListener('click', saveDocs)
+document.getElementById('buttonCancel').addEventListener('click', cancelDocs)
 document.getElementById('searchInput').addEventListener('input', filterByName)
 document.getElementById('filterSelect').onchange = sortByDate
 
@@ -21,34 +21,70 @@ async function loadDocs() {
         const docs = await fetchData('http://localhost:5000/inspection-docs/')
 
         docs.forEach((doc) => {
-            const listItem = document.createElement('li')
-            listItem.setAttribute('value', doc.date)
-            listItem.setAttribute('name', 'tmp')
-            listItem.innerHTML = `
-                <div class="inner_list_div" id="document_${doc.id}">
-                    <span>${fixStringDate(doc.date)} ${doc.subject} ${doc.teacher}</span>
-                    <button type="button" style="border: none; background: none; padding: 0;">
-                        <img src="images/edit.png" alt="Edit button" class="trash_img">
-                    </button>
-                </div>
-            `
+            const listItem = createListItem(doc)
             itemList.appendChild(listItem)
-            const deleteButton = listItem.querySelector(
-                '.inner_list_div button img'
-            )
-            deleteButton.addEventListener('click', () => {
-                editItem(doc.id)
-            })
         })
 
         sortByDate()
     } catch (error) {
-        console.error('Error loading semesters:', error)
+        console.error('Error loading documents:', error)
     }
 }
 
-async function save_docs() {
-    const inputs = [
+function createListItem(doc) {
+    const listItem = document.createElement('li')
+    listItem.setAttribute('value', doc.date)
+    listItem.setAttribute('name', 'tmp')
+    listItem.innerHTML = `
+        <div class="inner_list_div" id="document_${doc.id}">
+            <span>${fixStringDate(doc.date)} ${doc.subject} ${doc.teacher}</span>
+            <button type="button" style="border: none; background: none; padding: 0;">
+                <img src="images/edit.png" alt="Edit button" class="trash_img">
+            </button>
+        </div>
+    `
+
+    const deleteButton = listItem.querySelector('.inner_list_div button img')
+    deleteButton.addEventListener('click', () => editItem(doc.id))
+
+    return listItem
+}
+
+async function saveDocs() {
+    const inputs = getInputs()
+    const invalidFields = validateInputs(inputs)
+
+    if (invalidFields.length > 0) {
+        createPopup(`Invalid input data!\n${invalidFields.join('\n')}`, [
+            { text: 'Ok', color: 'ok_popup_btn' },
+        ])
+        return
+    }
+
+    const editableDiv = document.getElementById('editable')
+    createPopup('Do you want to save document?', [
+        {
+            text: 'Yes',
+            color: 'save_popup_btn',
+            onClick: () => {
+                editableDiv.classList.add('hidden')
+                saveDocsChanges(editableDiv.name, {
+                    lateness_minutes: inputs[0].element.value,
+                    students_attendance: inputs[1].element.value,
+                    room_adaptation: inputs[2].element.value,
+                    content_compatibility: inputs[3].element.value,
+                    substantive_rating: inputs[4].element.value,
+                    final_rating: inputs[5].element.value,
+                    objection: inputs[6].element.value,
+                })
+            },
+        },
+        { text: 'No', color: 'cancel_popup_btn', onClick: () => {} },
+    ])
+}
+
+function getInputs() {
+    return [
         {
             element: document.getElementById('Inspected_lateness_input'),
             max: 240,
@@ -93,11 +129,12 @@ async function save_docs() {
             label: 'Recommendation',
         },
     ]
+}
 
+function validateInputs(inputs) {
     let invalidFields = []
 
-    for (const f of inputs) {
-        const { element, max, checkFunc, label } = f
+    inputs.forEach(({ element, max, checkFunc, label }) => {
         const message = checkFunc(element.value, max)
 
         if (message !== true) {
@@ -106,42 +143,9 @@ async function save_docs() {
         } else {
             element.classList.remove('input_error')
         }
-    }
+    })
 
-    if (invalidFields.length > 0) {
-        createPopup(`Invalid input data!\n${invalidFields.join('\n')}`, [
-            {
-                text: 'Ok',
-                color: 'ok_popup_btn',
-            },
-        ])
-        return
-    }
-
-    const editableDiv = document.getElementById('editable')
-    createPopup('Do you want to save document?', [
-        {
-            text: 'Yes',
-            color: 'save_popup_btn',
-            onClick: () => {
-                editableDiv.classList.add('hidden')
-                saveDocsChanges(editableDiv.name, {
-                    lateness_minutes: inputs[0].element.value,
-                    students_attendance: inputs[1].element.value,
-                    room_adaptation: inputs[2].element.value,
-                    content_compatibility: inputs[3].element.value,
-                    substantive_rating: inputs[4].element.value,
-                    final_rating: inputs[5].element.value,
-                    objection: inputs[6].element.value,
-                })
-            },
-        },
-        {
-            text: 'No',
-            color: 'cancel_popup_btn',
-            onClick: () => {},
-        },
-    ])
+    return invalidFields
 }
 
 async function saveDocsChanges(docsId, data) {
@@ -150,9 +154,7 @@ async function saveDocsChanges(docsId, data) {
             `http://localhost:5000/inspection-docs/${docsId}/edit/`,
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     lateness_minutes: parseInt(data.lateness_minutes),
                     students_attendance: parseInt(data.students_attendance),
@@ -168,19 +170,16 @@ async function saveDocsChanges(docsId, data) {
         if (!response.ok) {
             throw new Error('Failed to save document')
         }
+
         createPopup('Document saved successfully', [
-            {
-                text: 'Ok',
-                color: 'ok_popup_btn',
-                onClick: () => {},
-            },
+            { text: 'Ok', color: 'ok_popup_btn', onClick: () => {} },
         ])
     } catch (error) {
-        console.error('Error during saving document', error)
+        console.error('Error during saving document:', error)
     }
 }
 
-function cancel_docs() {
+function cancelDocs() {
     const editableDiv = document.getElementById('editable')
     editableDiv.classList.add('hidden')
 }
@@ -191,27 +190,14 @@ function filterByName() {
         .value.toLowerCase()
     const items = document.querySelectorAll('#itemList li')
 
-    if (searchValue === '') {
-        items.forEach((item) => {
-            item.style.display = 'block'
-        })
-        return
-    }
-
     items.forEach((item) => {
         const text = item.textContent.toLowerCase()
-
-        if (text.includes(searchValue)) {
-            item.style.display = 'block'
-        } else {
-            item.style.display = 'none'
-        }
+        item.style.display = text.includes(searchValue) ? 'block' : 'none'
     })
 }
 
 async function editItem(id) {
     const editableDiv = document.getElementById('editable')
-
     editableDiv.classList.remove('hidden')
     editableDiv.name = id
 
@@ -219,84 +205,58 @@ async function editItem(id) {
         const docDetails = await fetchDocDetails(id)
 
         if (docDetails) {
-            setDocDetailId('Inspected_name', docDetails.inspected_name)
-            setDocDetailId('Inspected_department', docDetails.department_name)
-            setDocDetailId(
-                'Inspection_date',
-                fixStringDate(docDetails.date_of_inspection)
-            )
-            setDocDetailId('Inspected_Subject', docDetails.subject_name)
-            setDocDetailId('Inspected_Subject_code', docDetails.subject_code)
-            setDocDetailId(
-                'Inspectors',
-                docDetails.inspectors
-                    .map((inspector) => `${inspector.title} ${inspector.name}`)
-                    .join(' ')
-            )
-
-            setDocDetailValue(
-                'Inspected_lateness_input',
-                docDetails.lateness_minutes,
-                Number
-            )
-            setDocDetailValue(
-                'Student_attendance_input',
-                docDetails.student_attendance,
-                Number
-            )
-            setDocDetailValue(
-                'Room_adaptation_input',
-                docDetails.room_adaptation,
-                String
-            )
-            setDocDetailValue(
-                'Content_compatibility_input',
-                docDetails.content_compatibility,
-                Number
-            )
-            setDocDetailValue(
-                'Substantive_assessment_input',
-                docDetails.substantive_rating,
-                String
-            )
-            setDocDetailValue(
-                'Final_assessment_input',
-                docDetails.final_rating,
-                Number
-            )
-            setDocDetailValue(
-                'Recommendation_input',
-                docDetails.objection,
-                Number
-            )
-
+            setDocDetails(docDetails)
             editableDiv.classList.remove('hidden')
         }
     } catch (error) {
-        console.error('Cannot load data', error)
+        console.error('Cannot load document details:', error)
     }
 }
 
-function setDocDetailId(id, detail) {
-    document.getElementById(id).innerHTML = detail
-}
-function setDocDetailValue(id, valu, type) {
-    if (type === Number) {
-        valu = Number(valu)
-    } else if (type === String) {
-        valu = String(valu)
-    }
-    document.getElementById(id).value = valu
+function setDocDetails(docDetails) {
+    document.getElementById('Inspected_name').innerHTML =
+        docDetails.inspected_name
+    document.getElementById('Inspected_department').innerHTML =
+        docDetails.department_name
+    document.getElementById('Inspection_date').innerHTML = fixStringDate(
+        docDetails.date_of_inspection
+    )
+    document.getElementById('Inspected_Subject').innerHTML =
+        docDetails.subject_name
+    document.getElementById('Inspected_Subject_code').innerHTML =
+        docDetails.subject_code
+    document.getElementById('Inspectors').innerHTML = docDetails.inspectors
+        .map((i) => `${i.title} ${i.name}`)
+        .join(', ')
+
+    document.getElementById('Inspected_lateness_input').value = Number(
+        docDetails.lateness_minutes
+    )
+    document.getElementById('Student_attendance_input').value = Number(
+        docDetails.student_attendance
+    )
+    document.getElementById('Room_adaptation_input').value = String(
+        docDetails.room_adaptation
+    )
+    document.getElementById('Content_compatibility_input').value = Number(
+        docDetails.content_compatibility
+    )
+    document.getElementById('Substantive_assessment_input').value = String(
+        docDetails.substantive_rating
+    )
+    document.getElementById('Final_assessment_input').value = Number(
+        docDetails.final_rating
+    )
+    document.getElementById('Recommendation_input').value = Number(
+        docDetails.objection
+    )
 }
 
 async function fetchDocDetails(id) {
     try {
-        const response = await fetchData(
-            `http://localhost:5000/inspection-docs/${id}/`
-        )
-        return response
+        return await fetchData(`http://localhost:5000/inspection-docs/${id}/`)
     } catch (error) {
-        console.error('Error during loading doc details', error)
+        console.error('Error fetching document details:', error)
         return null
     }
 }

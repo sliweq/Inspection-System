@@ -36,8 +36,8 @@ def get_inspection_docs(db: sessionmaker = Depends(get_db)):
     """
     Fetch inspection documents from the database.
 
-    This endpoint retrieves a list of inspection documents, including details such as 
-    the inspection date, subject, and teacher information. Data is queried from the 
+    This endpoint retrieves a list of inspection documents, including details such as
+    the inspection date, subject, and teacher information. Data is queried from the
     database using SQLAlchemy and structured into a response-friendly format.
 
     Args:
@@ -49,7 +49,7 @@ def get_inspection_docs(db: sessionmaker = Depends(get_db)):
             - date (datetime): The date of the inspection.
             - subject (str): The name of the subject.
             - teacher (str): The full name of the teacher, including title, first name, and surname.
-    
+
     Example Response:
         [
             {
@@ -93,7 +93,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
     """
     Fetch a specific inspection document by its ID.
 
-    This endpoint retrieves detailed information about a specific inspection document, 
+    This endpoint retrieves detailed information about a specific inspection document,
     including teacher, subject, inspection team, and report ratings.
 
     Args:
@@ -120,7 +120,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
             - substantive_rating (float): Rating for the substantive content.
             - final_rating (float): Final rating of the inspection.
             - objection (str | None): Any objections noted in the report.
-    
+
     Example Response:
         {
             "inspected_name": "Dr. Jane Doe",
@@ -162,8 +162,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
     )
 
     if not inspection:
-        raise HTTPException(
-            status_code=404, detail="Inspection document not found")
+        raise HTTPException(status_code=404, detail="Inspection document not found")
 
     inspection_details = {
         "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name}",
@@ -241,13 +240,11 @@ def edit_inspection_report(
     )
 
     if not inspection:
-        raise HTTPException(
-            status_code=404, detail="Inspection report not found")
+        raise HTTPException(status_code=404, detail="Inspection report not found")
 
     inspection_report = inspection.inspection_report
     if not inspection_report:
-        raise HTTPException(
-            status_code=404, detail="Inspection report not found")
+        raise HTTPException(status_code=404, detail="Inspection report not found")
 
     update_fields = updated_data.dict(exclude_unset=True)
     for field, value in update_fields.items():
@@ -317,8 +314,7 @@ def get_inspection_term(term_id: int, db: sessionmaker = Depends(get_db)):
     )
 
     if not data:
-        raise HTTPException(
-            status_code=404, detail="Inspection term not found")
+        raise HTTPException(status_code=404, detail="Inspection term not found")
 
     return {
         "lesson_id": data.lesson.id,
@@ -373,8 +369,7 @@ def edit_inspection_team(
 
     inspection = db.query(Inspection).filter(Inspection.id == term_id).first()
     if not inspection:
-        raise HTTPException(
-            status_code=404, detail="Inspection term not found")
+        raise HTTPException(status_code=404, detail="Inspection term not found")
 
     update_fields = updated_data.dict(exclude_unset=True)
     for field, value in update_fields.items():
@@ -390,7 +385,7 @@ def get_inspection_terms(db: sessionmaker = Depends(get_db)):
     """
     Fetch all inspection terms.
 
-    This endpoint retrieves a list of inspection terms, including information about 
+    This endpoint retrieves a list of inspection terms, including information about
     the inspection date, subject, teacher, and associated lesson and team details.
 
     Args:
@@ -486,8 +481,7 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
     """
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
-        raise HTTPException(
-            status_code=404, detail="No inspection schedule found.")
+        raise HTTPException(status_code=404, detail="No inspection schedule found.")
 
     inspection = Inspection(
         fk_inspectionSchedule=schedule,
@@ -532,11 +526,9 @@ def remove_teacher_from_team(term_id: int, db: sessionmaker = Depends(get_db)):
     """
 
     try:
-        term = db.query(Inspection).filter(
-            Inspection.id == term_id).one_or_none()
+        term = db.query(Inspection).filter(Inspection.id == term_id).one_or_none()
     except NoResultFound:
-        raise HTTPException(
-            status_code=404, detail="Inspection term not found")
+        raise HTTPException(status_code=404, detail="Inspection term not found")
     db.delete(term)
     db.commit()
     return {"message": "Term has been deleted successfully"}
@@ -657,8 +649,7 @@ def create_inspection_team(
     except IntegrityError as e:
         db.rollback()
         if "inspectionteam_name_unique" in str(e.orig):
-            raise HTTPException(
-                status_code=400, detail="Team name already exists.")
+            raise HTTPException(status_code=400, detail="Team name already exists.")
         raise HTTPException(
             status_code=500, detail="An error occurred while creating the team."
         )
@@ -708,8 +699,7 @@ def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
     """
 
     try:
-        team = db.query(InspectionTeam).filter(
-            InspectionTeam.id == team_id).one()
+        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
         teachers = (
             db.query(Teacher)
             .join(TeacherInspectionTeam)
@@ -720,14 +710,12 @@ def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
             id=team.id,
             name=team.name,
             teachers=[
-                TeacherBase(id=t.id, name=t.name,
-                            surname=t.surname, title=t.title)
+                TeacherBase(id=t.id, name=t.name, surname=t.surname, title=t.title)
                 for t in teachers
             ],
         )
     except NoResultFound:
-        raise HTTPException(
-            status_code=404, detail="Inspection Team not found")
+        raise HTTPException(status_code=404, detail="Inspection Team not found")
 
 
 @app.post("/inspection-teams/{team_id}/add-teacher/")
@@ -764,14 +752,11 @@ def add_teacher_to_team(
     """
 
     try:
-        team = db.query(InspectionTeam).filter(
-            InspectionTeam.id == team_id).one()
+        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
     except NoResultFound:
-        raise HTTPException(
-            status_code=404, detail="Inspection Team not found")
+        raise HTTPException(status_code=404, detail="Inspection Team not found")
 
-    teacher = db.query(Teacher).filter(
-        Teacher.id == payload.teacher_id).one_or_none()
+    teacher = db.query(Teacher).filter(Teacher.id == payload.teacher_id).one_or_none()
     if not teacher:
         raise HTTPException(status_code=404, detail="Teacher not found")
 
@@ -785,8 +770,7 @@ def add_teacher_to_team(
     )
 
     if existing_assignment:
-        raise HTTPException(
-            status_code=400, detail="Teacher is already in the team")
+        raise HTTPException(status_code=400, detail="Teacher is already in the team")
 
     try:
         assignment = TeacherInspectionTeam(
@@ -836,11 +820,9 @@ def remove_teacher_from_team(
     """
 
     try:
-        team = db.query(InspectionTeam).filter(
-            InspectionTeam.id == team_id).one()
+        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
     except NoResultFound:
-        raise HTTPException(
-            status_code=404, detail="Inspection Team not found")
+        raise HTTPException(status_code=404, detail="Inspection Team not found")
 
     assignment = (
         db.query(TeacherInspectionTeam)
@@ -852,8 +834,7 @@ def remove_teacher_from_team(
     )
 
     if not assignment:
-        raise HTTPException(
-            status_code=404, detail="Teacher is not in the team")
+        raise HTTPException(status_code=404, detail="Teacher is not in the team")
 
     db.delete(assignment)
     db.commit()
@@ -912,11 +893,9 @@ def get_specified_inspection_teams(
     if not lesson:
         raise HTTPException(status_code=404, detail="Lesson not found.")
 
-    inspected_teacher = db.query(Teacher).filter(
-        Teacher.id == teacher_id).first()
+    inspected_teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not inspected_teacher:
-        raise HTTPException(
-            status_code=404, detail="Inspected teacher not found.")
+        raise HTTPException(status_code=404, detail="Inspected teacher not found.")
 
     inspected_department = inspected_teacher.department
 
@@ -940,8 +919,7 @@ def get_specified_inspection_teams(
 
         for member in team.teachers:
             member_lessons = (
-                db.query(Lesson).filter(
-                    Lesson.fk_teacher == member.fk_teacher).all()
+                db.query(Lesson).filter(Lesson.fk_teacher == member.fk_teacher).all()
             )
             member_inspections = (
                 db.query(Lesson)

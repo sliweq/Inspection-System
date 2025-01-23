@@ -19,6 +19,10 @@ export function fixStringDate(dateString) {
 
 export function checkNumberInput(number, max) {
     const parsedNumber = parseInt(number)
+    const isValidNumber = !isNaN(Number(number))
+    if (!isValidNumber) {
+        return `Value must be a number.`
+    }
     if (isNaN(parsedNumber)) {
         return `Value must be a number.`
     } else if (parsedNumber < 0) {

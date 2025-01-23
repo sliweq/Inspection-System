@@ -20,19 +20,16 @@ class InspectionTeam(Base):
     __tablename__ = "InspectionTeam"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, nullable=False)
-    teachers = relationship("TeacherInspectionTeam",
-                            back_populates="inspection_team")
+    teachers = relationship("TeacherInspectionTeam", back_populates="inspection_team")
     inspections = relationship("Inspection", back_populates="inspection_team")
-    teachers = relationship("TeacherInspectionTeam",
-                            back_populates="inspection_team")
+    teachers = relationship("TeacherInspectionTeam", back_populates="inspection_team")
 
 
 class TeacherInspectionTeam(Base):
     __tablename__ = "TeacherInspectionTeam"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     fk_teacher = Column(Integer, ForeignKey("Teacher.id"), nullable=False)
-    fk_inspectionTeam = Column(Integer, ForeignKey(
-        "InspectionTeam.id"), nullable=False)
+    fk_inspectionTeam = Column(Integer, ForeignKey("InspectionTeam.id"), nullable=False)
     teacher = relationship("Teacher")
     inspection_team = relationship("InspectionTeam", back_populates="teachers")
 
@@ -67,12 +64,10 @@ class InspectionSchedule(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     year_semester = Column(String, nullable=False)
-    fk_administrator = Column(Integer, ForeignKey(
-        "Administrator.id"), nullable=False)
+    fk_administrator = Column(Integer, ForeignKey("Administrator.id"), nullable=False)
 
     administrator = relationship("Administrator", back_populates="schedules")
-    inspections = relationship(
-        "Inspection", back_populates="inspectionSchedule")
+    inspections = relationship("Inspection", back_populates="inspectionSchedule")
 
 
 class Administrator(Base):
@@ -84,8 +79,7 @@ class Administrator(Base):
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
 
-    schedules = relationship("InspectionSchedule",
-                             back_populates="administrator")
+    schedules = relationship("InspectionSchedule", back_populates="administrator")
 
 
 class Inspection(Base):
@@ -95,8 +89,7 @@ class Inspection(Base):
     fk_inspectionSchedule = Column(
         Integer, ForeignKey("InspectionSchedule.id"), nullable=False
     )
-    fk_inspectionTeam = Column(Integer, ForeignKey(
-        "InspectionTeam.id"), nullable=True)
+    fk_inspectionTeam = Column(Integer, ForeignKey("InspectionTeam.id"), nullable=True)
     fk_inspectionReport = Column(
         Integer, ForeignKey("InspectionReport.id"), nullable=True
     )
@@ -105,11 +98,9 @@ class Inspection(Base):
     inspectionSchedule = relationship(
         "InspectionSchedule", back_populates="inspections"
     )
-    inspection_team = relationship(
-        "InspectionTeam", back_populates="inspections")
+    inspection_team = relationship("InspectionTeam", back_populates="inspections")
     lesson = relationship("Lesson", back_populates="inspections")
-    inspection_report = relationship(
-        "InspectionReport", back_populates="inspections")
+    inspection_report = relationship("InspectionReport", back_populates="inspections")
 
 
 class InspectionReport(Base):
@@ -125,8 +116,7 @@ class InspectionReport(Base):
     final_rating = Column(Integer, nullable=False)
     objection = Column(Integer, nullable=False)
 
-    inspections = relationship(
-        "Inspection", back_populates="inspection_report")
+    inspections = relationship("Inspection", back_populates="inspection_report")
 
 
 class TeacherInspectionReport(Base):
