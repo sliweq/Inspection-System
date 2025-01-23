@@ -1,7 +1,10 @@
 formatting
 Controller/tmp.js
+coverage
 # Byte-compiled / optimized / DLL files
 .history
+jest.config.js
+
 /.history
 __pycache__/
 *.py[cod]

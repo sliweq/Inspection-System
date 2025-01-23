@@ -20,7 +20,7 @@ export function fixStringDate(dateString) {
 export function checkNumberInput(number, max) {
     const parsedNumber = parseInt(number)
     if (isNaN(parsedNumber)) {
-        return `Value must vbe a number.`
+        return `Value must be a number.`
     } else if (parsedNumber < 0) {
         return `Value must be greater than 0.`
     } else if (parsedNumber > max) {

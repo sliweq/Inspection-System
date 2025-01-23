@@ -44,3 +44,15 @@ python Model_Database_API.py
 ```
 
 Open website in live server and enjoy !
+
+## Testing
+
+Required: npm package jest
+
+```bash
+npm i jest
+```
+Run
+```bash
+jest
+```
