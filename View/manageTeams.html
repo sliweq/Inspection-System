@@ -7,12 +7,15 @@
         <link rel="stylesheet" href="styles/style.css" />
     </head>
     <body>
+        <script src="../Controller/teamsController.js"></script>
         <h1>Edit Inspection Teams</h1>
         <div id="team-container"></div>
         <p id="message" class="alert"></p>
+        <input type="text" id="teamName" placeholder="Team Name" />
+        <button onclick="addTeam()">Add Team</button> <br>
         <a href="index.html" class="button">Return to Main</a>
 
-        <script src="../Controller/teamsController.js"></script>
+        
         <script>
             window.onload = loadTeams
         </script>

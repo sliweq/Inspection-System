@@ -45,6 +45,11 @@ async function loadTeams() {
                                 .length
                     )
                 )
+                if (members.length === 0) {
+                    const noMembersMessage = document.createElement('p')
+                    noMembersMessage.textContent = 'No members in this team.'
+                    membersList.appendChild(noMembersMessage)
+                }
 
                 members.forEach((member) => {
                     const fullText = `${member.title} ${member.name} ${member.surname}`
@@ -183,4 +188,33 @@ async function removeMember(teamId, memberId) {
     } catch (error) {
         message.textContent = 'Error removing member.'
     }
+}
+
+async function addTeam() {
+    const message = document.getElementById('message')
+    const teamName = document.getElementById('teamName').value
+    if (!teamName) {
+        message.textContent = 'Team name is required.'
+        return
+    }
+
+    try {
+        const response = await fetch('http://localhost:5000/inspection-teams/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: teamName }),
+        })
+
+        if (!response.ok) {
+            throw new Error('Failed to add team')
+        }
+
+        message.textContent = 'Team added successfully!'
+        loadTeams()
+    } catch (error) {
+        message.textContent = 'Error adding team.'
+    }
+
 }
