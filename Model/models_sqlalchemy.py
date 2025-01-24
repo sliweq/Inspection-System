@@ -114,7 +114,7 @@ class InspectionReport(Base):
     content_compatibility = Column(Integer, nullable=False)
     substantive_rating = Column(String, nullable=False)
     final_rating = Column(Integer, nullable=False)
-    objection = Column(Integer, nullable=False)
+    objection = Column(String, nullable=False)
 
     inspections = relationship("Inspection", back_populates="inspection_report")
 

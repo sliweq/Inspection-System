@@ -76,7 +76,7 @@ CREATE TABLE "InspectionReport"(
     "content_compatibility" BIGINT NOT NULL,
     "substantive_rating" TEXT NOT NULL,
     "final_rating" BIGINT NOT NULL,
-    "objection" BIGINT NOT NULL
+    "objection" TEXT NOT NULL
 );
 ALTER TABLE
     "InspectionReport" ADD PRIMARY KEY("id");

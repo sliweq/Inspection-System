@@ -170,7 +170,7 @@ function getInputs() {
         },
         {
             element: document.getElementById('Recommendation_input'),
-            max: 100,
+            max: 500,
             checkFunc: checkStringInput,
             label: 'Objection',
         },
@@ -245,7 +245,7 @@ async function saveDocsChanges(docsId, data) {
                     content_compatibility: parseInt(data.content_compatibility),
                     substantive_rating: data.substantive_rating,
                     final_rating: parseInt(data.final_rating),
-                    objection: parseInt(data.objection),
+                    objection: data.objection,
                 }),
             }
         )
@@ -380,7 +380,7 @@ function setDocDetails(docDetails) {
     document.getElementById('Final_assessment_input').value = Number(
         docDetails.final_rating
     )
-    document.getElementById('Recommendation_input').value = Number(
+    document.getElementById('Recommendation_input').value = String(
         docDetails.objection
     )
 }

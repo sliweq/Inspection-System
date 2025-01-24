@@ -67,11 +67,11 @@ VALUES
 
 INSERT INTO "InspectionReport" ("name", "lateness_minutes", "students_attendance", "room_adaptation", "content_compatibility", "substantive_rating", "final_rating", "objection")
 VALUES
-('Report 1', 10, 30, 'Adapted', 5, 'Good', 4, 1),
-('Report 2', 5, 20, 'Not Adapted', 4, 'Satisfactory', 3, 0),
-('Report 3', 0, 25, 'Adapted', 5, 'Excellent', 5, 0),
-('Report 4', 15, 15, 'Adapted', 3, 'Poor', 2, 2),
-('Report 5', 20, 10, 'Not Adapted', 2, 'Very Good', 4, 1);
+('Report 1', 10, 30, 'Adapted', 5, 'Good', 4, 'No objections'),
+('Report 2', 5, 20, 'Not Adapted', 4, 'Satisfactory', 3, 'No objections'),
+('Report 3', 0, 25, 'Adapted', 5, 'Excellent', 5, 'No objections'),
+('Report 4', 15, 15, 'Adapted', 3, 'Poor', 2, 'No objections'),
+('Report 5', 20, 10, 'Not Adapted', 2, 'Very Good', 4, 'No objections');
 
 INSERT INTO "Lesson" ("time", "room", "building", "fk_subject", "fk_teacher")
 VALUES

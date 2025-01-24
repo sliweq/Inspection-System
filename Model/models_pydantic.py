@@ -62,7 +62,7 @@ class InspectionReportBase(BaseModel):
     content_compatibility: int
     substantive_rating: str
     final_rating: int
-    objection: int
+    objection: str
 
     class Config:
         from_attributes = True
@@ -107,4 +107,4 @@ class EditInspectionReport(BaseModel):
     content_compatibility: int
     substantive_rating: str
     final_rating: int
-    objection: int
+    objection: str 
