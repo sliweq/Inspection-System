@@ -79,6 +79,9 @@ async function loadTeams() {
 
             teamContainer.appendChild(teamDiv)
         }
+        if (teams.length === 0) {
+            message.textContent = 'No teams found.'
+        }
     } catch (error) {
         message.textContent = 'Error loading teams.'
     }
