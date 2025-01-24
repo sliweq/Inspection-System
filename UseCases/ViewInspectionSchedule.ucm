@@ -1,0 +1,20 @@
+Use-Case Model: ViewInspectionSchedule
+
+Use-Case: ViewSchedule
+
+Preconditions:
+- "Actor is logged in the system"
+
+Postcondition (success):
+- "Actor obtained a list of scheduled inspections"
+
+Trigger: Actor wants "the system to show the schedule of inspections"
+Main flow:
+    1. "The system asks the actor for which semester he wishes to view the schedule"
+    2. Actor chooses "semester he wishes to view"
+    3. System verifies "there are inspections scheduled for the chosen semester"
+    4. "The system displays the schedule of inspections for the chosen semester"
+
+Flow A: NoInspectionsScheduled
+    A1.3. System verifies "there are no inspections scheduled for chosen semester"
+    A2. "System informs the actor that there are no scheduled inspections for the semester he chose"
