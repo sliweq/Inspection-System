@@ -1,7 +1,7 @@
 const { By, Builder, until } = require('selenium-webdriver');
 const assert = require('assert');
 
-(async function editDocsWrongData() {
+(async function editDocsCancel() {
   let driver = await new Builder().forBrowser('chrome').build();
   try {
     await driver.get('http://127.0.0.1:5500/View/index.html');
@@ -45,45 +45,19 @@ const assert = require('assert');
     await driver.findElement(By.id('Final_assessment_input')).clear();
     await driver.findElement(By.id('Recommendation_input')).clear();
 
-    await driver.findElement(By.id('Inspected_lateness_input')).sendKeys('asd');
-    await driver.findElement(By.id('Student_attendance_input')).sendKeys('asds');
+    await driver.findElement(By.id('Inspected_lateness_input')).sendKeys('5');
+    await driver.findElement(By.id('Student_attendance_input')).sendKeys('150');
     await driver.findElement(By.id('Room_adaptation_input')).sendKeys('Excellent');
-    await driver.findElement(By.id('Content_compatibility_input')).sendKeys('asd');
+    await driver.findElement(By.id('Content_compatibility_input')).sendKeys('6');
     await driver.findElement(By.id('Substantive_assessment_input')).sendKeys('Detailed');
-    await driver.findElement(By.id('Final_assessment_input')).sendKeys('asdddd');
+    await driver.findElement(By.id('Final_assessment_input')).sendKeys('4');
     await driver.findElement(By.id('Recommendation_input')).sendKeys('0');
 
     await driver.findElement(By.id('buttonSave')).click();
     await driver.sleep(1000);
 
-    const popupTextElement = await driver.findElement(By.className('popup_text'));
-
-    const popupText = await popupTextElement.getText();
-    assert.equal(popupText, "Invalid input data! Inspected Lateness: Value must be a number. Student Attendance: Value must be a number. Content Compatibility: Value must be a number. Final Rating: Value must be a number.", 'Popup text does not match');
-     
-    await driver.findElement(By.className('ok_popup_btn')).click();
+    await driver.findElement(By.className('cancel_popup_btn')).click();
     await driver.sleep(1000);
-
-    const studentAttendance = await driver.findElement(By.id('Student_attendance_input'));
-    const inspectedLateness = await driver.findElement(By.id('Inspected_lateness_input'));
-    const contentCompatibility = await driver.findElement(By.id('Content_compatibility_input'));
-    const finalRating = await driver.findElement(By.id('Final_assessment_input'));
-    
-
-    
-    const studentAttendanceAtributes = await studentAttendance.getAttribute('class');
-    const inspectedLatenessAtributes = await inspectedLateness.getAttribute('class');
-    const contentCompatibilityAtributes = await contentCompatibility.getAttribute('class');
-    const finalRatingAtributes = await finalRating.getAttribute('class');
-    
-    if (studentAttendanceAtributes.includes('input_error') && inspectedLatenessAtributes.includes('input_error') && contentCompatibilityAtributes.includes('input_error') && finalRatingAtributes.includes('input_error')) {
-      console.log("Element ma klasę 'input_error'.");
-      assert.equal(true, true, 'All elements have input_error class');
-    } else {
-      assert.equal(true, false, 'Not all elements have input_error class');
-    }
-
-
 
   } catch (e) {
     console.error("Błąd:", e);

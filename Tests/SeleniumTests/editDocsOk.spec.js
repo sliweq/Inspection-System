@@ -1,7 +1,7 @@
 const { By, Builder, until } = require('selenium-webdriver');
 const assert = require('assert');
 
-(async function example() {
+(async function editDocsOk() {
   let driver = await new Builder().forBrowser('chrome').build();
   try {
     await driver.get('http://127.0.0.1:5500/View/index.html');
