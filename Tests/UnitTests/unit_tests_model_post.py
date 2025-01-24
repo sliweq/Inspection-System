@@ -1,9 +1,9 @@
 from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
-from model_database_API import (app,
+from ...Model.model_database_API import (app,
                                 get_db)
-from models_sqlalchemy import \
+from ...Model.models_sqlalchemy import \
     InspectionTeam  
 from sqlalchemy.exc import IntegrityError
 
