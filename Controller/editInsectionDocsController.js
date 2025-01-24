@@ -102,6 +102,7 @@ async function saveDocs() {
             color: 'save_popup_btn',
             onClick: () => {
                 editableDiv.classList.add('hidden')
+                resetInputsErrors()
                 saveDocsChanges(editableDiv.name, {
                     lateness_minutes: inputs[0].element.value,
                     students_attendance: inputs[1].element.value,
@@ -204,6 +205,18 @@ function validateInputs(inputs) {
 }
 
 /**
+ * Resets the error state of all input elements by removing the 'input_error' class.
+ * This function retrieves all input elements using the getInputs function and iterates
+ * through each element to remove the 'input_error' class, if present.
+ */
+function resetInputsErrors(){
+    const inputs = getInputs()
+    inputs.forEach(({ element }) => {
+        element.classList.remove('input_error')
+    })
+}
+
+/**
  * Saves changes to inspection documents.
  *
  * @param {string} docsId - The ID of the document to be edited.
@@ -259,6 +272,7 @@ function cancelDocs() {
             color: 'save_popup_btn',
             onClick: () => {
                 document.getElementById('editable').classList.add('hidden')
+                resetInputsErrors()
             },
         },
         { text: 'No', color: 'cancel_popup_btn', onClick: () => {} },
@@ -345,9 +359,9 @@ function setDocDetails(docDetails) {
     document.getElementById('Inspected_Subject_code').innerHTML =
         docDetails.subject_code
     document.getElementById('Inspectors').innerHTML = docDetails.inspectors
-        .map((i) => `${i.title} ${i.name}`)
+        .map((i) => `${i.title} ${i.name} ${i.surname}`)
         .join(', ')
-
+    console.log(docDetails.inspectors)
     document.getElementById('Inspected_lateness_input').value = Number(
         docDetails.lateness_minutes
     )

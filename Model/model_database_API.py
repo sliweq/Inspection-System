@@ -112,6 +112,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
             - subject_code (int): Code/ID of the subject inspected.
             - inspectors (list[dict]): List of inspectors, with:
                 - name (str): Inspector's name.
+                - surname (str): Inspector's surname.
                 - title (str): Inspector's title.
             - lateness_minutes (int): Lateness duration in minutes, if any.
             - student_attendance (int): Number of students present during inspection.
@@ -129,7 +130,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
             "subject_name": "Calculus",
             "subject_code": 101,
             "inspectors": [
-                {"name": "Mr. John Smith", "title": "Senior Inspector"}
+                {"name": "John", "surname":"Smith" , "title": "SeniorMr."}
             ],
             "lateness_minutes": 0,
             "student_attendance": 25,
@@ -174,6 +175,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
             [
                 {
                     "name": inspector.teacher.name,
+                    "surname": inspector.teacher.surname,
                     "title": inspector.teacher.title,
                 }
                 for inspector in inspection.inspection_team.teachers
