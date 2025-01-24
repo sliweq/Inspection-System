@@ -1129,4 +1129,4 @@ def get_schedule(semester: str, db: sessionmaker = Depends(get_db)):
 
 
 if __name__ == "__main__":
-    uvicorn.run("Model_Database_API:app", port=5000, log_level="info")
+    uvicorn.run("model_database_API:app", port=5000, log_level="info")
