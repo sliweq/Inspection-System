@@ -1,7 +1,19 @@
+/**
+ * Converts a string representation of a date to a Date object.
+ *
+ * @param {string} dateString - The string representation of the date.
+ * @returns {Date} The Date object created from the string.
+ */
 export function convertStringDateToDate(dateString) {
     return new Date(dateString.replace(' ', 'T'))
 }
 
+/**
+ * Converts a Date object to a formatted string.
+ *
+ * @param {Date} date - The date to be converted.
+ * @returns {string} The formatted date string in the format 'YYYY-MM-DD HH:mm'.
+ */
 export function convertDateToStringDate(date) {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -13,10 +25,23 @@ export function convertDateToStringDate(date) {
     return formattedDate
 }
 
+/**
+ * Converts a date string to a standardized string date format.
+ *
+ * @param {string} dateString - The date string to be converted.
+ * @returns {string} - The converted date string in a standardized format.
+ */
 export function fixStringDate(dateString) {
     return convertDateToStringDate(new Date(dateString.replace(' ', 'T')))
 }
 
+/**
+ * Checks if the given number input is valid.
+ *
+ * @param {string|number} number - The input number to check.
+ * @param {number} max - The maximum allowed value for the input number.
+ * @returns {string|boolean} - Returns a string with an error message if the input is invalid, or true if the input is valid.
+ */
 export function checkNumberInput(number, max) {
     const parsedNumber = parseInt(number)
     const isValidNumber = !isNaN(Number(number))
@@ -33,6 +58,13 @@ export function checkNumberInput(number, max) {
     return true
 }
 
+/**
+ * Checks if a string input is valid based on given criteria.
+ *
+ * @param {string} string - The input string to be checked.
+ * @param {number} max - The maximum allowed length for the input string.
+ * @returns {string|boolean} - Returns an error message if the input is invalid, otherwise returns true.
+ */
 export function checkStringInput(string, max) {
     if (string.trim() === '') {
         return `Filed cannot be empty.`
@@ -42,6 +74,14 @@ export function checkStringInput(string, max) {
     return true
 }
 
+/**
+ * Filters the items in the itemList based on the selected date from the datePicker1 input.
+ * If the date input is empty, all items will be shown.
+ *
+ * The function assumes that each item in the itemList has a 'value' attribute that contains the date information.
+ *
+ * @function
+ */
 export function filterByDate() {
     const value = document.getElementById('datePicker1').value
     const itemList = document.getElementById('itemList')
@@ -60,6 +100,15 @@ export function filterByDate() {
     }
 }
 
+/**
+ * Sorts the items in the item list by date based on the selected filter value.
+ * The items are sorted in ascending order if the filter value is 'old',
+ * otherwise they are sorted in descending order.
+ *
+ * The function expects the HTML structure to have an element with the ID 'filterSelect'
+ * containing the filter value, and an element with the ID 'itemList' containing the items to be sorted.
+ * Each item should have a 'value' attribute containing a date string.
+ */
 export function sortByDate() {
     const value = document.getElementById('filterSelect').value
     const itemList = document.getElementById('itemList')
@@ -82,18 +131,17 @@ export function sortByDate() {
     items.forEach((item) => itemList.appendChild(item))
 }
 
+/**
+ * Creates a popup with a message and buttons.
+ *
+ * @param {string} message - The main string to display in the popup.
+ * @param {Array<Object>} buttons - An array of button objects.
+ * @param {string} buttons[].text - The text to display on the button.
+ * @param {string} buttons[].color - The color class to apply to the button.
+ * @param {string} buttons[].hoverColor - The hover color class to apply to the button.
+ * @param {Function} buttons[].onClick - The function to call when the button is clicked.
+ */
 export function createPopup(message, buttons) {
-    // message main string to display
-
-    // buttons pattern
-    // buttons:[{
-    //     text: 'Save',
-    //     color: 'green',
-    //     hoverColor: 'lightgreen',
-    //     onClick: () => {
-    //         console.log('Save clicked');
-    //     }
-    // }]
     if (!buttons) {
         console.error('No buttons provided')
         return
@@ -127,4 +175,18 @@ export function createPopup(message, buttons) {
 
     overlay.appendChild(content)
     document.body.appendChild(overlay)
+}
+
+/**
+ * Checks if an inspection has been conducted based on the given date.
+ *
+ * @param {string} date - The date of the inspection in string format.
+ * @returns {boolean} - Returns true if the inspection date is today or in the past, otherwise false.
+ */
+export function isInspectionConducted(date) {
+    const currentDate = new Date()
+    const inspectionDate = convertStringDateToDate(date)
+    currentDate.setHours(0, 0, 0, 0)
+    inspectionDate.setHours(0, 0, 0, 0)
+    return currentDate >= inspectionDate
 }

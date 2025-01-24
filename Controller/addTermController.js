@@ -8,6 +8,13 @@ document.getElementById('buttonSave').addEventListener('click', saveTerms)
 
 let teachers_data = {}
 
+/**
+ * Populates a select HTML element with options based on provided data.
+ *
+ * @param {string} id - The ID of the select element to populate.
+ * @param {Array} data - The array of data to use for creating options.
+ * @param {function} func - A function that takes an item from the data array and returns an object with `textContent` and `value` properties.
+ */
 function fillSelectElement(id, data, func) {
     const selectElement = document.getElementById(id)
 
@@ -22,10 +29,26 @@ function fillSelectElement(id, data, func) {
     })
 }
 
+/**
+ * Adds a 'change' event listener to the element with the specified ID.
+ *
+ * @param {string} id - The ID of the element to which the event listener will be added.
+ * @param {Function} callback - The function to be called when the 'change' event is triggered.
+ */
 function addChangeListener(id, callback) {
     document.getElementById(id).addEventListener('change', callback)
 }
 
+/**
+ * Asynchronously loads teachers from the server, hides specific elements,
+ * populates a select element with the retrieved teachers, and adds a change
+ * listener to handle teacher selection changes.
+ *
+ * @async
+ * @function loadTeachers
+ * @returns {Promise<void>} A promise that resolves when the teachers are loaded and the select element is populated.
+ * @throws {Error} If there is an error while fetching the teachers data.
+ */
 async function loadTeachers() {
     ;['select_subject', 'select_date', 'select_inspectors'].forEach((element) =>
         hideElement(element)
@@ -47,6 +70,12 @@ async function loadTeachers() {
     }
 }
 
+/**
+ * Handles the change event for the teacher selection dropdown.
+ *
+ * @param {Event} event - The change event triggered by the teacher selection dropdown.
+ * @param {Array} teachers - An array of teacher objects, each containing id, title, name, surname, and department properties.
+ */
 function handleTeacherChange(event, teachers) {
     applyToResult(['', '', '', '', '', ''])
     document.getElementById('editable').classList.add('hidden')
@@ -72,6 +101,15 @@ function handleTeacherChange(event, teachers) {
     showElement('select_subject')
 }
 
+/**
+ * Loads subjects for a given teacher and populates a select element with the subjects.
+ *
+ * @async
+ * @function loadSubjects
+ * @param {number} teacher_id - The ID of the teacher whose subjects are to be loaded.
+ * @returns {Promise<void>} - A promise that resolves when the subjects are loaded and the select element is populated.
+ * @throws {Error} - Throws an error if there is an issue loading the subjects.
+ */
 async function loadSubjects(teacher_id) {
     try {
         const subjects = await fetchData(
@@ -91,6 +129,13 @@ async function loadSubjects(teacher_id) {
     }
 }
 
+/**
+ * Handles the change event for the subject selection.
+ *
+ * @param {Event} event - The event object from the subject selection change.
+ * @param {Array} subjects - An array of subject objects.
+ * @param {string} teacher_id - The ID of the teacher.
+ */
 function handleSubjectChange(event, subjects, teacher_id) {
     applyToResult(['', '', '', '', '', ''])
     document.getElementById('editable').classList.add('hidden')
@@ -125,6 +170,17 @@ function handleSubjectChange(event, subjects, teacher_id) {
     hideElement('select_inspectors')
 }
 
+/**
+ * Loads lessons and their dates for a given subject and teacher, populates a select element with the lessons,
+ * and adds a change listener to handle lesson changes.
+ *
+ * @async
+ * @function loadLessonsAndDates
+ * @param {number} subject_id - The ID of the subject.
+ * @param {number} teacher_id - The ID of the teacher.
+ * @returns {Promise<void>} - A promise that resolves when the lessons and dates are loaded and the select element is populated.
+ * @throws {Error} - Throws an error if there is an issue loading the lessons and dates.
+ */
 async function loadLessonsAndDates(subject_id, teacher_id) {
     try {
         const lessons = await fetchData(
@@ -149,6 +205,13 @@ async function loadLessonsAndDates(subject_id, teacher_id) {
     }
 }
 
+/**
+ * Handles the change event for the lesson selection.
+ *
+ * @param {Array} lessons - Array of lesson objects.
+ * @param {number} teacher_id - The ID of the teacher.
+ * @param {Event} event - The change event triggered by the lesson selection.
+ */
 function handleLessonChange(lessons, teacher_id, event) {
     applyToResult(['', '', '', '', '', ''])
     document.getElementById('editable').classList.add('hidden')
@@ -170,6 +233,15 @@ function handleLessonChange(lessons, teacher_id, event) {
     selectFirst('teamPicker')
 }
 
+/**
+ * Loads the inspection teams for a given lesson and teacher, populates a select element with the teams,
+ * and sets up an event listener to handle changes in the selected team.
+ *
+ * @param {number} lesson_id - The ID of the lesson.
+ * @param {number} teacher_id - The ID of the teacher.
+ * @returns {Promise<void>} - A promise that resolves when the inspection teams are loaded and the select element is populated.
+ * @throws {Error} - Throws an error if there is an issue loading the inspection teams.
+ */
 async function loadInspectorsTeam(lesson_id, teacher_id) {
     try {
         const teams = await fetchData(
@@ -196,6 +268,14 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
     }
 }
 
+/**
+ * Handles the change event for the inspectors dropdown.
+ *
+ * @param {Array} teams - An array of team objects.
+ * @param {Object} event - The event object from the change event.
+ * @param {Object} event.target - The target element of the event.
+ * @param {string} event.target.value - The selected value from the dropdown.
+ */
 function handleInspectorsChange(teams, event) {
     const selectedValue = event.target.value
     if (selectedValue == '') {
@@ -225,6 +305,12 @@ function handleInspectorsChange(teams, event) {
     ])
 }
 
+/**
+ * Resets the options of a select element with a given default option.
+ *
+ * @param {string} html_id - The ID of the HTML select element to reset.
+ * @param {string} default_text - The text for the default option to be added.
+ */
 function resetOptions(html_id, default_text) {
     const element = document.getElementById(html_id)
     element.innerHTML = ''
@@ -235,6 +321,11 @@ function resetOptions(html_id, default_text) {
     element.appendChild(option)
 }
 
+/**
+ * Selects the first option in a dropdown list.
+ *
+ * @param {string} html_id - The ID of the HTML select element.
+ */
 function selectFirst(html_id) {
     const element = document.getElementById(html_id)
     const options = element.options
@@ -244,16 +335,32 @@ function selectFirst(html_id) {
     }
 }
 
+/**
+ * Hides an HTML element by adding the 'hidden' class to it.
+ *
+ * @param {string} id - The ID of the HTML element to hide.
+ */
 function hideElement(id) {
     const element = document.getElementById(id)
     element.classList.add('hidden')
 }
 
+/**
+ * Displays an HTML element by removing the 'hidden' class.
+ *
+ * @param {string} id - The ID of the HTML element to show.
+ */
 function showElement(id) {
     const element = document.getElementById(id)
     element.classList.remove('hidden')
 }
 
+/**
+ * Updates the text content of specific HTML elements with corresponding data.
+ *
+ * @param {Object} data - An object containing the data to be applied to the result.
+ * The object should have properties corresponding to the IDs of the HTML elements.
+ */
 function applyToResult(data) {
     const ids = [
         'info_inspected',
@@ -267,6 +374,19 @@ function applyToResult(data) {
     })
 }
 
+/**
+ * Asynchronously saves the terms selected by the user.
+ *
+ * This function retrieves the values from the HTML elements with IDs 'inspectedPicker',
+ * 'subjectPicker', 'datePicker', and 'teamPicker'. If any of these values are empty,
+ * it creates a popup message prompting the user to select the missing values.
+ * If all values are present, it creates a confirmation popup asking the user if they
+ * want to save the term. If the user confirms, it calls the `saveTermAsync` function
+ * with the selected date and team values.
+ *
+ * @async
+ * @function saveTerms
+ */
 async function saveTerms() {
     const teacher_id = document.getElementById('inspectedPicker').value
     const subject_id = document.getElementById('subjectPicker').value
@@ -316,6 +436,13 @@ async function saveTerms() {
     ])
 }
 
+/**
+ * Asynchronously saves a term by sending a POST request to the server.
+ *
+ * @param {number|string} lesson_id - The ID of the lesson to associate with the term.
+ * @param {number|string} team_id - The ID of the inspection team to associate with the term.
+ * @returns {Promise<void>} A promise that resolves when the term is saved.
+ */
 async function saveTermAsync(lesson_id, team_id) {
     const response = await fetch('http://localhost:5000/inspection-terms/', {
         method: 'POST',
