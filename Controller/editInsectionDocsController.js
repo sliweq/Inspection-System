@@ -160,19 +160,19 @@ function getInputs() {
             element: document.getElementById('Substantive_assessment_input'),
             max: 500,
             checkFunc: checkStringInput,
-            label: 'Substantive Assessment',
+            label: 'Substantive Rating',
         },
         {
             element: document.getElementById('Final_assessment_input'),
             max: 100,
             checkFunc: checkNumberInput,
-            label: 'Final Assessment',
+            label: 'Final Rating',
         },
         {
             element: document.getElementById('Recommendation_input'),
             max: 100,
             checkFunc: checkStringInput,
-            label: 'Recommendation',
+            label: 'Objection',
         },
     ]
 }

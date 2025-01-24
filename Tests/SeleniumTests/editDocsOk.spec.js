@@ -13,7 +13,6 @@ const assert = require('assert');
     
     let element = await driver.findElement(By.xpath("//a[text()='Edit Documents']"));
 
-    // Go to Edit Documents
     await element.click();
 
     console.log("Kliknięto w element: Edit Documents");
@@ -24,7 +23,7 @@ const assert = require('assert');
     title = await driver.getTitle();
     assert.equal(title, 'Edit Documents');
 
-    await driver.sleep(3000);
+    await driver.sleep(2000);
 
     const documentName = "2024-12-15 16:00 Artificial Intelligence mgr inż Michael Wilson";
     let spanElement = await driver.findElement(By.xpath(`//span[text()='${documentName}']`));
@@ -36,7 +35,7 @@ const assert = require('assert');
     await editButton.click();
       
 
-    await driver.sleep(3000);
+    await driver.sleep(1500);
 
     await driver.findElement(By.id('Inspected_lateness_input')).clear();
     await driver.findElement(By.id('Student_attendance_input')).clear();
@@ -52,21 +51,23 @@ const assert = require('assert');
     await driver.findElement(By.id('Content_compatibility_input')).sendKeys('6');
     await driver.findElement(By.id('Substantive_assessment_input')).sendKeys('Detailed');
     await driver.findElement(By.id('Final_assessment_input')).sendKeys('4');
-    await driver.findElement(By.id('Recommendation_input')).sendKeys('Recommended');
+    await driver.findElement(By.id('Recommendation_input')).sendKeys('0');
 
     await driver.findElement(By.id('buttonSave')).click();
-    await driver.sleep(5000);
+    await driver.sleep(1000);
 
     await driver.findElement(By.className('save_popup_btn')).click();
-    await driver.sleep(500);
+    await driver.sleep(1000);
      
+    await driver.findElement(By.className('ok_popup_btn')).click();
+    await driver.sleep(1000);
 
     spanElement = await driver.findElement(By.xpath(`//span[text()='${documentName}']`));
      
     editButton = await spanElement.findElement(By.xpath("./following-sibling::button/img"));
 
     await editButton.click();
-    await driver.sleep(3000);
+    await driver.sleep(2000);
 
     const inspectedLateness = await driver.findElement(By.id('Inspected_lateness_input')).getAttribute('value');
     const studentAttendance = await driver.findElement(By.id('Student_attendance_input')).getAttribute('value');
@@ -82,10 +83,10 @@ const assert = require('assert');
     assert.equal(contentCompatibility, '6', 'Content compatibility value does not match');
     assert.equal(substantiveAssessment, 'Detailed', 'Substantive assessment value does not match');
     assert.equal(finalAssessment, '4', 'Final assessment value does not match');
-    assert.equal(recommendation, 'Recommended', 'Recommendation value does not match');
+    assert.equal(recommendation, '0', 'Recommendation value does not match');
 
     console.log('All values are correct');
-    driver.sleep(3000);
+    driver.sleep(1500);
 
 
   } catch (e) {
