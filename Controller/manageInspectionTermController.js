@@ -10,8 +10,20 @@ import { fetchData } from './controllerUtils.js'
 
 document.addEventListener('DOMContentLoaded', loadTerms)
 document.getElementById('buttonCancel').addEventListener('click', () => {
-    const editable = document.getElementById('editable')
-    editable.classList.add('hidden')
+    createPopup('Are you sure you want to cancel this operation?', [
+        {
+            text: 'Yes',
+            color: 'save_popup_btn',
+            onClick: () =>
+                document.getElementById('editable').classList.add('hidden')
+        },
+        {
+            text: 'No',
+            color: 'cancel_popup_btn',
+            onClick: () => {
+            },
+        },
+    ])
 })
 
 let inspection_id = undefined

@@ -1,0 +1,53 @@
+Use-Case Model: Inspection_document_editing
+
+Trigger: Actor sends cancelling event
+Flow A : cancelling_event_handler
+A1. "The system asks for cancelling confirmation"
+A2. "An actor confirm decision"
+A3. System verifies that "actor requested to cancel editing document"
+A4. The use-case ends with failure
+
+Flow C: An_actor_doesn't_confirm_cancellation
+C1.A3. System verifies that "actor doesn't want to cancel editing document"
+C2. Goto ctx
+
+Use-Case: Edit_inspection_document
+
+Preconditions:
+- "an actor is logged into the system"
+- "inspection document exists"
+- "semesters has been selected"
+
+Postcondition (success):
+- "document chages are saved in the system"
+- "System shows the confirmation"
+
+Postcondition (failure):
+- "no changes are saved"
+
+Postcondition (success):
+- "Changes to the document saved successfully"
+
+Trigger: Actor wants "to edit inspection document"
+
+Main flow:
+1. "System show sorted inspection documents to edit"
+2. "Actor selects the document to edit."
+3. "System opens the document for editing"
+4. "Actor introduces changes to the document"
+5. "Actor save changes"
+6. System verifies that "the entered data are valid"
+7. "System asks the actor for confirmation to save changes"
+8. "Actor confirms saving changes"
+9. The use-case ends with success
+
+Steps 4.-8. can be interrupted by cancelling event with ctx
+
+Flow A: Invalid_data
+A1.6 System verifies that "the entered data are invalid"
+A2. "System highlights invalid fields and provides error messages"
+A3. Goto 5.
+
+Flow B: Actor_doesn't_confirm_saving
+B1.4. System verifies that "the actor doesn't want to save changes"
+B2. Goto 3.

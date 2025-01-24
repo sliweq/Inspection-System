@@ -253,8 +253,16 @@ async function saveDocsChanges(docsId, data) {
  * Hides the editable document section by adding the 'hidden' class to the element with the ID 'editable'.
  */
 function cancelDocs() {
-    const editableDiv = document.getElementById('editable')
-    editableDiv.classList.add('hidden')
+    createPopup('Do you want to cancel this operation?', [
+        {
+            text: 'Yes',
+            color: 'save_popup_btn',
+            onClick: () => {
+                document.getElementById('editable').classList.add('hidden')
+            },
+        },
+        { text: 'No', color: 'cancel_popup_btn', onClick: () => {} },
+    ])
 }
 
 /**

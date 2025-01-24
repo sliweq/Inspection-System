@@ -5,6 +5,18 @@ import { fetchData } from './controllerUtils.js'
 document.addEventListener('DOMContentLoaded', loadTeachers)
 
 document.getElementById('buttonSave').addEventListener('click', saveTerms)
+document.getElementById('buttonCancel').addEventListener('click', () => {
+    createPopup('Do you want to cancel this operation?', [
+        {
+            text: 'Yes',
+            color: 'save_popup_btn',
+            onClick: () => {
+                window.location.href = 'index.html';
+            },
+        },
+        { text: 'No', color: 'cancel_popup_btn', onClick: () => {} },
+    ])
+})
 
 let teachers_data = {}
 
