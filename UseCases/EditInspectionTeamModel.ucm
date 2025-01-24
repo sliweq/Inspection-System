@@ -1,0 +1,96 @@
+Use-Case Model: ManageInspectionTeam
+
+Use-Case: ViewInspectionTeams
+
+Preconditions:
+- "Actor is logged in the system"
+- "A semester was selected beforehand"
+
+Postcondition (success):
+- "Actor obtained a list of members of all inspection teams"
+
+Trigger: Actor wants "the system to show the composition of the inspection teams"
+Main flow:
+    1. System verifies "The list of existing teams is not empty"
+    2. "The system displays the list of teams"
+    3. System verifies "The team is not empty"
+    4. "The system displays the list of members in the team"
+    5. The use-case ends with success
+Steps 3.-4. can be repeated until "Member list of all teams have been displayed"
+
+Flow A : NoExistingTeams
+	A1.1. System verifies "The list of existing teams is empty"
+	A2. "System informs an actor about the lack of teams to display"
+	Z1. The use-case ends with failure
+
+Flow B: EmptyTeam
+    B1.3. System verifies "The team is empty"
+    B2. "System informs an actor about the lack of members to display"
+    B3. Goto 3.
+
+Use-Case: EditInspectionTeam
+
+Preconditions:
+- "Actor is logged in the system"
+
+Postcondition (success):
+- "Actor changed the composition of a inspection team"
+
+Trigger: Actor wants "the system to change the composition of a inspection team"
+Main flow:
+    1. System verifies "The list of existing teams is not empty"
+    2. "The system displays the list of teams"
+    3. System verifies "The team is not empty"
+    4. "The system displays the list of members in the team"
+    5. Actor chooses "to delete an existing member or to add a new one"
+    6. System verifies "The actor chose to remove a member from the team"
+    7. "The system removes the member from the team"
+    8. "The system informs the actor that the member was removed from the team"
+    9. The use-case ends with success
+Steps 3.-4. can be repeated until "Member list of all teams have been displayed"
+
+Flow A : NoExistingTeams
+	A1.1. System verifies "The list of existing teams is empty"
+	A2. "System informs an actor about the lack of teams to display"
+	A1. The use-case ends with failure
+
+Flow B: AddMember
+    B1.6. System verifies "The actor chose to add a member to the team"
+    B2. "The system offers the actor a choice of which member to add"
+    B3. Actor chooses "A member from existing inspectors"
+    B4. System verifies "The team is not full"
+    B5. "System adds the member to the team"
+    B6. "The system informs the actor of successful addition"
+    B7. The use-case ends with success
+
+Flow C: EmptyTeam
+    C1.3. System verifies "The team is empty"
+    C2. "System informs an actor about the lack of members to display"
+    C3. Goto 3.
+
+Flow D: TeamFull
+    D1.B4. System verifies "The team is full"
+    D2. "The system displays information that it is not possible to add the member to the team"
+    D3. The use-case ends with failure
+
+Use-Case: CreateInspectionTeam
+
+Preconditions:
+- "Actor is logged in the system"
+
+Postcondition (success):
+- "Actor added a new inspection team"
+
+Trigger: Actor wants "the system to add a new team"
+Main flow:
+    1. "The system asks the actor for the identifier for a new team"
+    2. "Actor enters the identifier"
+    3. System verifies "No team with the entered identifier exists"
+    4. "The system creates a new team"
+    5. "The system notifies the actor of successful creation of a new team"
+    6. The use-case ends with success
+
+Flow A: TeamIdentifierAlreadyExists
+    A1.3. System verifies "A team with the entered identifier exists"
+    A2. "The system notifies the actor that it is not possible to create a team with the entered identifier"
+    A3. Goto 1.
