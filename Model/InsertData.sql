@@ -27,7 +27,8 @@ VALUES
 ('Team Beta'),
 ('Team Gamma'),
 ('Team Delta'),
-('Team Epsilon');
+('Team Epsilon'),
+('Team Foxtrot');
 
 INSERT INTO "TeacherInspectionTeam" ("fk_teacher", "fk_inspectionTeam")
 VALUES
