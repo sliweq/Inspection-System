@@ -908,15 +908,19 @@ def get_specified_inspection_teams(
 
     inspected_department = inspected_teacher.department
 
+    subquery = (
+        db.query(TeacherInspectionTeam.fk_inspectionTeam)
+        .filter(TeacherInspectionTeam.fk_teacher == teacher_id)
+        .subquery()
+    )
+
     inspection_teams = (
         db.query(InspectionTeam)
         .join(
             TeacherInspectionTeam,
             TeacherInspectionTeam.fk_inspectionTeam == InspectionTeam.id,
         )
-        .join(Teacher, Teacher.id == TeacherInspectionTeam.fk_teacher)
-        .filter(Lesson.id == lesson_id)
-        .filter(TeacherInspectionTeam.fk_teacher != teacher_id)
+        .filter(InspectionTeam.id.notin_(subquery.select())) 
         .all()
     )
 

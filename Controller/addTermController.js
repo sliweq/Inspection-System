@@ -262,10 +262,10 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
         )
 
         fillSelectElement('teamPicker', teams, (team) => ({
-            textContent: team.members
+            textContent: team.inspection_team_name + ": " + team.members
                 .map(
                     (member) =>
-                        `${team.inspection_team_name}: ${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
+                        `${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
                 )
                 .join(', '),
             value: team.inspection_team_id,

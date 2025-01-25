@@ -58,7 +58,17 @@ VALUES
 ('Physics', 'Laboratory', 'PHYS101'),
 ('Computer Science', 'Project', 'CS101'),
 ('Electronics', 'Seminar', 'ELEC101'),
-('Artificial Intelligence', 'Lecture', 'AI101');
+('Artificial Intelligence', 'Lecture', 'AI101'),
+('Mathematics', 'Practical', 'MATH102'),
+('Physics 2', 'Laboratory', 'PHYS102'),
+('Advanced Computer Science', 'Laboratory', 'CS102'),
+('Advanced Electronics', 'Laboratory', 'ELEC102'),
+('Artificial Intelligence Theory', 'Laboratory', 'AI102'),
+('Introduction to Automation', 'Laboratory', 'AUTO101'),
+('Control Systems', 'Laboratory', 'CTRL102'),
+('Machine Learning', 'Laboratory', 'ML103'),
+('Cybersecurity Basics', 'Laboratory', 'CYBER104'),
+('Data Science', 'Laboratory', 'DS105');
 
 INSERT INTO "InspectionSchedule" ("year_semester", "fk_administrator")
 VALUES
@@ -76,7 +86,22 @@ VALUES
 
 INSERT INTO "Lesson" ("time", "room", "building", "fk_subject", "fk_teacher")
 VALUES
-('2024-12-15 08:00:00', 'Room 101', 'A1', 1, 1),  ('2024-12-15 10:00:00', 'Room 102', 'B4', 2, 2),  ('2024-12-15 12:00:00', 'Room 103', 'C4', 3, 3),  ('2024-12-15 14:00:00', 'Room 104', 'C6', 4, 4),  ('2024-12-15 16:00:00', 'Room 105', 'D1', 5, 5);  
+('2024-12-15 08:00:00', 'Room 101', 'A1', 1, 1),  
+('2024-12-15 10:00:00', 'Room 102', 'B4', 2, 2),  
+('2024-12-15 12:00:00', 'Room 103', 'C4', 3, 3),  
+('2024-12-15 14:00:00', 'Room 104', 'C6', 4, 4),  
+('2024-12-15 16:00:00', 'Room 105', 'D1', 5, 5),  
+('2025-02-01 08:00:00', 'Room 101', 'A1', 6, 1),  
+('2025-02-01 10:00:00', 'Room 102', 'B4', 7, 2),  
+('2025-02-01 12:00:00', 'Room 103', 'C4', 8, 3),  
+('2025-02-01 14:00:00', 'Room 105', 'C6', 9, 4),  
+('2025-02-01 16:00:00', 'Room 105', 'D1', 10, 5),  
+('2025-03-01 08:00:00', 'Room 201', 'A1', 1, 6),
+('2025-03-01 10:00:00', 'Room 202', 'B4', 2, 7),
+('2025-03-01 12:00:00', 'Room 203', 'C13', 3, 8),
+('2025-03-01 14:00:00', 'Room 204', 'D2', 4, 9),
+('2025-03-01 16:00:00', 'Room 205', 'C16', 5, 10);
+
 INSERT INTO "Inspection" ("fk_inspectionSchedule", "fk_inspectionTeam", "fk_inspectionReport", "fk_lesson")
 VALUES
 (1, 1, 1, 1),  (1, 1, 2, 2),  (1, 2, 3, 3),  (2, 2, 4, 4),  (2, 1, 5, 5);   
