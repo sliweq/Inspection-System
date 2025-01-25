@@ -45,13 +45,13 @@ const assert = require('assert');
     await driver.findElement(By.id('Final_assessment_input')).clear();
     await driver.findElement(By.id('Recommendation_input')).clear();
 
-    await driver.findElement(By.id('Inspected_lateness_input')).sendKeys('asd');
-    await driver.findElement(By.id('Student_attendance_input')).sendKeys('asds');
-    await driver.findElement(By.id('Room_adaptation_input')).sendKeys('Excellent');
-    await driver.findElement(By.id('Content_compatibility_input')).sendKeys('asd');
-    await driver.findElement(By.id('Substantive_assessment_input')).sendKeys('Detailed');
-    await driver.findElement(By.id('Final_assessment_input')).sendKeys('asdddd');
-    await driver.findElement(By.id('Recommendation_input')).sendKeys('0');
+    await driver.findElement(By.id('Inspected_lateness_input')).sendKeys('on time');
+    await driver.findElement(By.id('Student_attendance_input')).sendKeys('one hundred');
+    await driver.findElement(By.id('Room_adaptation_input')).sendKeys('0');
+    await driver.findElement(By.id('Content_compatibility_input')).sendKeys('ok');
+    await driver.findElement(By.id('Substantive_assessment_input')).sendKeys('5');
+    await driver.findElement(By.id('Final_assessment_input')).sendKeys('very good');
+    await driver.findElement(By.id('Recommendation_input')).sendKeys('speak little louder');
 
     await driver.findElement(By.id('buttonSave')).click();
     await driver.sleep(1000);
@@ -69,8 +69,6 @@ const assert = require('assert');
     const contentCompatibility = await driver.findElement(By.id('Content_compatibility_input'));
     const finalRating = await driver.findElement(By.id('Final_assessment_input'));
     
-
-    
     const studentAttendanceAtributes = await studentAttendance.getAttribute('class');
     const inspectedLatenessAtributes = await inspectedLateness.getAttribute('class');
     const contentCompatibilityAtributes = await contentCompatibility.getAttribute('class');
@@ -82,12 +80,10 @@ const assert = require('assert');
     } else {
       assert.equal(true, false, 'Not all elements have input_error class');
     }
-
-
-
   } catch (e) {
     console.error("Błąd:", e);
   } finally {
     await driver.quit();
   }
+  console.log("Test TC12 zakończony pomyślnie.");
 })();
