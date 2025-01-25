@@ -6,6 +6,7 @@ from models_sqlalchemy import *
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import aliased, declarative_base, sessionmaker
+from datetime import datetime
 
 DATABASE_URL = "postgresql://postgres:postgres@localhost/inspections"
 engine = create_engine(DATABASE_URL)
@@ -577,6 +578,7 @@ def get_lesson_with_dates(
         .join(Teacher, Lesson.fk_teacher == Teacher.id)
         .join(Subject, Lesson.fk_subject == Subject.id)
         .filter(Teacher.id == teacher_id, Subject.id == subject_id)
+        # .filter(Lesson.time >= datetime.now()) TODO!!
         .all()
     )
 

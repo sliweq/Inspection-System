@@ -431,22 +431,10 @@ async function saveTerms() {
         return
     }
 
-    createPopup('Are you sure you want to save this term?', [
-        {
-            text: 'Yes',
-            color: 'save_popup_btn',
-            onClick: () =>
-                saveTermAsync(
-                    document.getElementById('datePicker').value,
-                    document.getElementById('teamPicker').value
-                ),
-        },
-        {
-            text: 'No',
-            color: 'cancel_popup_btn',
-            onClick: () => {},
-        },
-    ])
+    saveTermAsync(
+        document.getElementById('datePicker').value,
+        document.getElementById('teamPicker').value
+    )
 }
 
 /**
@@ -468,7 +456,7 @@ async function saveTermAsync(lesson_id, team_id) {
         }),
     })
     if(response.status == 409){
-        createPopup('Term fo this subject already exists. Please select other subject', [
+        createPopup('Inspection for this subject already exists. Please select other subject', [
             {
                 text: 'Ok',
                 color: 'ok_popup_btn',

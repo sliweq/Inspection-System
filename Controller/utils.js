@@ -46,10 +46,10 @@ export function checkNumberInput(number, max) {
     const parsedNumber = parseInt(number)
     const isValidNumber = !isNaN(Number(number))
     if (!isValidNumber) {
-        return `Value must be a number.`
+        return `Value must be positive number.`
     }
     if (isNaN(parsedNumber)) {
-        return `Value must be a number.`
+        return `Value must be positive number.`
     } else if (parsedNumber < 0) {
         return `Value must be greater than 0.`
     } else if (parsedNumber > max) {

@@ -111,9 +111,22 @@ function createTermsList(terms) {
         })
         const editButton = listItem.querySelector('.edit_button img')
         editButton.addEventListener('click', () => {
-            cleanEditable()
-            inspection_id = term.id
-            editTerm(term.lesson_id, term.teacher_id, term.team_id)
+            // TODO delete !
+            if (!isInspectionConducted(term.date)) {
+                createPopup(
+                    'This term has been conducted. You cannot edit this term',
+                    [
+                        {
+                            text: 'Ok',
+                            color: 'ok_popup_btn',
+                        },
+                    ]
+                )
+            }else{
+                cleanEditable()
+                inspection_id = term.id
+                editTerm(term.lesson_id, term.teacher_id, term.team_id)
+            }
         })
     })
 }
@@ -128,7 +141,8 @@ function createTermsList(terms) {
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 async function deleteTerm(id, date) {
-    if (isInspectionConducted(date)) {
+    // TODO delete !
+    if (!isInspectionConducted(date)) {
         createPopup(
             'This term has been conducted. You cannot delete this term',
             [
@@ -179,18 +193,16 @@ async function deleteTermAsync(id) {
         if (!response.ok) {
             throw new Error('Failed to remove term')
         }
-        createPopup('Document deleted successfully', [
+        createPopup('Inspection term deleted successfully', [
             {
                 text: 'Ok',
                 color: 'ok_popup_btn',
-                onClick: () => {},
+                onClick: () => {window.location.reload()},
             },
         ])
     } catch (error) {
         console.error('Error loading :', error)
     }
-
-    window.location.reload()
 }
 
 /**
