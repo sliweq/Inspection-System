@@ -127,9 +127,9 @@ async function loadSubjects(teacher_id) {
         const subjects = await fetchData(
             `http://localhost:5000/unique-subjects/${teacher_id}/`
         )
-
+        console.error(subjects)
         fillSelectElement('subjectPicker', subjects, (subject) => ({
-            textContent: `${subject.subject_name} ${subject.subject_code}`,
+            textContent: `${subject.subject_name} ${subject.subject_type} ${subject.subject_code}`,
             value: subject.subject_id,
         }))
 
@@ -171,6 +171,7 @@ function handleSubjectChange(event, subjects, teacher_id) {
     })
 
     teachers_data.subject = subject.subject_name
+    teachers_data.subject_type = subject.subject_type
     teachers_data.subject_code = subject.subject_code
 
     resetOptions('datePicker', 'Select Date')
@@ -264,7 +265,7 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
             textContent: team.members
                 .map(
                     (member) =>
-                        `${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
+                        `${team.inspection_team_name}: ${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
                 )
                 .join(', '),
             value: team.inspection_team_id,
@@ -302,9 +303,9 @@ function handleInspectorsChange(teams, event) {
     applyToResult([
         teachers_data.teacher,
         teachers_data.department,
-        teachers_data.subject,
+        teachers_data.subject + " " + teachers_data.subject_type + " " + teachers_data.subject_code,
         teachers_data.date,
-        team.members
+        team.inspection_team_name + ': ' + team.members
             .map(
                 (member) =>
                     member.teacher_title +
@@ -466,8 +467,20 @@ async function saveTermAsync(lesson_id, team_id) {
             fk_inspectionTeam: parseInt(team_id),
         }),
     })
+    if(response.status == 409){
+        createPopup('Term fo this subject already exists. Please select other subject', [
+            {
+                text: 'Ok',
+                color: 'ok_popup_btn',
+                onClick: () => {},
+            },
+        ])
+        return
+    }
+
 
     if (!response.ok) {
+        console.error('Failed to save term:', response)
         alert('Failed to save term')
         return
     }

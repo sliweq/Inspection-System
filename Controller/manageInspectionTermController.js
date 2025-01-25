@@ -251,7 +251,7 @@ function editTermSetInfo(term_data) {
         ' ' +
         term_data.teacher_surname
     const info_department = document.getElementById('info_department')
-    info_department.innerHTML = info_department.department
+    info_department.innerHTML = term_data.department
     const info_subject = document.getElementById('info_subject')
     info_subject.innerHTML =
         term_data.subject_name + ' ' + term_data.subject_type
@@ -382,7 +382,7 @@ function afterFetchSpecificInspectionTeams(teams, team_id) {
 
     teams.forEach((element) => {
         const option = document.createElement('option')
-
+        option.textContent = element.inspection_team_name + ' '
         element.members.forEach((member) => {
             option.textContent +=
                 member.teacher_title +
@@ -428,7 +428,7 @@ async function saveTermAsync(lesson_id, team_id, term_id) {
     )
 
     if (!response.ok) {
-        alert('Failed to save term')
+        alert('Failed to save term. Unexpected error occurred.')
         return
     }
 
@@ -438,9 +438,7 @@ async function saveTermAsync(lesson_id, team_id, term_id) {
         {
             text: 'Ok',
             color: 'ok_popup_btn',
-            onClick: () => {},
+            onClick: () => {window.location.reload()},
         },
     ])
-
-    window.location.reload()
 }

@@ -484,6 +484,11 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
         raise HTTPException(status_code=404, detail="No inspection schedule found.")
+    
+    all_inspection = db.query(Inspection).filter(Inspection.fk_inspectionSchedule == schedule).join(Lesson, Inspection.fk_lesson == Lesson.id).filter(Lesson.id == term.fk_lesson).first()
+
+    if all_inspection:
+        raise HTTPException(status_code=409, detail="Lesson already has an inspection scheduled.")
 
     inspection = Inspection(
         fk_inspectionSchedule=schedule,
@@ -1021,7 +1026,7 @@ def get_teachers(db: sessionmaker = Depends(get_db)):
 @app.get("/unique-subjects/{teacher_id}/")
 def get_subjects(teacher_id: int, db: sessionmaker = Depends(get_db)):
     subjects = (
-        db.query(Subject.id, Subject.name, Subject.code)
+        db.query(Subject.id, Subject.name, Subject.code, Subject.type)
         .join(Lesson, Lesson.fk_subject == Subject.id)
         .join(Teacher, Teacher.id == Lesson.fk_teacher)
         .filter(Teacher.id == teacher_id)
@@ -1032,6 +1037,7 @@ def get_subjects(teacher_id: int, db: sessionmaker = Depends(get_db)):
             "subject_id": subject.id,
             "subject_name": subject.name,
             "subject_code": subject.code,
+            "subject_type": subject.type,
         }
         for subject in subjects
     ]
