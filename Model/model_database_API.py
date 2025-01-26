@@ -3,8 +3,8 @@ from datetime import datetime
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .models_pydantic import *
-from .models_sqlalchemy import *
+from models_pydantic import *
+from models_sqlalchemy import *
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import aliased, declarative_base, sessionmaker
