@@ -50,8 +50,8 @@ This project is a web application that uses a local server for the frontend and 
 <p>Project created as part of the Software Design class.</p>
 <h2>Authors</h2>
 <ul>
-<li>Jan Maciuk <a href="github.com/JanMaciuk">JanMaciuk</a></li>
-<li>Jakub Śliwka <a href="github.com/sliweq">sliweq</a></li>
+<li>Jan Maciuk <a href="https://github.com/JanMaciuk">JanMaciuk</a></li>
+<li>Jakub Śliwka <a href="https://github.com/sliweq">sliweq</a></li>
 </ul>
 <hr>
 <h2>Prerequisites</h2>
@@ -82,13 +82,20 @@ This project is a web application that uses a local server for the frontend and 
 <pre class="prettyprint source lang-bash"><code>python Model_Database_API.py
 </code></pre>
 <p>Open website in live server and enjoy !</p>
-<h2>Testing</h2>
-<p>Required: npm package jest</p>
+<h2>Unit tests</h2>
+<p>Required: npm package jest and pip package pytest</p>
 <pre class="prettyprint source lang-bash"><code>npm i jest
+</code></pre>
+<pre class="prettyprint source lang-bash"><code>pip install pytest pytest-mock
 </code></pre>
 <p>Run</p>
 <pre class="prettyprint source lang-bash"><code>jest
-</code></pre></article>
+</code></pre>
+<p>Run second part of unit tests</p>
+<pre class="prettyprint source lang-bash"><code>.\Model\unit_tests_model_get.py .\model\unit_tests_model_post.py
+</code></pre>
+
+</article>
     </section>
 
 
