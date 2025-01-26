@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: utils.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: utils.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Converts a string representation of a date to a Date object.
+ *
+ * @param {string} dateString - The string representation of the date.
+ * @returns {Date} The Date object created from the string.
+ */
+export function convertStringDateToDate(dateString) {
+    return new Date(dateString.replace(' ', 'T'))
+}
+
+/**
+ * Converts a Date object to a formatted string.
+ *
+ * @param {Date} date - The date to be converted.
+ * @returns {string} The formatted date string in the format 'YYYY-MM-DD HH:mm'.
+ */
+export function convertDateToStringDate(date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`
+    return formattedDate
+}
+
+/**
+ * Converts a date string to a standardized string date format.
+ *
+ * @param {string} dateString - The date string to be converted.
+ * @returns {string} - The converted date string in a standardized format.
+ */
+export function fixStringDate(dateString) {
+    return convertDateToStringDate(new Date(dateString.replace(' ', 'T')))
+}
+
+/**
+ * Checks if the given number input is valid.
+ *
+ * @param {string|number} number - The input number to check.
+ * @param {number} max - The maximum allowed value for the input number.
+ * @returns {string|boolean} - Returns a string with an error message if the input is invalid, or true if the input is valid.
+ */
+export function checkNumberInput(number, max) {
+    const parsedNumber = parseInt(number)
+    const isValidNumber = !isNaN(Number(number))
+    if (!isValidNumber) {
+        return `Value must be positive number.`
+    }
+    if (isNaN(parsedNumber)) {
+        return `Value must be positive number.`
+    } else if (parsedNumber &lt; 0) {
+        return `Value must be greater than 0.`
+    } else if (parsedNumber > max) {
+        return `Value must be lower than ${max}.`
+    }
+    return true
+}
+
+/**
+ * Checks if a string input is valid based on given criteria.
+ *
+ * @param {string} string - The input string to be checked.
+ * @param {number} max - The maximum allowed length for the input string.
+ * @returns {string|boolean} - Returns an error message if the input is invalid, otherwise returns true.
+ */
+export function checkStringInput(string, max) {
+    if (string.trim() === '') {
+        return `Filed cannot be empty.`
+    } else if (string.length > max) {
+        return `Text cannot be longer than ${max}.`
+    }
+    return true
+}
+
+/**
+ * Filters the items in the itemList based on the selected date from the datePicker1 input.
+ * If the date input is empty, all items will be shown.
+ *
+ * The function assumes that each item in the itemList has a 'value' attribute that contains the date information.
+ *
+ * @function
+ */
+export function filterByDate() {
+    const value = document.getElementById('datePicker1').value
+    const itemList = document.getElementById('itemList')
+    const items = Array.from(itemList.children)
+    items.forEach((element) => {
+        if (element.getAttribute('value').includes(value)) {
+            element.classList.remove('hidden')
+        } else {
+            element.classList.add('hidden')
+        }
+    })
+    if (value == '') {
+        items.forEach((item) => {
+            item.classList.remove('hidden')
+        })
+    }
+}
+
+/**
+ * Sorts the items in the item list by date based on the selected filter value.
+ * The items are sorted in ascending order if the filter value is 'old',
+ * otherwise they are sorted in descending order.
+ *
+ * The function expects the HTML structure to have an element with the ID 'filterSelect'
+ * containing the filter value, and an element with the ID 'itemList' containing the items to be sorted.
+ * Each item should have a 'value' attribute containing a date string.
+ */
+export function sortByDate() {
+    const value = document.getElementById('filterSelect').value
+    const itemList = document.getElementById('itemList')
+    const items = Array.from(itemList.children)
+    if (value == 'old') {
+        items.sort(
+            (a, b) =>
+                new Date(a.getAttribute('value')) -
+                new Date(b.getAttribute('value'))
+        )
+    } else {
+        items.sort(
+            (a, b) =>
+                new Date(b.getAttribute('value')) -
+                new Date(a.getAttribute('value'))
+        )
+    }
+    itemList.innerHTML = ''
+
+    items.forEach((item) => itemList.appendChild(item))
+}
+
+/**
+ * Creates a popup with a message and buttons.
+ *
+ * @param {string} message - The main string to display in the popup.
+ * @param {Array&lt;Object>} buttons - An array of button objects.
+ * @param {string} buttons[].text - The text to display on the button.
+ * @param {string} buttons[].color - The color class to apply to the button.
+ * @param {string} buttons[].hoverColor - The hover color class to apply to the button.
+ * @param {Function} buttons[].onClick - The function to call when the button is clicked.
+ */
+export function createPopup(message, buttons) {
+    if (!buttons) {
+        console.error('No buttons provided')
+        return
+    }
+    const overlay = document.createElement('div')
+    overlay.className = 'popup_overlay'
+
+    const content = document.createElement('div')
+    content.className = 'popup_content'
+
+    const text = document.createElement('p')
+    text.className = 'popup_text'
+    text.textContent = message
+    content.appendChild(text)
+
+    buttons.forEach((button) => {
+        const buttonElement = document.createElement('button')
+        buttonElement.classList.add(button.color)
+        buttonElement.className = button.color
+        buttonElement.textContent = button.text
+
+        buttonElement.addEventListener('click', () => {
+            overlay.remove()
+            if (button.onClick) {
+                button.onClick()
+            }
+        })
+
+        content.appendChild(buttonElement)
+    })
+
+    overlay.appendChild(content)
+    document.body.appendChild(overlay)
+}
+
+/**
+ * Checks if an inspection has been conducted based on the given date.
+ *
+ * @param {string} date - The date of the inspection in string format.
+ * @returns {boolean} - Returns true if the inspection date is today or in the past, otherwise false.
+ */
+export function isInspectionConducted(date) {
+    const currentDate = new Date()
+    const inspectionDate = convertStringDateToDate(date)
+    currentDate.setHours(0, 0, 0, 0)
+    inspectionDate.setHours(0, 0, 0, 0)
+    return currentDate >= inspectionDate
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addChangeListener">addChangeListener</a></li><li><a href="global.html#afterFetchSpecificInspectionTeams">afterFetchSpecificInspectionTeams</a></li><li><a href="global.html#applyToResult">applyToResult</a></li><li><a href="global.html#cancelDocs">cancelDocs</a></li><li><a href="global.html#checkNumberInput">checkNumberInput</a></li><li><a href="global.html#checkStringInput">checkStringInput</a></li><li><a href="global.html#cleanEditable">cleanEditable</a></li><li><a href="global.html#cleanInspectors">cleanInspectors</a></li><li><a href="global.html#convertDateToStringDate">convertDateToStringDate</a></li><li><a href="global.html#convertStringDateToDate">convertStringDateToDate</a></li><li><a href="global.html#createListItem">createListItem</a></li><li><a href="global.html#createPopup">createPopup</a></li><li><a href="global.html#createTermsList">createTermsList</a></li><li><a href="global.html#deleteTerm">deleteTerm</a></li><li><a href="global.html#deleteTermAsync">deleteTermAsync</a></li><li><a href="global.html#editItem">editItem</a></li><li><a href="global.html#editTerm">editTerm</a></li><li><a href="global.html#editTermSetInfo">editTermSetInfo</a></li><li><a href="global.html#editTermSetLessons">editTermSetLessons</a></li><li><a href="global.html#fetchData">fetchData</a></li><li><a href="global.html#fetchDocDetails">fetchDocDetails</a></li><li><a href="global.html#fetchSpecificInspectionTeams">fetchSpecificInspectionTeams</a></li><li><a href="global.html#fillSelectElement">fillSelectElement</a></li><li><a href="global.html#filterByDate">filterByDate</a></li><li><a href="global.html#filterByName">filterByName</a></li><li><a href="global.html#fixStringDate">fixStringDate</a></li><li><a href="global.html#getInputs">getInputs</a></li><li><a href="global.html#handleInspectorsChange">handleInspectorsChange</a></li><li><a href="global.html#handleLessonChange">handleLessonChange</a></li><li><a href="global.html#handleSubjectChange">handleSubjectChange</a></li><li><a href="global.html#handleTeacherChange">handleTeacherChange</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#isInspectionConducted">isInspectionConducted</a></li><li><a href="global.html#loadDocs">loadDocs</a></li><li><a href="global.html#loadInspectorsTeam">loadInspectorsTeam</a></li><li><a href="global.html#loadLessonsAndDates">loadLessonsAndDates</a></li><li><a href="global.html#loadSubjects">loadSubjects</a></li><li><a href="global.html#loadTeachers">loadTeachers</a></li><li><a href="global.html#loadTerms">loadTerms</a></li><li><a href="global.html#resetInputsErrors">resetInputsErrors</a></li><li><a href="global.html#resetOptions">resetOptions</a></li><li><a href="global.html#saveDocs">saveDocs</a></li><li><a href="global.html#saveDocsChanges">saveDocsChanges</a></li><li><a href="global.html#saveTermAsync">saveTermAsync</a></li><li><a href="global.html#saveTerms">saveTerms</a></li><li><a href="global.html#selectFirst">selectFirst</a></li><li><a href="global.html#setDocDetails">setDocDetails</a></li><li><a href="global.html#showElement">showElement</a></li><li><a href="global.html#sortByDate">sortByDate</a></li><li><a href="global.html#validateInputs">validateInputs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sun Jan 26 2025 12:08:55 GMT+0100 (czas środkowoeuropejski standardowy)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Inspection Management System</h1>
+<h2>Overview</h2>
+<p>A system for managing inspections at the university. It has capabilities such as: CRUD operations of inspection dates, Read Update inspection documents, Read inspection schedule, Udpate inspection teams.
+This project is a web application that uses a local server for the frontend and a Python-based API with SQLAlchemy for the backend. The application interacts with a PostgreSQL database.</p>
+<p>Project created as part of the Software Design class.</p>
+<h2>Authors</h2>
+<ul>
+<li>Jan Maciuk <a href="github.com/JanMaciuk">JanMaciuk</a></li>
+<li>Jakub Śliwka <a href="github.com/sliweq">sliweq</a></li>
+</ul>
+<hr>
+<h2>Prerequisites</h2>
+<p>Before running the project, ensure you have the following installed on your system:</p>
+<ul>
+<li><strong>Localhost Server (e.g VSCode extension &quot;Live Server&quot; by Ritwick Dey)</strong></li>
+<li><strong>PostgreSQL</strong>
+<ul>
+<li><code>Windows Users: Use ImportSQL.bat to create database, structure and insert data to database (make sure you have configured this file beforehand)</code></li>
+<li><code>Linux Users: Use ImportSQL.sh (make sure you have configured this file beforehand)</code></li>
+</ul>
+</li>
+<li><strong>Python (recommended latest version)</strong></li>
+<li><strong>Python Libraries:</strong>
+<ul>
+<li><code>fastapi</code></li>
+<li><code>pydantic</code></li>
+<li><code>sqlalchemy</code></li>
+<li><code>uvicorn</code></li>
+</ul>
+</li>
+</ul>
+<p>You can install the required Python libraries using the following command:</p>
+<pre class="prettyprint source lang-bash"><code>pip install fastapi pydantic sqlalchemy uvicorn
+</code></pre>
+<h2>Run</h2>
+<p>Run python code</p>
+<pre class="prettyprint source lang-bash"><code>python Model_Database_API.py
+</code></pre>
+<p>Open website in live server and enjoy !</p>
+<h2>Testing</h2>
+<p>Required: npm package jest</p>
+<pre class="prettyprint source lang-bash"><code>npm i jest
+</code></pre>
+<p>Run</p>
+<pre class="prettyprint source lang-bash"><code>jest
+</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addChangeListener">addChangeListener</a></li><li><a href="global.html#afterFetchSpecificInspectionTeams">afterFetchSpecificInspectionTeams</a></li><li><a href="global.html#applyToResult">applyToResult</a></li><li><a href="global.html#cancelDocs">cancelDocs</a></li><li><a href="global.html#checkNumberInput">checkNumberInput</a></li><li><a href="global.html#checkStringInput">checkStringInput</a></li><li><a href="global.html#cleanEditable">cleanEditable</a></li><li><a href="global.html#cleanInspectors">cleanInspectors</a></li><li><a href="global.html#convertDateToStringDate">convertDateToStringDate</a></li><li><a href="global.html#convertStringDateToDate">convertStringDateToDate</a></li><li><a href="global.html#createListItem">createListItem</a></li><li><a href="global.html#createPopup">createPopup</a></li><li><a href="global.html#createTermsList">createTermsList</a></li><li><a href="global.html#deleteTerm">deleteTerm</a></li><li><a href="global.html#deleteTermAsync">deleteTermAsync</a></li><li><a href="global.html#editItem">editItem</a></li><li><a href="global.html#editTerm">editTerm</a></li><li><a href="global.html#editTermSetInfo">editTermSetInfo</a></li><li><a href="global.html#editTermSetLessons">editTermSetLessons</a></li><li><a href="global.html#fetchData">fetchData</a></li><li><a href="global.html#fetchDocDetails">fetchDocDetails</a></li><li><a href="global.html#fetchSpecificInspectionTeams">fetchSpecificInspectionTeams</a></li><li><a href="global.html#fillSelectElement">fillSelectElement</a></li><li><a href="global.html#filterByDate">filterByDate</a></li><li><a href="global.html#filterByName">filterByName</a></li><li><a href="global.html#fixStringDate">fixStringDate</a></li><li><a href="global.html#getInputs">getInputs</a></li><li><a href="global.html#handleInspectorsChange">handleInspectorsChange</a></li><li><a href="global.html#handleLessonChange">handleLessonChange</a></li><li><a href="global.html#handleSubjectChange">handleSubjectChange</a></li><li><a href="global.html#handleTeacherChange">handleTeacherChange</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#isInspectionConducted">isInspectionConducted</a></li><li><a href="global.html#loadDocs">loadDocs</a></li><li><a href="global.html#loadInspectorsTeam">loadInspectorsTeam</a></li><li><a href="global.html#loadLessonsAndDates">loadLessonsAndDates</a></li><li><a href="global.html#loadSubjects">loadSubjects</a></li><li><a href="global.html#loadTeachers">loadTeachers</a></li><li><a href="global.html#loadTerms">loadTerms</a></li><li><a href="global.html#resetInputsErrors">resetInputsErrors</a></li><li><a href="global.html#resetOptions">resetOptions</a></li><li><a href="global.html#saveDocs">saveDocs</a></li><li><a href="global.html#saveDocsChanges">saveDocsChanges</a></li><li><a href="global.html#saveTermAsync">saveTermAsync</a></li><li><a href="global.html#saveTerms">saveTerms</a></li><li><a href="global.html#selectFirst">selectFirst</a></li><li><a href="global.html#setDocDetails">setDocDetails</a></li><li><a href="global.html#showElement">showElement</a></li><li><a href="global.html#sortByDate">sortByDate</a></li><li><a href="global.html#validateInputs">validateInputs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sun Jan 26 2025 12:08:55 GMT+0100 (czas środkowoeuropejski standardowy)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

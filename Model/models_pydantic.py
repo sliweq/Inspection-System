@@ -107,4 +107,4 @@ class EditInspectionReport(BaseModel):
     content_compatibility: int
     substantive_rating: str
     final_rating: int
-    objection: str 
+    objection: str

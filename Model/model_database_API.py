@@ -1,12 +1,13 @@
+from datetime import datetime
+
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from models_pydantic import *
-from models_sqlalchemy import *
+from .models_pydantic import *
+from .models_sqlalchemy import *
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import aliased, declarative_base, sessionmaker
-from datetime import datetime
 
 DATABASE_URL = "postgresql://postgres:postgres@localhost/inspections"
 engine = create_engine(DATABASE_URL)
@@ -67,6 +68,7 @@ def get_inspection_docs(db: sessionmaker = Depends(get_db)):
             InspectionReport.id.label("document_id"),
             Lesson.time.label("inspection_date"),
             Subject.name.label("subject_name"),
+            Subject.type.label("subject_type"),
             Teacher.name.label("teacher_name"),
             Teacher.surname.label("teacher_surname"),
             Teacher.title.label("teacher_title"),
@@ -82,6 +84,7 @@ def get_inspection_docs(db: sessionmaker = Depends(get_db)):
             "id": doc.document_id,
             "date": doc.inspection_date,
             "subject": doc.subject_name,
+            "subject_type": doc.subject_type,
             "teacher": f"{doc.teacher_title} {doc.teacher_name} {doc.teacher_surname}",
         }
         for doc in inspection_docs
@@ -425,6 +428,7 @@ def get_inspection_terms(db: sessionmaker = Depends(get_db)):
             Inspection.fk_inspectionTeam.label("team_id"),
             Lesson.time.label("inspection_date"),
             Subject.name.label("subject_name"),
+            Subject.type.label("subject_type"),
             Teacher.name.label("teacher_name"),
             Teacher.id.label("teacher_id"),
             Teacher.surname.label("teacher_surname"),
@@ -441,6 +445,7 @@ def get_inspection_terms(db: sessionmaker = Depends(get_db)):
             "id": term.inspection_id,
             "date": term.inspection_date,
             "subject": term.subject_name,
+            "subject_type": term.subject_type,
             "teacher": f"{term.teacher_title} {term.teacher_name} {term.teacher_surname}",
             "teacher_id": term.teacher_id,
             "lesson_id": term.lesson_id,
@@ -485,11 +490,19 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
     schedule = db.query(InspectionSchedule).first().id
     if not schedule:
         raise HTTPException(status_code=404, detail="No inspection schedule found.")
-    
-    all_inspection = db.query(Inspection).filter(Inspection.fk_inspectionSchedule == schedule).join(Lesson, Inspection.fk_lesson == Lesson.id).filter(Lesson.id == term.fk_lesson).first()
+
+    all_inspection = (
+        db.query(Inspection)
+        .filter(Inspection.fk_inspectionSchedule == schedule)
+        .join(Lesson, Inspection.fk_lesson == Lesson.id)
+        .filter(Lesson.id == term.fk_lesson)
+        .first()
+    )
 
     if all_inspection:
-        raise HTTPException(status_code=409, detail="Lesson already has an inspection scheduled.")
+        raise HTTPException(
+            status_code=409, detail="Lesson already has an inspection scheduled."
+        )
 
     inspection = Inspection(
         fk_inspectionSchedule=schedule,
@@ -920,7 +933,7 @@ def get_specified_inspection_teams(
             TeacherInspectionTeam,
             TeacherInspectionTeam.fk_inspectionTeam == InspectionTeam.id,
         )
-        .filter(InspectionTeam.id.notin_(subquery.select())) 
+        .filter(InspectionTeam.id.notin_(subquery.select()))
         .all()
     )
 
@@ -1036,6 +1049,7 @@ def get_subjects(teacher_id: int, db: sessionmaker = Depends(get_db)):
         .join(Lesson, Lesson.fk_subject == Subject.id)
         .join(Teacher, Teacher.id == Lesson.fk_teacher)
         .filter(Teacher.id == teacher_id)
+        .filter(Lesson.time >= datetime.now())
         .all()
     )
     result = [

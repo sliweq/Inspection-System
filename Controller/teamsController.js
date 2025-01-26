@@ -220,6 +220,7 @@ async function addTeam() {
         message.textContent = 'Team added successfully!'
         loadTeams()
     } catch (error) {
-        message.textContent = 'Error adding team, the identifiers must be unique.'
+        message.textContent =
+            'Error adding team, the identifiers must be unique.'
     }
 }

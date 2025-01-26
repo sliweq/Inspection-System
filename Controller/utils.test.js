@@ -1,9 +1,44 @@
-import {
-    checkStringInput,
-    checkNumberInput,
-    convertDateToStringDate,
-} from './utils.js'
+function checkNumberInput(number, max) {
+    const parsedNumber = parseInt(number)
+    const isValidNumber = !isNaN(Number(number))
+    if (!isValidNumber) {
+        return `Value must be positive number.`
+    }
+    if (isNaN(parsedNumber)) {
+        return `Value must be positive number.`
+    } else if (parsedNumber < 0) {
+        return `Value must be greater than 0.`
+    } else if (parsedNumber > max) {
+        return `Value must be lower than ${max}.`
+    }
+    return true
+}
 
+function convertDateToStringDate(date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+
+    const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}`
+    return formattedDate
+}
+/**
+ * Checks if a string input is valid based on given criteria.
+ *
+ * @param {string} string - The input string to be checked.
+ * @param {number} max - The maximum allowed length for the input string.
+ * @returns {string|boolean} - Returns an error message if the input is invalid, otherwise returns true.
+ */
+function checkStringInput(string, max) {
+    if (string.trim() === '') {
+        return `Filed cannot be empty.`
+    } else if (string.length > max) {
+        return `Text cannot be longer than ${max}.`
+    }
+    return true
+}
 describe('checkStringInput', () => {
     test('should return error message if string is empty', () => {
         const result = checkStringInput('', 10)
@@ -34,7 +69,7 @@ describe('checkStringInput', () => {
 describe('checkNumberInput', () => {
     test('should return error message if input is not a number', () => {
         const result = checkNumberInput('abc', 10)
-        expect(result).toBe('Value must be a number.')
+        expect(result).toBe('Value must be positive number.')
     })
 
     test('should return error message if number is less than 0', () => {

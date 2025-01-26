@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: addTermController.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: addTermController.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { fixStringDate, createPopup } from './utils.js'
+
+import { fetchData } from './controllerUtils.js'
+
+document.addEventListener('DOMContentLoaded', loadTeachers)
+
+document.getElementById('buttonSave').addEventListener('click', saveTerms)
+document.getElementById('buttonCancel').addEventListener('click', () => {
+    createPopup('Do you want to cancel this operation?', [
+        {
+            text: 'Yes',
+            color: 'save_popup_btn',
+            onClick: () => {
+                window.location.href = 'index.html'
+            },
+        },
+        { text: 'No', color: 'cancel_popup_btn', onClick: () => {} },
+    ])
+})
+
+let teachers_data = {}
+
+/**
+ * Populates a select HTML element with options based on provided data.
+ *
+ * @param {string} id - The ID of the select element to populate.
+ * @param {Array} data - The array of data to use for creating options.
+ * @param {function} func - A function that takes an item from the data array and returns an object with `textContent` and `value` properties.
+ */
+function fillSelectElement(id, data, func) {
+    const selectElement = document.getElementById(id)
+
+    data.forEach((item) => {
+        const option = document.createElement('option')
+
+        const { textContent, value } = func(item)
+        option.textContent = textContent
+        option.value = value
+
+        selectElement.appendChild(option)
+    })
+}
+
+/**
+ * Adds a 'change' event listener to the element with the specified ID.
+ *
+ * @param {string} id - The ID of the element to which the event listener will be added.
+ * @param {Function} callback - The function to be called when the 'change' event is triggered.
+ */
+function addChangeListener(id, callback) {
+    document.getElementById(id).addEventListener('change', callback)
+}
+
+/**
+ * Asynchronously loads teachers from the server, hides specific elements,
+ * populates a select element with the retrieved teachers, and adds a change
+ * listener to handle teacher selection changes.
+ *
+ * @async
+ * @function loadTeachers
+ * @returns {Promise&lt;void>} A promise that resolves when the teachers are loaded and the select element is populated.
+ * @throws {Error} If there is an error while fetching the teachers data.
+ */
+async function loadTeachers() {
+    ;['select_subject', 'select_date', 'select_inspectors'].forEach((element) =>
+        hideElement(element)
+    )
+
+    try {
+        const teachers = await fetchData('http://localhost:5000/teachers/')
+
+        fillSelectElement('inspectedPicker', teachers, (teacher) => ({
+            textContent: `${teacher.title} ${teacher.name} ${teacher.surname}`,
+            value: teacher.id,
+        }))
+
+        addChangeListener('inspectedPicker', (event) =>
+            handleTeacherChange(event, teachers)
+        )
+    } catch (error) {
+        console.error('Error loading teachers:', error)
+    }
+}
+
+/**
+ * Handles the change event for the teacher selection dropdown.
+ *
+ * @param {Event} event - The change event triggered by the teacher selection dropdown.
+ * @param {Array} teachers - An array of teacher objects, each containing id, title, name, surname, and department properties.
+ */
+function handleTeacherChange(event, teachers) {
+    applyToResult(['', '', '', '', '', ''])
+    document.getElementById('editable').classList.add('hidden')
+
+    hideElement('select_date')
+    hideElement('select_inspectors')
+    const selectedValue = event.target.value
+    if (selectedValue == '') {
+        hideElement('select_subject')
+        return
+    }
+    const teacher = teachers.find((teacher) => teacher.id == selectedValue)
+    teachers_data.teacher =
+        teacher.title + ' ' + teacher.name + ' ' + teacher.surname
+    teachers_data.department = teacher.department
+
+    resetOptions('subjectPicker', 'Select Subject')
+    resetOptions('datePicker', 'Select Date')
+    resetOptions('teamPicker', 'Select Inspectors')
+    loadSubjects(selectedValue)
+
+    selectFirst('subjectPicker')
+    showElement('select_subject')
+}
+
+/**
+ * Loads subjects for a given teacher and populates a select element with the subjects.
+ *
+ * @async
+ * @function loadSubjects
+ * @param {number} teacher_id - The ID of the teacher whose subjects are to be loaded.
+ * @returns {Promise&lt;void>} - A promise that resolves when the subjects are loaded and the select element is populated.
+ * @throws {Error} - Throws an error if there is an issue loading the subjects.
+ */
+async function loadSubjects(teacher_id) {
+    try {
+        const subjects = await fetchData(
+            `http://localhost:5000/unique-subjects/${teacher_id}/`
+        )
+        console.error(subjects)
+        fillSelectElement('subjectPicker', subjects, (subject) => ({
+            textContent: `${subject.subject_name} ${subject.subject_type} ${subject.subject_code}`,
+            value: subject.subject_id,
+        }))
+
+        addChangeListener('subjectPicker', (event) =>
+            handleSubjectChange(event, subjects, teacher_id)
+        )
+    } catch (error) {
+        console.error('Error loading subjects:', error)
+    }
+}
+
+/**
+ * Handles the change event for the subject selection.
+ *
+ * @param {Event} event - The event object from the subject selection change.
+ * @param {Array} subjects - An array of subject objects.
+ * @param {string} teacher_id - The ID of the teacher.
+ */
+function handleSubjectChange(event, subjects, teacher_id) {
+    applyToResult(['', '', '', '', '', ''])
+    document.getElementById('editable').classList.add('hidden')
+
+    if (event.target == undefined) {
+        return
+    }
+
+    const selectedValue = event.target.value
+
+    if (selectedValue == '') {
+        hideElement('select_date')
+        hideElement('select_inspectors')
+        return
+    }
+    var subject = undefined
+    subjects.forEach((element) => {
+        if (element.subject_id == selectedValue) {
+            subject = element
+        }
+    })
+
+    teachers_data.subject = subject.subject_name
+    teachers_data.subject_type = subject.subject_type
+    teachers_data.subject_code = subject.subject_code
+
+    resetOptions('datePicker', 'Select Date')
+    resetOptions('teamPicker', 'Select Inspectors')
+    loadLessonsAndDates(selectedValue, teacher_id)
+
+    showElement('select_date')
+    selectFirst('datePicker')
+    hideElement('select_inspectors')
+}
+
+/**
+ * Loads lessons and their dates for a given subject and teacher, populates a select element with the lessons,
+ * and adds a change listener to handle lesson changes.
+ *
+ * @async
+ * @function loadLessonsAndDates
+ * @param {number} subject_id - The ID of the subject.
+ * @param {number} teacher_id - The ID of the teacher.
+ * @returns {Promise&lt;void>} - A promise that resolves when the lessons and dates are loaded and the select element is populated.
+ * @throws {Error} - Throws an error if there is an issue loading the lessons and dates.
+ */
+async function loadLessonsAndDates(subject_id, teacher_id) {
+    try {
+        const lessons = await fetchData(
+            `http://localhost:5000/lesson_with_dates/${teacher_id}/${subject_id}/`
+        )
+
+        fillSelectElement('datePicker', lessons, (lesson) => ({
+            textContent:
+                fixStringDate(lesson.time) +
+                ' ' +
+                lesson.building +
+                '-' +
+                lesson.room,
+            value: lesson.id,
+        }))
+
+        addChangeListener('datePicker', (event) =>
+            handleLessonChange(lessons, teacher_id, event)
+        )
+    } catch (error) {
+        console.error('Error loading subjects:', error)
+    }
+}
+
+/**
+ * Handles the change event for the lesson selection.
+ *
+ * @param {Array} lessons - Array of lesson objects.
+ * @param {number} teacher_id - The ID of the teacher.
+ * @param {Event} event - The change event triggered by the lesson selection.
+ */
+function handleLessonChange(lessons, teacher_id, event) {
+    applyToResult(['', '', '', '', '', ''])
+    document.getElementById('editable').classList.add('hidden')
+
+    const selectedValue = event.target.value
+    if (selectedValue == '') {
+        hideElement('select_inspectors')
+        return
+    }
+
+    const lesson = lessons.find((lesson) => lesson.id == selectedValue)
+    teachers_data.date = fixStringDate(lesson.time)
+    teachers_data.building = lesson.building + '-' + lesson.room
+
+    resetOptions('teamPicker', 'Select Inspectors')
+    loadInspectorsTeam(selectedValue, teacher_id)
+
+    showElement('select_inspectors')
+    selectFirst('teamPicker')
+}
+
+/**
+ * Loads the inspection teams for a given lesson and teacher, populates a select element with the teams,
+ * and sets up an event listener to handle changes in the selected team.
+ *
+ * @param {number} lesson_id - The ID of the lesson.
+ * @param {number} teacher_id - The ID of the teacher.
+ * @returns {Promise&lt;void>} - A promise that resolves when the inspection teams are loaded and the select element is populated.
+ * @throws {Error} - Throws an error if there is an issue loading the inspection teams.
+ */
+async function loadInspectorsTeam(lesson_id, teacher_id) {
+    try {
+        const teams = await fetchData(
+            `http://localhost:5000/inspection-teams/${teacher_id}/${lesson_id}/`
+        )
+
+        fillSelectElement('teamPicker', teams, (team) => ({
+            textContent:
+                team.inspection_team_name +
+                ': ' +
+                team.members
+                    .map(
+                        (member) =>
+                            `${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
+                    )
+                    .join(', '),
+            value: team.inspection_team_id,
+        }))
+
+        document
+            .getElementById('teamPicker')
+            .addEventListener('change', function (event) {
+                handleInspectorsChange(teams, event)
+            })
+    } catch (error) {
+        console.error('Error loading subjects:', error)
+    }
+}
+
+/**
+ * Handles the change event for the inspectors dropdown.
+ *
+ * @param {Array} teams - An array of team objects.
+ * @param {Object} event - The event object from the change event.
+ * @param {Object} event.target - The target element of the event.
+ * @param {string} event.target.value - The selected value from the dropdown.
+ */
+function handleInspectorsChange(teams, event) {
+    const selectedValue = event.target.value
+    if (selectedValue == '') {
+        applyToResult(['', '', '', '', '', ''])
+        document.getElementById('editable').classList.add('hidden')
+        return
+    }
+    const team = teams.find((team) => team.inspection_team_id == selectedValue)
+
+    document.getElementById('editable').classList.remove('hidden')
+
+    applyToResult([
+        teachers_data.teacher,
+        teachers_data.department,
+        teachers_data.subject +
+            ' ' +
+            teachers_data.subject_type +
+            ' ' +
+            teachers_data.subject_code,
+        teachers_data.date,
+        team.inspection_team_name +
+            ': ' +
+            team.members
+                .map(
+                    (member) =>
+                        member.teacher_title +
+                        ' ' +
+                        member.teacher_name +
+                        ' ' +
+                        member.teacher_surname
+                )
+                .join(', '),
+    ])
+}
+
+/**
+ * Resets the options of a select element with a given default option.
+ *
+ * @param {string} html_id - The ID of the HTML select element to reset.
+ * @param {string} default_text - The text for the default option to be added.
+ */
+function resetOptions(html_id, default_text) {
+    const element = document.getElementById(html_id)
+    element.innerHTML = ''
+
+    const option = document.createElement('option')
+    option.textContent = default_text
+    option.value = ''
+    element.appendChild(option)
+}
+
+/**
+ * Selects the first option in a dropdown list.
+ *
+ * @param {string} html_id - The ID of the HTML select element.
+ */
+function selectFirst(html_id) {
+    const element = document.getElementById(html_id)
+    const options = element.options
+
+    if (options.length > 0) {
+        options[0].selected = true
+    }
+}
+
+/**
+ * Hides an HTML element by adding the 'hidden' class to it.
+ *
+ * @param {string} id - The ID of the HTML element to hide.
+ */
+function hideElement(id) {
+    const element = document.getElementById(id)
+    element.classList.add('hidden')
+}
+
+/**
+ * Displays an HTML element by removing the 'hidden' class.
+ *
+ * @param {string} id - The ID of the HTML element to show.
+ */
+function showElement(id) {
+    const element = document.getElementById(id)
+    element.classList.remove('hidden')
+}
+
+/**
+ * Updates the text content of specific HTML elements with corresponding data.
+ *
+ * @param {Object} data - An object containing the data to be applied to the result.
+ * The object should have properties corresponding to the IDs of the HTML elements.
+ */
+function applyToResult(data) {
+    const ids = [
+        'info_inspected',
+        'info_department',
+        'info_subject',
+        'info_date',
+        'info_inspectors',
+    ]
+    ids.forEach((id) => {
+        document.getElementById(id).textContent = data[ids.indexOf(id)]
+    })
+}
+
+/**
+ * Asynchronously saves the terms selected by the user.
+ *
+ * This function retrieves the values from the HTML elements with IDs 'inspectedPicker',
+ * 'subjectPicker', 'datePicker', and 'teamPicker'. If any of these values are empty,
+ * it creates a popup message prompting the user to select the missing values.
+ * If all values are present, it creates a confirmation popup asking the user if they
+ * want to save the term. If the user confirms, it calls the `saveTermAsync` function
+ * with the selected date and team values.
+ *
+ * @async
+ * @function saveTerms
+ */
+async function saveTerms() {
+    const teacher_id = document.getElementById('inspectedPicker').value
+    const subject_id = document.getElementById('subjectPicker').value
+    const lesson_id = document.getElementById('datePicker').value
+    const team_id = document.getElementById('teamPicker').value
+
+    if (
+        teacher_id == '' ||
+        subject_id == '' ||
+        lesson_id == '' ||
+        team_id == ''
+    ) {
+        let message = 'Please select:'
+        if (teacher_id == '') {
+            message += ' Inspected'
+        }
+        if (subject_id == '') {
+            message += ' Subject'
+        }
+        if (lesson_id == '') {
+            message += ' Date'
+        }
+        if (team_id == '') {
+            message += ' Inspectors'
+        }
+        createPopup(message, [
+            { text: 'Ok', color: 'ok_popup_btn', onClick: () => {} },
+        ])
+        return
+    }
+
+    saveTermAsync(
+        document.getElementById('datePicker').value,
+        document.getElementById('teamPicker').value
+    )
+}
+
+/**
+ * Asynchronously saves a term by sending a POST request to the server.
+ *
+ * @param {number|string} lesson_id - The ID of the lesson to associate with the term.
+ * @param {number|string} team_id - The ID of the inspection team to associate with the term.
+ * @returns {Promise&lt;void>} A promise that resolves when the term is saved.
+ */
+async function saveTermAsync(lesson_id, team_id) {
+    const response = await fetch('http://localhost:5000/inspection-terms/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            fk_lesson: parseInt(lesson_id),
+            fk_inspectionTeam: parseInt(team_id),
+        }),
+    })
+    if (response.status == 409) {
+        createPopup(
+            'Inspection for this subject already exists. Please select other subject',
+            [
+                {
+                    text: 'Ok',
+                    color: 'ok_popup_btn',
+                    onClick: () => {},
+                },
+            ]
+        )
+        return
+    }
+
+    if (!response.ok) {
+        console.error('Failed to save term:', response)
+        alert('Failed to save term')
+        return
+    }
+    createPopup('Term saved successfully', [
+        {
+            text: 'Ok',
+            color: 'ok_popup_btn',
+            onClick: () => {
+                location.reload()
+            },
+        },
+    ])
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#addChangeListener">addChangeListener</a></li><li><a href="global.html#afterFetchSpecificInspectionTeams">afterFetchSpecificInspectionTeams</a></li><li><a href="global.html#applyToResult">applyToResult</a></li><li><a href="global.html#cancelDocs">cancelDocs</a></li><li><a href="global.html#checkNumberInput">checkNumberInput</a></li><li><a href="global.html#checkStringInput">checkStringInput</a></li><li><a href="global.html#cleanEditable">cleanEditable</a></li><li><a href="global.html#cleanInspectors">cleanInspectors</a></li><li><a href="global.html#convertDateToStringDate">convertDateToStringDate</a></li><li><a href="global.html#convertStringDateToDate">convertStringDateToDate</a></li><li><a href="global.html#createListItem">createListItem</a></li><li><a href="global.html#createPopup">createPopup</a></li><li><a href="global.html#createTermsList">createTermsList</a></li><li><a href="global.html#deleteTerm">deleteTerm</a></li><li><a href="global.html#deleteTermAsync">deleteTermAsync</a></li><li><a href="global.html#editItem">editItem</a></li><li><a href="global.html#editTerm">editTerm</a></li><li><a href="global.html#editTermSetInfo">editTermSetInfo</a></li><li><a href="global.html#editTermSetLessons">editTermSetLessons</a></li><li><a href="global.html#fetchData">fetchData</a></li><li><a href="global.html#fetchDocDetails">fetchDocDetails</a></li><li><a href="global.html#fetchSpecificInspectionTeams">fetchSpecificInspectionTeams</a></li><li><a href="global.html#fillSelectElement">fillSelectElement</a></li><li><a href="global.html#filterByDate">filterByDate</a></li><li><a href="global.html#filterByName">filterByName</a></li><li><a href="global.html#fixStringDate">fixStringDate</a></li><li><a href="global.html#getInputs">getInputs</a></li><li><a href="global.html#handleInspectorsChange">handleInspectorsChange</a></li><li><a href="global.html#handleLessonChange">handleLessonChange</a></li><li><a href="global.html#handleSubjectChange">handleSubjectChange</a></li><li><a href="global.html#handleTeacherChange">handleTeacherChange</a></li><li><a href="global.html#hideElement">hideElement</a></li><li><a href="global.html#isInspectionConducted">isInspectionConducted</a></li><li><a href="global.html#loadDocs">loadDocs</a></li><li><a href="global.html#loadInspectorsTeam">loadInspectorsTeam</a></li><li><a href="global.html#loadLessonsAndDates">loadLessonsAndDates</a></li><li><a href="global.html#loadSubjects">loadSubjects</a></li><li><a href="global.html#loadTeachers">loadTeachers</a></li><li><a href="global.html#loadTerms">loadTerms</a></li><li><a href="global.html#resetInputsErrors">resetInputsErrors</a></li><li><a href="global.html#resetOptions">resetOptions</a></li><li><a href="global.html#saveDocs">saveDocs</a></li><li><a href="global.html#saveDocsChanges">saveDocsChanges</a></li><li><a href="global.html#saveTermAsync">saveTermAsync</a></li><li><a href="global.html#saveTerms">saveTerms</a></li><li><a href="global.html#selectFirst">selectFirst</a></li><li><a href="global.html#setDocDetails">setDocDetails</a></li><li><a href="global.html#showElement">showElement</a></li><li><a href="global.html#sortByDate">sortByDate</a></li><li><a href="global.html#validateInputs">validateInputs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sun Jan 26 2025 12:08:55 GMT+0100 (czas środkowoeuropejski standardowy)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

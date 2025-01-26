@@ -15,13 +15,12 @@ document.getElementById('buttonCancel').addEventListener('click', () => {
             text: 'Yes',
             color: 'save_popup_btn',
             onClick: () =>
-                document.getElementById('editable').classList.add('hidden')
+                document.getElementById('editable').classList.add('hidden'),
         },
         {
             text: 'No',
             color: 'cancel_popup_btn',
-            onClick: () => {
-            },
+            onClick: () => {},
         },
     ])
 })
@@ -93,7 +92,7 @@ function createTermsList(terms) {
 
         listItem.innerHTML = `
             <div class="inner_list_div">
-                <span>${fixStringDate(term.date)} ${term.subject} ${term.teacher}</span>
+                <span>${fixStringDate(term.date)} ${Array.from(term.subject_type)[0]} ${term.subject} ${term.teacher}</span>
                 <div class="buttons_container">
                     <button type="submit" class="edit_button">
                         <img src="images/edit.png" alt="Edit button" class="trash_img">
@@ -111,8 +110,7 @@ function createTermsList(terms) {
         })
         const editButton = listItem.querySelector('.edit_button img')
         editButton.addEventListener('click', () => {
-            // TODO delete !
-            if (!isInspectionConducted(term.date)) {
+            if (isInspectionConducted(term.date)) {
                 createPopup(
                     'This term has been conducted. You cannot edit this term',
                     [
@@ -122,7 +120,7 @@ function createTermsList(terms) {
                         },
                     ]
                 )
-            }else{
+            } else {
                 cleanEditable()
                 inspection_id = term.id
                 editTerm(term.lesson_id, term.teacher_id, term.team_id)
@@ -141,8 +139,7 @@ function createTermsList(terms) {
  * @returns {Promise<void>} - A promise that resolves when the operation is complete.
  */
 async function deleteTerm(id, date) {
-    // TODO delete !
-    if (!isInspectionConducted(date)) {
+    if (isInspectionConducted(date)) {
         createPopup(
             'This term has been conducted. You cannot delete this term',
             [
@@ -197,7 +194,9 @@ async function deleteTermAsync(id) {
             {
                 text: 'Ok',
                 color: 'ok_popup_btn',
-                onClick: () => {window.location.reload()},
+                onClick: () => {
+                    window.location.reload()
+                },
             },
         ])
     } catch (error) {
@@ -450,7 +449,9 @@ async function saveTermAsync(lesson_id, team_id, term_id) {
         {
             text: 'Ok',
             color: 'ok_popup_btn',
-            onClick: () => {window.location.reload()},
+            onClick: () => {
+                window.location.reload()
+            },
         },
     ])
 }

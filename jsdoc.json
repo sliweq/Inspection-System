@@ -1,0 +1,16 @@
+{
+    "tags": {
+      "allowUnknownTags": true
+    },
+    "source": {
+      "include": ["./Controller"], 
+      "includePattern": ".js$",
+      "excludePattern": "(node_modules/|docs)"
+    },
+    "opts": {
+      "destination": "./docs/jsdoc", 
+      "recurse": true,
+      "readme": "./readme.md"
+    }
+  }
+  

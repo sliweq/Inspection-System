@@ -11,7 +11,7 @@ document.getElementById('buttonCancel').addEventListener('click', () => {
             text: 'Yes',
             color: 'save_popup_btn',
             onClick: () => {
-                window.location.href = 'index.html';
+                window.location.href = 'index.html'
             },
         },
         { text: 'No', color: 'cancel_popup_btn', onClick: () => {} },
@@ -262,12 +262,15 @@ async function loadInspectorsTeam(lesson_id, teacher_id) {
         )
 
         fillSelectElement('teamPicker', teams, (team) => ({
-            textContent: team.inspection_team_name + ": " + team.members
-                .map(
-                    (member) =>
-                        `${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
-                )
-                .join(', '),
+            textContent:
+                team.inspection_team_name +
+                ': ' +
+                team.members
+                    .map(
+                        (member) =>
+                            `${member.teacher_title} ${member.teacher_name} ${member.teacher_surname}`
+                    )
+                    .join(', '),
             value: team.inspection_team_id,
         }))
 
@@ -303,18 +306,24 @@ function handleInspectorsChange(teams, event) {
     applyToResult([
         teachers_data.teacher,
         teachers_data.department,
-        teachers_data.subject + " " + teachers_data.subject_type + " " + teachers_data.subject_code,
+        teachers_data.subject +
+            ' ' +
+            teachers_data.subject_type +
+            ' ' +
+            teachers_data.subject_code,
         teachers_data.date,
-        team.inspection_team_name + ': ' + team.members
-            .map(
-                (member) =>
-                    member.teacher_title +
-                    ' ' +
-                    member.teacher_name +
-                    ' ' +
-                    member.teacher_surname
-            )
-            .join(', '),
+        team.inspection_team_name +
+            ': ' +
+            team.members
+                .map(
+                    (member) =>
+                        member.teacher_title +
+                        ' ' +
+                        member.teacher_name +
+                        ' ' +
+                        member.teacher_surname
+                )
+                .join(', '),
     ])
 }
 
@@ -455,17 +464,19 @@ async function saveTermAsync(lesson_id, team_id) {
             fk_inspectionTeam: parseInt(team_id),
         }),
     })
-    if(response.status == 409){
-        createPopup('Inspection for this subject already exists. Please select other subject', [
-            {
-                text: 'Ok',
-                color: 'ok_popup_btn',
-                onClick: () => {},
-            },
-        ])
+    if (response.status == 409) {
+        createPopup(
+            'Inspection for this subject already exists. Please select other subject',
+            [
+                {
+                    text: 'Ok',
+                    color: 'ok_popup_btn',
+                    onClick: () => {},
+                },
+            ]
+        )
         return
     }
-
 
     if (!response.ok) {
         console.error('Failed to save term:', response)

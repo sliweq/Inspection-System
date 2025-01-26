@@ -1,15 +1,14 @@
 from unittest.mock import MagicMock
+
 import pytest
 from fastapi.testclient import TestClient
-from model_database_API import (  
-    app, get_db)
-from models_sqlalchemy import \
-    InspectionTeam  
+from model_database_API import app, get_db
+from models_sqlalchemy import InspectionTeam
 
 
 @pytest.fixture
 def mock_db_session():
-    
+
     mock_session = MagicMock()
 
     mock_session.query.return_value.distinct.return_value.all.return_value = [
@@ -30,7 +29,6 @@ def mock_db_session():
     yield mock_session
 
 
-
 def test_get_available_semesters_with_data(mock_db_session):
     app.dependency_overrides[get_db] = lambda: mock_db_session
     client = TestClient(app)
@@ -38,7 +36,6 @@ def test_get_available_semesters_with_data(mock_db_session):
 
     assert response.status_code == 200
     assert response.json() == ["2023-Fall", "2024-Spring"]
-
 
 
 def test_get_available_semesters_empty(mock_db_session):
@@ -52,7 +49,6 @@ def test_get_available_semesters_empty(mock_db_session):
     assert response.json() == []
 
 
-
 def test_get_inspection_teams_with_data(mock_db_session):
     app.dependency_overrides[get_db] = lambda: mock_db_session
     client = TestClient(app)
@@ -61,7 +57,6 @@ def test_get_inspection_teams_with_data(mock_db_session):
 
     assert response.status_code == 200
     assert response.json() == [{"id": 1, "name": "Team A"}, {"id": 2, "name": "Team B"}]
-
 
 
 def test_get_inspection_teams_empty(mock_db_session):

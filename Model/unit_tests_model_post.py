@@ -1,10 +1,9 @@
 from unittest.mock import MagicMock
+
 import pytest
 from fastapi.testclient import TestClient
-from model_database_API import (app,
-                                get_db)
-from models_sqlalchemy import \
-    InspectionTeam  
+from model_database_API import app, get_db
+from models_sqlalchemy import InspectionTeam
 from sqlalchemy.exc import IntegrityError
 
 
@@ -69,7 +68,7 @@ def test_create_inspection_team_unexpected_error(mock_db_session):
         orig=Exception("unexpected_error"),
     )
     mock_db_session.rollback.return_value = None
-    
+
     response = client.post("/inspection-teams/", json=team_data)
 
     assert response.status_code == 500

@@ -57,7 +57,7 @@ function createListItem(doc) {
     listItem.setAttribute('name', 'tmp')
     listItem.innerHTML = `
         <div class="inner_list_div" id="document_${doc.id}">
-            <span>${fixStringDate(doc.date)} ${doc.subject} ${doc.teacher}</span>
+            <span>${fixStringDate(doc.date)} ${Array.from(doc.subject_type)[0]} ${doc.subject} ${doc.teacher}</span>
             <button type="button" style="border: none; background: none; padding: 0;">
                 <img src="images/edit.png" alt="Edit button" class="trash_img">
             </button>
@@ -209,7 +209,7 @@ function validateInputs(inputs) {
  * This function retrieves all input elements using the getInputs function and iterates
  * through each element to remove the 'input_error' class, if present.
  */
-function resetInputsErrors(){
+function resetInputsErrors() {
     const inputs = getInputs()
     inputs.forEach(({ element }) => {
         element.classList.remove('input_error')

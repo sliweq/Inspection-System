@@ -2,25 +2,38 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const assert = require('assert')
 
-describe('CreateInspectionTeam', function() {
-  this.timeout(30000)
-  let driver
-  let vars
-  beforeEach(async function() {
-    driver = await new Builder().forBrowser('chrome').build()
-    vars = {}
-  })
-  afterEach(async function() {
-    await driver.quit();
-  })
-  it('CreateInspectionTeam', async function() {
-    await driver.get("http://127.0.0.1:5500/View/index.html")
-    await driver.findElement(By.linkText("Manage Teams")).click()
-    await driver.findElement(By.id("teamName")).click()
-    await driver.findElement(By.id("teamName")).sendKeys("Team Testing")
-    await driver.findElement(By.xpath("//button[contains(.,\'Add Team\')]")).click()
-    await driver.wait(until.elementLocated(By.xpath("//h2[contains(.,\'Team Testing\')]")), 30000)
-    assert(await driver.findElement(By.css("#members-7 > p")).getText() == "No members in this team.")
-    assert(await driver.findElement(By.id("message")).getText() == "Team added successfully!")
-  })
+describe('CreateInspectionTeam', function () {
+    this.timeout(30000)
+    let driver
+    let vars
+    beforeEach(async function () {
+        driver = await new Builder().forBrowser('chrome').build()
+        vars = {}
+    })
+    afterEach(async function () {
+        await driver.quit()
+    })
+    it('CreateInspectionTeam', async function () {
+        await driver.get('http://127.0.0.1:5500/View/index.html')
+        await driver.findElement(By.linkText('Manage Teams')).click()
+        await driver.findElement(By.id('teamName')).click()
+        await driver.findElement(By.id('teamName')).sendKeys('Team Testing')
+        await driver
+            .findElement(By.xpath("//button[contains(.,\'Add Team\')]"))
+            .click()
+        await driver.wait(
+            until.elementLocated(
+                By.xpath("//h2[contains(.,\'Team Testing\')]")
+            ),
+            30000
+        )
+        assert(
+            (await driver.findElement(By.css('#members-7 > p')).getText()) ==
+                'No members in this team.'
+        )
+        assert(
+            (await driver.findElement(By.id('message')).getText()) ==
+                'Team added successfully!'
+        )
+    })
 })
