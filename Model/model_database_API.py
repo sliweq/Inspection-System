@@ -9,9 +9,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import aliased, declarative_base, sessionmaker
 
-from models_pydantic import *
-from models_sqlalchemy import *
-
 DATABASE_URL = "postgresql://postgres:postgres@localhost/inspections"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -533,7 +530,7 @@ def post_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get
         raise HTTPException(
             status_code=500,
             detail="An error occurred while creating the inspection term.",
-        )
+        ) from e
 
 
 @app.delete("/inspection-terms/{term_id}/remove-term/")
@@ -561,8 +558,8 @@ def remove_inspection_term(term_id: int, db: sessionmaker = Depends(get_db)):
 
     try:
         term = db.query(Inspection).filter(Inspection.id == term_id).one_or_none()
-    except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection term not found")
+    except NoResultFound as e:
+        raise HTTPException(status_code=404, detail="Inspection term not found") from e
     db.delete(term)
     db.commit()
     return {"message": "Term has been deleted successfully"}
@@ -685,10 +682,10 @@ def create_inspection_team(
     except IntegrityError as e:
         db.rollback()
         if "inspectionteam_name_unique" in str(e.orig):
-            raise HTTPException(status_code=400, detail="Team name already exists.")
+            raise HTTPException(status_code=400, detail="Team name already exists.") from e
         raise HTTPException(
             status_code=500, detail="An error occurred while creating the team."
-        )
+        ) from e
 
 
 @app.get("/inspection-teams/{team_id}/", response_model=InspectionTeamBase)
@@ -750,8 +747,8 @@ def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
                 for t in teachers
             ],
         )
-    except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection Team not found")
+    except NoResultFound as e:
+        raise HTTPException(status_code=404, detail="Inspection Team not found") from e
 
 
 @app.post("/inspection-teams/{team_id}/add-teacher/")
@@ -791,9 +788,9 @@ def add_teacher_to_team(
     """
 
     try:
-        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
-    except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection Team not found")
+        db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
+    except NoResultFound as e:
+        raise HTTPException(status_code=404, detail="Inspection Team not found") from e
 
     teacher = db.query(Teacher).filter(Teacher.id == payload.teacher_id).one_or_none()
     if not teacher:
@@ -821,7 +818,7 @@ def add_teacher_to_team(
         raise HTTPException(
             status_code=400,
             detail="Unable to add teacher to the team, is the team full?",
-        )
+        ) from e
 
     return {"message": "Teacher added to the team successfully"}
 
@@ -862,9 +859,9 @@ def remove_teacher_from_team(
     """
 
     try:
-        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
-    except NoResultFound:
-        raise HTTPException(status_code=404, detail="Inspection Team not found")
+        db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
+    except NoResultFound as e:
+        raise HTTPException(status_code=404, detail="Inspection Team not found") from e
 
     assignment = (
         db.query(TeacherInspectionTeam)
