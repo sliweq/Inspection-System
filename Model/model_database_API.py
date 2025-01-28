@@ -9,6 +9,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.orm import aliased, declarative_base, sessionmaker
 
+from models_pydantic import *
+from models_sqlalchemy import *
+
 DATABASE_URL = "postgresql://postgres:postgres@localhost/inspections"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -26,6 +29,16 @@ app.add_middleware(
 
 
 def get_db():
+    """
+    Provides a database session for use in a context manager.
+
+    This function yields a database session object that can be used to interact
+    with the database. The session is automatically closed when the context
+    manager exits, ensuring that resources are properly released.
+
+    Yields:
+        db (SessionLocal): A database session object.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -457,12 +470,12 @@ def get_inspection_terms(db: sessionmaker = Depends(get_db)):
 
 
 @app.post("/inspection-terms/")
-def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_db)):
+def post_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_db)):
     """
     Create a new inspection term.
 
-    This endpoint adds a new inspection term to the database, associating it with an inspection schedule,
-    team, and lesson.
+    This endpoint adds a new inspection term to the database, 
+    associating it with an inspection schedule, team, and lesson.
 
     Args:
         term (CreateInspection): The data model containing inspection term details.
@@ -524,7 +537,7 @@ def get_inspection_terms(term: CreateInspection, db: sessionmaker = Depends(get_
 
 
 @app.delete("/inspection-terms/{term_id}/remove-term/")
-def remove_teacher_from_team(term_id: int, db: sessionmaker = Depends(get_db)):
+def remove_inspection_term(term_id: int, db: sessionmaker = Depends(get_db)):
     """
     Remove an inspection term by its ID.
 
@@ -562,7 +575,8 @@ def get_lesson_with_dates(
     """
     Fetch lessons for a specific teacher and subject.
 
-    This endpoint retrieves all lessons for a given teacher and subject, including the relevant details.
+    This endpoint retrieves all lessons for a given teacher and subject,
+    including the relevant details.
 
     Args:
         teacher_id (int): The unique identifier of the teacher.
@@ -682,8 +696,8 @@ def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
     """
     View details of a specific inspection team.
 
-    This endpoint retrieves the details of an inspection team, including its name and a list of teachers
-    associated with the team.
+    This endpoint retrieves the details of an inspection team, 
+    including its name and a list of teachers associated with the team.
 
     Args:
         team_id (int): The unique identifier of the inspection team.
@@ -696,8 +710,8 @@ def view_inspection_team(team_id: int, db: sessionmaker = Depends(get_db)):
         InspectionTeamBase: The inspection team details along with a list of teachers:
             - id (int): The ID of the inspection team.
             - name (str): The name of the inspection team.
-            - teachers (list[TeacherBase]): A list of teachers associated with the team, where each teacher
-              includes their ID, name, surname, and title.
+            - teachers (list[TeacherBase]): A list of teachers associated with the team, 
+                where each teacher includes their ID, name, surname, and title.
 
     Example Response:
         {
@@ -747,16 +761,19 @@ def add_teacher_to_team(
     """
     Add a teacher to an inspection team.
 
-    This endpoint assigns a teacher to a specific inspection team. If the teacher is already part of the team,
-    an error is raised. If the teacher or the team is not found, a corresponding error message is returned.
+    This endpoint assigns a teacher to a specific inspection team. 
+    If the teacher is already part of the team, an error is raised. 
+    If the teacher or the team is not found, a corresponding error message is returned.
 
     Args:
         team_id (int): The unique identifier of the inspection team.
-        payload (AddTeacherToTeam): The data model containing the teacher's ID to be added to the team.
+        payload (AddTeacherToTeam): The data model containing the teacher's 
+            ID to be added to the team.
         db (sessionmaker): The database session dependency injected by FastAPI.
 
     Raises:
-        HTTPException: If the inspection team or teacher is not found, or if the teacher is already assigned to the team,
+        HTTPException: If the inspection team or teacher is not found, 
+        or if the teacher is already assigned to the team,
         or if there is an issue adding the teacher to the team.
 
     Returns:
@@ -816,16 +833,19 @@ def remove_teacher_from_team(
     """
     Remove a teacher from an inspection team.
 
-    This endpoint removes a teacher from a specific inspection team. If the teacher is not assigned to the team,
-    an error is raised. If the team or the teacher is not found, a corresponding error message is returned.
+    This endpoint removes a teacher from a specific inspection team. 
+    If the teacher is not assigned to the team, an error is raised.
+    If the team or the teacher is not found, a corresponding error message is returned.
 
     Args:
         team_id (int): The unique identifier of the inspection team.
-        payload (RemoveTeacherFromTeam): The data model containing the teacher's ID to be removed from the team.
+        payload (RemoveTeacherFromTeam): The data model containing 
+            the teacher's ID to be removed from the team.
         db (sessionmaker): The database session dependency injected by FastAPI.
 
     Raises:
-        HTTPException: If the inspection team or teacher is not found, or if the teacher is not part of the team.
+        HTTPException: If the inspection team or teacher is not found, 
+        or if the teacher is not part of the team.
 
     Returns:
         dict: A success message indicating the teacher was removed from the team.
@@ -870,8 +890,10 @@ def get_specified_inspection_teams(
     """
     Get available inspection teams for a specified teacher and lesson.
 
-    This endpoint retrieves inspection teams that are available to participate in an inspection for a specific
-    lesson, excluding teams that already have scheduling conflicts or teams with more than one member from the
+    This endpoint retrieves inspection teams that are available 
+    to participate in an inspection for a specific
+    lesson, excluding teams that already have scheduling conflicts 
+    or teams with more than one member from the
     teacher's department.
 
     Args:
@@ -883,8 +905,9 @@ def get_specified_inspection_teams(
         HTTPException: If the lesson or the inspected teacher is not found.
 
     Returns:
-        list[dict]: A list of inspection teams that are available for the specified lesson, including the team name
-            and members that do not have scheduling conflicts, with no more than one member from the inspected teacher's department.
+        list[dict]: A list of inspection teams that are available for the specified lesson, 
+            including the team name and members that do not have scheduling conflicts, 
+            with no more than one member from the inspected teacher's department.
 
     Example Response:
         [
@@ -918,8 +941,6 @@ def get_specified_inspection_teams(
     inspected_teacher = db.query(Teacher).filter(Teacher.id == teacher_id).first()
     if not inspected_teacher:
         raise HTTPException(status_code=404, detail="Inspected teacher not found.")
-
-    inspected_department = inspected_teacher.department
 
     subquery = (
         db.query(TeacherInspectionTeam.fk_inspectionTeam)
@@ -965,7 +986,7 @@ def get_specified_inspection_teams(
             if conflict_found:
                 continue
 
-            if member.teacher.department == inspected_department:
+            if member.teacher.department == inspected_teacher.department:
                 department_count += 1
                 if department_count > 1:
                     break
@@ -997,7 +1018,8 @@ def get_teachers(db: sessionmaker = Depends(get_db)):
     """
     Fetch all teachers.
 
-    This endpoint retrieves a list of all teachers, including their ID, title, name, surname, and department.
+    This endpoint retrieves a list of all teachers, including their ID, 
+        title, name, surname, and department.
 
     Args:
         db (sessionmaker): The database session dependency injected by FastAPI.
@@ -1067,6 +1089,19 @@ def get_subjects(teacher_id: int, db: sessionmaker = Depends(get_db)):
 
 @app.get("/lessons/", response_model=list[LessonBase])
 def get_lessons(semester: str, db: sessionmaker = Depends(get_db)):
+    """
+    Fetches a list of lessons for a given semester.
+
+    Args:
+        semester (str): The semester for which to retrieve lessons.
+        db (sessionmaker, optional): The database session dependency.
+
+    Returns:
+        list[LessonBase]: A list of lessons for the specified semester.
+
+    Raises:
+        HTTPException: If no lessons are found for the selected semester.
+    """
     lessons = db.query(Lesson).filter(Lesson.semester == semester).all()
 
     if not lessons:
@@ -1082,7 +1117,8 @@ def get_available_semesters(db: sessionmaker = Depends(get_db)):
     """
     Get a list of available semesters for inspection schedules.
 
-    This endpoint retrieves a list of distinct semesters from the inspection schedules available in the database.
+    This endpoint retrieves a list of distinct semesters from the 
+        inspection schedules available in the database.
 
     Args:
         db (sessionmaker): The database session dependency injected by FastAPI.
@@ -1102,6 +1138,23 @@ def get_available_semesters(db: sessionmaker = Depends(get_db)):
 
 @app.get("/schedule/")
 def get_schedule(semester: str, db: sessionmaker = Depends(get_db)):
+    """
+    Endpoint to retrieve the schedule for a given semester.
+
+    Args:
+        semester (str): The semester for which the schedule is requested.
+        db (sessionmaker, optional): The database session dependency.
+
+    Returns:
+        list: A list of dictionaries containing the schedule information. Each dictionary contains:
+            - lesson (dict): Information about the lesson including time, room, and building.
+            - subject (dict): Information about the subject including name and type.
+            - teacher (dict): Information about the teacher including title, name, and surname.
+            - inspection_team (list): A list of dictionaries containing information 
+                about the inspection team teachers including title, name, and surname.
+
+    If no lessons are found for the given semester, an empty list is returned.
+    """
     lessons = (
         db.query(Lesson)
         .join(Subject, Lesson.fk_subject == Subject.id)
