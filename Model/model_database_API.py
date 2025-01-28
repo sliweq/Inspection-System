@@ -859,7 +859,7 @@ def remove_teacher_from_team(
     """
 
     try:
-        team = db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
+        db.query(InspectionTeam).filter(InspectionTeam.id == team_id).one()
     except NoResultFound as e:
         raise HTTPException(status_code=404, detail="Inspection Team not found") from e
 
