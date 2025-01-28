@@ -803,7 +803,7 @@ def add_teacher_to_team(
     except Exception as e:
         raise HTTPException(
             status_code=400,
-            detail="Unable to add teacher ot the team, is the team full?",
+            detail="Unable to add teacher to the team, is the team full?",
         )
 
     return {"message": "Teacher added to the team successfully"}
