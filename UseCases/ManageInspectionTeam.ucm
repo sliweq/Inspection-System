@@ -32,6 +32,7 @@ Use-Case: EditInspectionTeam
 
 Preconditions:
 - "Actor is logged in the system"
+- "A semester was selected beforehand"
 
 Postcondition (success):
 - "Actor changed the composition of a inspection team"
@@ -45,8 +46,9 @@ Main flow:
     5. Actor chooses "to delete an existing member or to add a new one"
     6. System verifies "The actor chose to remove a member from the team"
     7. "The system removes the member from the team"
-    8. "The system informs the actor that the member was removed from the team"
-    9. The use-case ends with success
+    8. System verifies "the member was successfully removed from the team"
+    9. "The system informs the actor that the member was removed from the team"
+    10. The use-case ends with success
 Steps 3.-4. can be repeated until "Member list of all teams have been displayed"
 
 Flow A : NoExistingTeams
@@ -60,8 +62,9 @@ Flow B: AddMember
     B3. Actor chooses "A member from existing inspectors"
     B4. System verifies "The team is not full"
     B5. "System adds the member to the team"
-    B6. "The system informs the actor of successful addition"
-    B7. The use-case ends with success
+    B6. System verifies "The member was successfully added to the team"
+    B7. "The system informs the actor of successful addition"
+    B8. The use-case ends with success
 
 Flow C: EmptyTeam
     C1.3. System verifies "The team is empty"
@@ -73,10 +76,22 @@ Flow D: TeamFull
     D2. "The system displays information that it is not possible to add the member to the team"
     D3. The use-case ends with failure
 
+Flow E: FailedRemoval
+    E1.8. System verifies "the member was not successfully removed from the team"
+    E2. "The system informs the actor that the member was not removed from the team"
+    E3. The use-case ends with failure
+
+Flow F: FailedAddition
+    F1.B6. System verifies "The member was not successfully added to the team"
+    F2. "The system informs the actor that the member was not added to the team"
+    F3. The use-case ends with failure
+
 Use-Case: CreateInspectionTeam
 
 Preconditions:
 - "Actor is logged in the system"
+- "A semester was selected beforehand"
+- "ViewInspectionTeams was executed beforehand"
 
 Postcondition (success):
 - "Actor added a new inspection team"
