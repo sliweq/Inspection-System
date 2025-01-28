@@ -29,7 +29,7 @@ async function loadDocs() {
 
     try {
         const docs = await fetchData('http://localhost:5000/inspection-docs/')
-
+        console.log(docs);
         docs.forEach((doc) => {
             const listItem = createListItem(doc)
             itemList.appendChild(listItem)
