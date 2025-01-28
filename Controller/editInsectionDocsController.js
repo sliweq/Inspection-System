@@ -4,9 +4,8 @@ import {
     checkNumberInput,
     createPopup,
     sortByDate,
+    fetchData,
 } from './utils.js';
-
-import { fetchData } from './controllerUtils.js';
 
 document.addEventListener('DOMContentLoaded', loadDocs);
 document.getElementById('buttonSave').addEventListener('click', saveDocs);

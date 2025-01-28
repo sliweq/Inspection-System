@@ -4,9 +4,9 @@ import {
     sortByDate,
     filterByDate,
     isInspectionConducted,
+    fetchData,
 } from './utils.js'
 
-import { fetchData } from './controllerUtils.js'
 
 document.addEventListener('DOMContentLoaded', loadTerms)
 document.getElementById('buttonCancel').addEventListener('click', () => {

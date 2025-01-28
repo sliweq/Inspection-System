@@ -1,6 +1,4 @@
-import { fixStringDate, createPopup } from './utils.js'
-
-import { fetchData } from './controllerUtils.js'
+import { fixStringDate, createPopup,fetchData } from './utils.js'
 
 document.addEventListener('DOMContentLoaded', loadTeachers)
 

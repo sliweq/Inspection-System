@@ -59,31 +59,27 @@ Postcondition (success):
 - "inspection term is updated successfully in the system"
 - "actor recieves edit confirmation"
 
-Postcondition (failure):
-- "inspection term remains unchanged"
 
 Trigger: Actor wants "the system to edit an existing inspection term."
 
 Main flow:
 1. "System show sorted list of inspection terms to edit."
 2. "Actor selects the inspection term to edit."
-3. "Actor selects a new date and/or inspection group"
+3. "Actor selects a new date and/or inspection groups available at this time"
 4. "Actor save changes"
-5. System verifies that "new data do not conflict with the inspectors classes or other inspections"
-6. The use-case ends with success.
+5. The use-case ends with success.
 
-Steps 2.-4. can be interrupted by cancelling_action event with ctx
+Steps 3.-4. can be interrupted by cancelling_action event with ctx
 
-Flow D: Inspection_data_are_in_conflict_or_invalid
-D1.5. System verifies that "inspection data are in conflict or invalid"
-D2. "System highlights provides error messages"
-D3. Goto 3.
+Flow G: Inspection_conducted
+E1.2. System verifies that "the selected Inspection term already has been conducted"
+E2. "System informs the actor that the term cannot be deleted"
+E3. Goto 1.
 
 Use-Case: Delete_inspection_term
 
 Preconditions:
 - "actor is logged into the system"
-- "inspection hasn't been conducted"
 - "semesters has been selected"
 
 Postcondition (success):
@@ -112,5 +108,3 @@ Flow F: Actor_cancels_deletion
 F1.4. "Actor chooses not to confirm the deletion"
 F2. "System retains the inspection term"
 F3. The use-case ends with failure.
-
-Steps 1.-2. can be interrupted by cancelling_action event.
