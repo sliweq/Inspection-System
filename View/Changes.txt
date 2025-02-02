@@ -5,4 +5,6 @@ użytkownik musiałby przeklikać się przez menu drop-down i czasami wiele przy
 Z tego powodu zmieniłem Use-Case Model ManageInspectionTeam, 
 Dzięki połączenia wielu funkcjonalności w jeden widok, drastycznie zredukowałem ilość interakcji które użytkownik musi wykonać z systemem.
 Teraz możliwe jest pełne zarządzanie zespołami hospitacyjnymi z poziomu jedengo ekranu.
+Rozszerzyłem także przypadek użycia EditInspectionTeam, 
+dodając przebiegi alternatywne uwzględniające więcej sytuacji błędów podczas edycji, na przykład jeśli zespół jest już pełny.
 Nowy Use-Case Model jest załączony w folderze UseCases
