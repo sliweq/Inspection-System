@@ -5,12 +5,10 @@
 A system for managing inspections at the university. It has capabilities such as: CRUD operations of inspection dates, Read Update inspection documents, Read inspection schedule, Udpate inspection teams.
 This project is a web application that uses a local server for the frontend and a Python-based API with SQLAlchemy for the backend. The application interacts with a PostgreSQL database.
 
-Project created as part of the Software Design class.
-
 ## Authors
 
-- Jan Maciuk [JanMaciuk](github.com/JanMaciuk)
-- Jakub Śliwka [sliweq](github.com/sliweq)
+- Jan Maciuk [JanMaciuk](https://github.com/JanMaciuk)
+- Jakub Śliwka [sliweq](https://github.com/sliweq)
 
 ---
 
@@ -32,7 +30,7 @@ Before running the project, ensure you have the following installed on your syst
 You can install the required Python libraries using the following command:
 
 ```bash
-pip install fastapi pydantic sqlalchemy uvicorn
+pip install fastapi pydantic sqlalchemy uvicorn pytest pytest-mock
 ```
 
 ## Run
@@ -53,8 +51,20 @@ Required: npm package jest
 npm i jest
 ```
 
+```bash
+npm install selenium-webdriver mocha assert chromedriver
+```
+
 Run
 
 ```bash
 jest
+```
+
+```bash
+npx mocha .\Tests\SeleniumTests\*
+```
+
+```bash
+.\Model\unit_tests_model_get.py .\model\unit_tests_model_post.py
 ```
