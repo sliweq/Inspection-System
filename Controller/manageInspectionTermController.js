@@ -231,10 +231,10 @@ async function editTerm(term_id, teacher_id, team_id) {
         }
         const lessons = await response1.json()
 
-        if (lessons.length === 0) {
-            editable.classList.add('hidden')
-            return
-        }
+        // if (lessons.length === 0) {
+        //     editable.classList.add('hidden')
+        //     return
+        // }
         editTermSetLessons(lessons, term_id, teacher_id, team_id)
     } catch (error) {
         editable.classList.add('hidden')

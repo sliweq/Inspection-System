@@ -2,58 +2,43 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const assert = require('assert')
 
-describe('TC17', function () {
-    this.timeout(30000)
-    let driver
-    let vars
-    beforeEach(async function () {
-        driver = await new Builder().forBrowser('chrome').build()
-        vars = {}
-    })
-    afterEach(async function () {
-        await driver.quit()
-    })
-    it('TC17', async function () {
-        await driver.get('http://127.0.0.1:5500/View/index.html')
-        await driver.manage().window().setRect({ width: 974, height: 1080 })
-        await driver.findElement(By.linkText('Add Inspection Terms')).click()
-        await driver.findElement(By.id('inspectedPicker')).click()
-        {
-            const dropdown = await driver.findElement(By.id('inspectedPicker'))
-            await dropdown
-                .findElement(By.xpath("//option[. = 'mgr John Doe']"))
-                .click()
-        }
-        await driver.findElement(By.id('subjectPicker')).click()
-        {
-            const dropdown = await driver.findElement(By.id('subjectPicker'))
-            await dropdown
-                .findElement(
-                    By.xpath("//option[. = 'Mathematics Practical MATH102']")
-                )
-                .click()
-        }
-        await driver.findElement(By.id('datePicker')).click()
-        {
-            const dropdown = await driver.findElement(By.id('datePicker'))
-            await dropdown
-                .findElement(
-                    By.xpath("//option[. = '2025-02-01 08:00 A1-Room 101']")
-                )
-                .click()
-        }
-        await driver.findElement(By.id('teamPicker')).click()
-        {
-            const dropdown = await driver.findElement(By.id('teamPicker'))
-            await dropdown
-                .findElement(
-                    By.xpath(
-                        "//option[. = 'Team Beta: dr inż Tom Brown, profesor Emily Davis, mgr inż Sophia Harris']"
-                    )
-                )
-                .click()
-        }
-        await driver.findElement(By.id('buttonSave')).click()
-        await driver.findElement(By.css('.ok_popup_btn')).click()
-    })
+describe('TC17_2', function() {
+  this.timeout(30000)
+  let driver
+  let vars
+  beforeEach(async function() {
+    driver = await new Builder().forBrowser('chrome').build()
+    vars = {}
+  })
+  afterEach(async function() {
+    await driver.quit();
+  })
+  it('TC17_2', async function() {
+    await driver.get("http://127.0.0.1:5500/View/index.html")
+    await driver.manage().window().setRect({ width: 974, height: 1080 })
+    await driver.findElement(By.linkText("Add Inspection Terms")).click()
+    await driver.findElement(By.css("#search > div")).click()
+    await driver.findElement(By.id("inspectedPicker")).click()
+    {
+      const dropdown = await driver.findElement(By.id("inspectedPicker"))
+      await dropdown.findElement(By.xpath("//option[. = 'dr hab Sarah Taylor']")).click()
+    }
+    await driver.findElement(By.id("subjectPicker")).click()
+    {
+      const dropdown = await driver.findElement(By.id("subjectPicker"))
+      await dropdown.findElement(By.xpath("//option[. = 'Mathematics Lecture MATH101']")).click()
+    }
+    await driver.findElement(By.id("datePicker")).click()
+    {
+      const dropdown = await driver.findElement(By.id("datePicker"))
+      await dropdown.findElement(By.xpath("//option[. = '2025-03-01 08:00 A1-Room 201']")).click()
+    }
+    await driver.findElement(By.id("teamPicker")).click()
+    {
+      const dropdown = await driver.findElement(By.id("teamPicker"))
+      await dropdown.findElement(By.xpath("//option[. = 'Team Beta: dr inż Tom Brown, profesor Emily Davis, mgr inż Sophia Harris']")).click()
+    }
+    await driver.findElement(By.id("buttonSave")).click()
+    await driver.findElement(By.css(".ok_popup_btn")).click()
+  })
 })

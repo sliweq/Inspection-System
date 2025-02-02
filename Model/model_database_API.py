@@ -602,7 +602,7 @@ def get_lesson_with_dates(
         .join(Teacher, Lesson.fk_teacher == Teacher.id)
         .join(Subject, Lesson.fk_subject == Subject.id)
         .filter(Teacher.id == teacher_id, Subject.id == subject_id)
-        # .filter(Lesson.time >= datetime.now()) TODO!!
+        .filter(Lesson.time >= datetime.now())
         .all()
     )
 

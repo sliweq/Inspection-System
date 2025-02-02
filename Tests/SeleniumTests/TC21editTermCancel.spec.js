@@ -2,39 +2,37 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const assert = require('assert')
 
-describe('TC21', function () {
-    this.timeout(30000)
-    let driver
-    let vars
-    beforeEach(async function () {
-        driver = await new Builder().forBrowser('chrome').build()
-        vars = {}
-    })
-    afterEach(async function () {
-        await driver.quit()
-    })
-    it('TC21', async function () {
-        await driver.get('http://127.0.0.1:5500/View/index.html')
-        await driver.manage().window().setRect({ width: 974, height: 1080 })
-        await driver
-            .findElement(By.linkText('Edit/Delete Inspection Terms'))
-            .click()
-        await driver
-            .findElement(By.css('li:nth-child(1) .edit_button > .trash_img'))
-            .click()
-        await driver.findElement(By.id('datePicker')).click()
-        await driver.findElement(By.id('teamPicker')).click()
-        {
-            const dropdown = await driver.findElement(By.id('teamPicker'))
-            await dropdown
-                .findElement(
-                    By.xpath(
-                        "//option[. = 'Team Gamma mgr inż Michael Wilson dr hab Sarah Taylor dr hab Chris Martin']"
-                    )
-                )
-                .click()
-        }
-        await driver.findElement(By.id('buttonSave')).click()
-        await driver.findElement(By.css('.cancel_popup_btn')).click()
-    })
+describe('TC21_2', function() {
+  this.timeout(30000)
+  let driver
+  let vars
+  beforeEach(async function() {
+    driver = await new Builder().forBrowser('chrome').build()
+    vars = {}
+  })
+  afterEach(async function() {
+    await driver.quit();
+  })
+  it('TC21_2', async function() {
+    await driver.get("http://127.0.0.1:5500/View/index.html")
+    await driver.manage().window().setRect({ width: 974, height: 1080 })
+    await driver.findElement(By.linkText("Edit/Delete Inspection Terms")).click()
+    await driver.findElement(By.css("li:nth-child(1) .edit_button > .trash_img")).click()
+    {
+      const element = await driver.findElement(By.css("li:nth-child(1) .delete_button > .trash_img"))
+      await driver.actions({ bridge: true }).moveToElement(element).perform()
+    }
+    {
+      const element = await driver.findElement(By.CSS_SELECTOR, "body")
+      await driver.actions({ bridge: true }).moveToElement(element, 0, 0).perform()
+    }
+    await driver.findElement(By.id("datePicker")).click()
+    await driver.findElement(By.id("teamPicker")).click()
+    {
+      const dropdown = await driver.findElement(By.id("teamPicker"))
+      await dropdown.findElement(By.xpath("//option[. = 'Team Delta profesor dr hab inż Robert Anderson mgr Laura Thomas profesor dr hab inż Jessica Thompson']")).click()
+    }
+    await driver.findElement(By.id("buttonSave")).click()
+    await driver.findElement(By.css(".cancel_popup_btn")).click()
+  })
 })

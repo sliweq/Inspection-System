@@ -2,26 +2,22 @@
 const { Builder, By, Key, until } = require('selenium-webdriver')
 const assert = require('assert')
 
-describe('TC27', function () {
-    this.timeout(30000)
-    let driver
-    let vars
-    beforeEach(async function () {
-        driver = await new Builder().forBrowser('chrome').build()
-        vars = {}
-    })
-    afterEach(async function () {
-        await driver.quit()
-    })
-    it('TC27', async function () {
-        await driver.get('http://127.0.0.1:5500/View/index.html')
-        await driver.manage().window().setRect({ width: 974, height: 1080 })
-        await driver
-            .findElement(By.linkText('Edit/Delete Inspection Terms'))
-            .click()
-        await driver
-            .findElement(By.css('li:nth-child(1) .delete_button > .trash_img'))
-            .click()
-        await driver.findElement(By.css('.cancel_popup_btn')).click()
-    })
+describe('TC27_2', function() {
+  this.timeout(30000)
+  let driver
+  let vars
+  beforeEach(async function() {
+    driver = await new Builder().forBrowser('chrome').build()
+    vars = {}
+  })
+  afterEach(async function() {
+    await driver.quit();
+  })
+  it('TC27_2', async function() {
+    await driver.get("http://127.0.0.1:5500/View/index.html")
+    await driver.manage().window().setRect({ width: 974, height: 1080 })
+    await driver.findElement(By.linkText("Edit/Delete Inspection Terms")).click()
+    await driver.findElement(By.css("li:nth-child(1) .delete_button > .trash_img")).click()
+    await driver.findElement(By.css(".cancel_popup_btn")).click()
+  })
 })
