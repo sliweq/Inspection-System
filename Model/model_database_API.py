@@ -180,7 +180,7 @@ def get_inspection_doc(docs_id: int, db: sessionmaker = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Inspection document not found")
 
     inspection_details = {
-        "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name}",
+        "inspected_name": f"{inspection.lesson.teacher.title} {inspection.lesson.teacher.name} {inspection.lesson.teacher.surname}",
         "department_name": inspection.lesson.teacher.department,
         "date_of_inspection": inspection.lesson.time,
         "subject_name": inspection.lesson.subject.name,
