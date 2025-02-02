@@ -150,13 +150,9 @@ function handleSubjectChange(event, subjects, teacher_id) {
     applyToResult(['', '', '', '', '', ''])
     document.getElementById('editable').classList.add('hidden')
 
-    if (event.target == undefined) {
-        return
-    }
-
     const selectedValue = event.target.value
 
-    if (selectedValue == '') {
+    if (event.target == undefined || selectedValue == '') {
         hideElement('select_date')
         hideElement('select_inspectors')
         return
@@ -228,7 +224,7 @@ function handleLessonChange(lessons, teacher_id, event) {
     document.getElementById('editable').classList.add('hidden')
 
     const selectedValue = event.target.value
-    if (selectedValue == '') {
+    if (event.target == undefined || selectedValue == '') {
         hideElement('select_inspectors')
         return
     }
