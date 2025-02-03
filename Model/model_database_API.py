@@ -960,6 +960,16 @@ def get_specified_inspection_teams(
     for team in inspection_teams:
         department_count = 0
         available_members = []
+        
+        team_inspections = (
+            db.query(Inspection)
+            .join(Lesson, Inspection.fk_lesson == Lesson.id)
+            .filter(Inspection.fk_inspectionTeam == team.id, Lesson.time == lesson.time)
+            .all()
+        )
+        
+        if team_inspections:
+            continue
 
         for member in team.teachers:
             member_lessons = (

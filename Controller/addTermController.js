@@ -125,7 +125,7 @@ async function loadSubjects(teacher_id) {
         const subjects = await fetchData(
             `http://localhost:5000/unique-subjects/${teacher_id}/`
         )
-        console.error(subjects)
+        
         fillSelectElement('subjectPicker', subjects, (subject) => ({
             textContent: `${subject.subject_name} ${subject.subject_type} ${subject.subject_code}`,
             value: subject.subject_id,
@@ -163,6 +163,12 @@ function handleSubjectChange(event, subjects, teacher_id) {
             subject = element
         }
     })
+
+    if (subject == undefined) {
+        hideElement('select_date')
+        hideElement('select_inspectors')
+        return
+    }
 
     teachers_data.subject = subject.subject_name
     teachers_data.subject_type = subject.subject_type
@@ -230,6 +236,10 @@ function handleLessonChange(lessons, teacher_id, event) {
     }
 
     const lesson = lessons.find((lesson) => lesson.id == selectedValue)
+    if (lesson == undefined) {
+        hideElement('select_inspectors')
+        return
+    }
     teachers_data.date = fixStringDate(lesson.time)
     teachers_data.building = lesson.building + '-' + lesson.room
 
