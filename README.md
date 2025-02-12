@@ -66,5 +66,5 @@ npx mocha .\Tests\SeleniumTests\*
 ```
 
 ```bash
-.\Model\unit_tests_model_get.py .\model\unit_tests_model_post.py
+pytest .\Model\unit_tests_model_get.py .\model\unit_tests_model_post.py
 ```
